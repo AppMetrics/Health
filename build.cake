@@ -319,14 +319,19 @@ Task("PublishTestResults")
 
 			Context.Information("Found " + filePaths.Count() + " .trx files");
 
-			try
+			foreach(var filePath in filePaths)
 			{
-				MoveFiles(filePath.FullPath, testResultsDir);
-				MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
-			}
-			catch(Exception ex)
-			{
-				Context.Information(ex.ToString());
+				Context.Information("Moving " + filePath.FullPath + " to " + testResultsDir);
+
+				try
+				{
+					MoveFiles(filePath.FullPath, testResultsDir);
+					MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
+				}
+				catch(Exception ex)
+				{
+					Context.Information(ex.ToString());
+				}				
 			}	
 		}	
 	}
