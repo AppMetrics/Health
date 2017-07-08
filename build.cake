@@ -35,23 +35,11 @@ var skipHtmlCoverageReport		= HasArgument("SkipHtmlCoverageReport") ? Argument<b
 // DEFINE FILES & DIRECTORIES
 //////////////////////////////////////////////////////////////////////
 var packDirs                    = new [] {
-											Directory("./src/App.Metrics"),
-											Directory("./src/App.Metrics.Abstractions"),
-											Directory("./src/App.Metrics.Core"),
-											Directory("./src/App.Metrics.Formatters.Json"),
-											Directory("./src/App.Metrics.Formatters.Ascii"),
-											Directory("./src/App.Metrics.Reporting"),
 											Directory("./src/App.Metrics.Health"),
 											Directory("./src/App.Metrics.HealthMetrics"),
 											Directory("./src/App.Metrics.Health.Abstractions"),
 											Directory("./src/App.Metrics.Health.Formatters.Ascii"),
 											Directory("./src/App.Metrics.Health.Formatters.Json"),											
-											Directory("./src/App.Metrics.AspNetCore"),
-											Directory("./src/App.Metrics.AspNetCore.Abstractions"),
-											Directory("./src/App.Metrics.AspNetCore.Formatters.Ascii"),
-											Directory("./src/App.Metrics.AspNetCore.Formatters.Json"),
-											Directory("./src/App.Metrics.AspNetCore.Middleware"),
-											Directory("./src/App.Metrics.AspNetCore.Mvc"),
 											Directory("./src/App.Metrics.AspNetCore.Health"),
 											Directory("./src/App.Metrics.AspNetCore.Health.Formatters.Ascii"),
 											Directory("./src/App.Metrics.AspNetCore.Health.Formatters.Json")
@@ -68,7 +56,7 @@ var packagesDir                 = artifactsDir.Combine("packages");
 var resharperSettings			= "./AppMetrics.sln.DotSettings";
 var inspectCodeXml				= string.Format("{0}/inspectCode.xml", reSharperReportsDir);
 var inspectCodeHtml				= string.Format("{0}/inspectCode.html", reSharperReportsDir);
-var solutionFile				= "./AppMetrics.sln";
+var solutionFile				= "./Health.sln";
 var solution					= ParseSolution(new FilePath(solutionFile));
 
 //////////////////////////////////////////////////////////////////////
@@ -331,13 +319,15 @@ Task("PublishTestResults")
 
 			Context.Information("Found " + filePaths.Count() + " .trx files");
 
-			foreach(var filePath in filePaths)
+			try
 			{
-				Context.Information("Moving " + filePath.FullPath + " to " + testResultsDir);
-
 				MoveFiles(filePath.FullPath, testResultsDir);
 				MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
 			}
+			catch(Exception ex)
+			{
+				Context.Information(ex.ToString());
+			}	
 		}	
 	}
 });

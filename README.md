@@ -1,21 +1,11 @@
-# App Metrics <img src="http://app-metrics.io/logo.png" alt="App Metrics" width="50px"/> 
+# App Metrics Health <img src="http://app-metrics.io/logo.png" alt="App Metrics" width="50px"/> 
 [![Official Site](https://img.shields.io/badge/site-appmetrics-blue.svg?style=flat-square)](http://app-metrics.io/getting-started/intro.html) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/app-metrics/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## What is App Metrics?
+## What is App Metrics Health?
 
 App Metrics is an open-source and cross-platform .NET library used to record metrics within an application. App Metrics can run on .NET Core or on the full .NET framework also supporting .NET 4.5.2. App Metrics abstracts away the underlaying repository of your Metrics for example InfluxDB, Graphite, Elasticsearch etc, by sampling and aggregating in memory and providing extensibility points to flush metrics to a repository at a specified interval. For pre .NET Core web applications see [AppMetrics.Owin](https://github.com/alhardy/AppMetrics.Owin)
 
 App Metrics provides various metric types to measure things such as the rate of requests, counting the number of user logins over time, measure the time taken to execute a database query, measure the amount of free memory and so on. Metrics types supported are Gauges, Counters, Meters, Histograms and Timers and Application Performance Indexes [Apdex](http://apdex.org/overview.html).
-
-For metric reporting capabilities see:
-
-- [Console & Text File Reporters](https://github.com/alhardy/AppMetrics.Reporters)
-- [InfluxDB Extensions](https://github.com/alhardy/AppMetrics.Extensions.InfluxDB)
-- [Elasticsearch Extensions](https://github.com/alhardy/AppMetrics.Extensions.Elasticsearch)
-- [Prometheus Extensions](https://github.com/alhardy/AppMetrics.Extensions.Prometheus)
-- [Graphite Extensions](https://github.com/alhardy/AppMetrics.Extensions.Graphite)
-
-`App.Metrics` includes an Exponentially Forward Decaying, Sliding Window and Algorithm R reservoir implementations, for additional reservoir sampling see the [reservoir repo](https://github.com/alhardy/AppMetrics.Reservoirs). For more details on reservoir sampling see the [docs](http://app-metrics.io/getting-started/sampling/index.html).
 
 App Metrics also provides a health checking system allowing you to monitor the health of your application through user defined checks.
 
@@ -27,8 +17,8 @@ App Metrics also provides a health checking system allowing you to monitor the h
 
 |Branch|AppVeyor|Travis|Coverage|
 |------|:--------:|:--------:|:--------:|
-|dev|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/AppMetrics/dev.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/appmetrics/branch/dev)|[![Travis](https://img.shields.io/travis/alhardy/AppMetrics/dev.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/AppMetrics)|[![Coveralls](https://img.shields.io/coveralls/alhardy/AppMetrics/dev.svg?style=flat-square)](https://coveralls.io/github/alhardy/AppMetrics?branch=dev)
-|master|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/AppMetrics/master.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/appmetrics/branch/master)| [![Travis](https://img.shields.io/travis/alhardy/AppMetrics/master.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/AppMetrics)| [![Coveralls](https://img.shields.io/coveralls/alhardy/AppMetrics/master.svg?style=flat-square)](https://coveralls.io/github/alhardy/AppMetrics?branch=master)|
+|dev|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/health/dev.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/health/branch/dev)|[![Travis](https://img.shields.io/travis/alhardy/health/dev.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/health)|[![Coveralls](https://img.shields.io/coveralls/alhardy/health/dev.svg?style=flat-square)](https://coveralls.io/github/alhardy/health?branch=dev)
+|master|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/health/master.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/health/branch/master)| [![Travis](https://img.shields.io/travis/alhardy/health/master.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/health)| [![Coveralls](https://img.shields.io/coveralls/alhardy/health/master.svg?style=flat-square)](https://coveralls.io/github/alhardy/health?branch=master)|
 
 |Package|Dev Release|Pre-Release|Release|
 |------|:--------:|:--------:|:--------:|
@@ -156,5 +146,3 @@ App Metrics is based on the [Metrics.NET](https://github.com/etishor/Metrics.NET
 "Copyright (c) 2010-2013 Coda Hale, Yammer.com Published under Apache Software License 2.0, see [LICENSE](https://github.com/dropwizard/metrics/blob/3.2-development/LICENSE)"
 
 ----------
-
-[![](https://codescene.io/projects/792/status.svg) Get more details at **codescene.io**.](https://codescene.io/projects/792/jobs/latest-successful/results)

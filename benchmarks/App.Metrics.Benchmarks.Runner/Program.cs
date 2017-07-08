@@ -4,7 +4,7 @@
 
 using System;
 using System.Reflection;
-using App.Metrics.Benchmarks.Support;
+using App.Metrics.Health.Benchmarks.Support;
 using BenchmarkDotNet.Running;
 
 namespace App.Metrics.Benchmarks.Runner
