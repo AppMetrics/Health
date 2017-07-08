@@ -34,7 +34,16 @@ var skipHtmlCoverageReport		= HasArgument("SkipHtmlCoverageReport") ? Argument<b
 //////////////////////////////////////////////////////////////////////
 // DEFINE FILES & DIRECTORIES
 //////////////////////////////////////////////////////////////////////
-var packDirs                    = new [] { Directory("./src/App.Metrics"), Directory("./src/App.Metrics.Concurrency"), Directory("./src/App.Metrics.Extensions.Middleware"), Directory("./src/App.Metrics.Extensions.Mvc"), Directory("./src/App.Metrics.Formatters.Json"), Directory("./src/App.Metrics.Formatters.Ascii") };
+var packDirs                    = new [] {
+											Directory("./src/App.Metrics.Health"),
+											Directory("./src/App.Metrics.HealthMetrics"),
+											Directory("./src/App.Metrics.Health.Abstractions"),
+											Directory("./src/App.Metrics.Health.Formatters.Ascii"),
+											Directory("./src/App.Metrics.Health.Formatters.Json"),											
+											Directory("./src/App.Metrics.AspNetCore.Health"),
+											Directory("./src/App.Metrics.AspNetCore.Health.Formatters.Ascii"),
+											Directory("./src/App.Metrics.AspNetCore.Health.Formatters.Json")
+										};
 var artifactsDir                = (DirectoryPath) Directory("./artifacts");
 var testResultsDir              = (DirectoryPath) artifactsDir.Combine("test-results");
 var coverageResultsDir          = (DirectoryPath) artifactsDir.Combine("coverage");
@@ -47,7 +56,7 @@ var packagesDir                 = artifactsDir.Combine("packages");
 var resharperSettings			= "./AppMetrics.sln.DotSettings";
 var inspectCodeXml				= string.Format("{0}/inspectCode.xml", reSharperReportsDir);
 var inspectCodeHtml				= string.Format("{0}/inspectCode.html", reSharperReportsDir);
-var solutionFile				= "./AppMetrics.sln";
+var solutionFile				= "./Health.sln";
 var solution					= ParseSolution(new FilePath(solutionFile));
 
 //////////////////////////////////////////////////////////////////////
@@ -58,17 +67,17 @@ var openCoverFilter				= "+[App.Metrics*]* -[xunit.*]* -[*.Facts]*";
 var openCoverExcludeFile        = "*/*Designer.cs;*/*.g.cs;*/*.g.i.cs";
 var coverIncludeFilter			= "+:App.Metrics*";
 var coverExcludeFilter			= "-:*.Facts";
-var excludeFromCoverage			= "*.AppMetricsExcludeFromCodeCoverage*";
+var excludeFromCoverage			= "*.ExcludeFromCodeCoverage*";
 string versionSuffix			= null;
 
 if (!string.IsNullOrEmpty(preReleaseSuffix))
 {
 	versionSuffix = preReleaseSuffix + "-" + buildNumber.ToString("D4");
 }
- else if (AppVeyor.IsRunningOnAppVeyor && !AppVeyor.Environment.Repository.Tag.IsTag)
- {
- 	versionSuffix = buildNumber.ToString("D4");
- }
+else if (AppVeyor.IsRunningOnAppVeyor && !AppVeyor.Environment.Repository.Tag.IsTag)
+{
+	versionSuffix = buildNumber.ToString("D4");
+}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -146,21 +155,15 @@ Task("Build")
 
 		foreach(var project in projects)
         {
-			// Ignore Net452 on non-windows environments
-			if (project.Path.ToString().Contains("Net452"))
-			{
-				continue;
-			}
-
 			var parsedProject = ParseProject(new FilePath(project.Path.ToString()), configuration);
 
 			if (parsedProject.IsLibrary() && !project.Path.ToString().Contains(".Sandbox")&& !project.Path.ToString().Contains(".Facts") && !project.Path.ToString().Contains(".Benchmarks"))
 			{				
-				settings.Framework = "netstandard1.6";				
+				settings.Framework = "netstandard2.0";				
 			}
 			else
 			{
-				settings.Framework = "netcoreapp1.1";
+				settings.Framework = "netcoreapp2.0";
 			}
 
 			Context.Information("Building as " + settings.Framework + ": " +  project.Path.ToString());
@@ -227,15 +230,9 @@ Task("RunTests")
 			 ArgumentCustomization = args => args.Append("--logger:trx")
 		};
 
-		// Ignore Net452 on non-windows environments
-		if (folderName.Contains("Net452") && !IsRunningOnWindows())
-		{
-			continue;
-		}
-
 		if (!IsRunningOnWindows())
         {
-			settings.Framework = "netcoreapp1.1";
+			settings.Framework = "netcoreapp2.0";
         }	 
 
 		DotNetCoreTest(project.FullPath, settings);
@@ -326,9 +323,16 @@ Task("PublishTestResults")
 			{
 				Context.Information("Moving " + filePath.FullPath + " to " + testResultsDir);
 
-				MoveFiles(filePath.FullPath, testResultsDir);
-				MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
-			}
+				try
+				{
+					MoveFiles(filePath.FullPath, testResultsDir);
+					MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
+				}
+				catch(Exception ex)
+				{
+					Context.Information(ex.ToString());
+				}				
+			}	
 		}	
 	}
 });
