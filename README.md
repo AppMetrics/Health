@@ -9,8 +9,8 @@ App Metrics Health is an open-source and cross-platform .NET library used define
 
 |Branch|AppVeyor|Travis|Coverage|
 |------|:--------:|:--------:|:--------:|
-|dev|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/health/dev.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/health/branch/dev)|[![Travis](https://img.shields.io/travis/alhardy/health/dev.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/health)|[![Coveralls](https://img.shields.io/coveralls/alhardy/health/dev.svg?style=flat-square)](https://coveralls.io/github/alhardy/health?branch=dev)
-|master|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/health/master.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/health/branch/master)| [![Travis](https://img.shields.io/travis/alhardy/health/master.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/health)| [![Coveralls](https://img.shields.io/coveralls/alhardy/health/master.svg?style=flat-square)](https://coveralls.io/github/alhardy/health?branch=master)|
+|dev|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/health/dev.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/health/branch/dev)|[![Travis](https://img.shields.io/travis/alhardy/health/dev.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/health)|[![Coveralls](https://img.shields.io/coveralls/AppMetrics/Health/dev.svg?style=flat-square)](https://coveralls.io/github/AppMetrics/Health?branch=dev)
+|master|[![AppVeyor](https://img.shields.io/appveyor/ci/alhardy/health/master.svg?style=flat-square&label=appveyor%20build)](https://ci.appveyor.com/project/alhardy/health/branch/master)| [![Travis](https://img.shields.io/travis/alhardy/health/master.svg?style=flat-square&label=travis%20build)](https://travis-ci.org/alhardy/health)| [![Coveralls](https://img.shields.io/coveralls/AppMetrics/Health/master.svg?style=flat-square)](https://coveralls.io/github/AppMetrics/Health?branch=master)|
 
 |Package|Dev Release|Pre-Release|Release|
 |------|:--------:|:--------:|:--------:|
