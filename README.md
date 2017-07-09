@@ -19,14 +19,6 @@ App Metrics Health is an open-source and cross-platform .NET library used define
 |App.Metrics.Health.Formatters.Ascii|[![MyGet Status](https://img.shields.io/myget/appmetrics/v/App.Metrics.Health.Formatters.Ascii.svg?style=flat-square&maxAge=7200)](https://www.myget.org/feed/appmetrics/package/nuget/App.Metrics.Health.Formatters.Ascii)|[![NuGet Status](https://img.shields.io/nuget/vpre/App.Metrics.Health.Formatters.Ascii.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.Health.Formatters.Ascii/)|[![NuGet Status](https://img.shields.io/nuget/v/App.Metrics.Health.Formatters.Ascii.svg)](https://www.nuget.org/packages/App.Metrics.Health.Formatters.Ascii/)
 |App.Metrics.Health.Formatters.Json|[![MyGet Status](https://img.shields.io/myget/appmetrics/v/App.Metrics.Health.Formatters.Json.svg?style=flat-square)](https://www.myget.org/feed/appmetrics/package/nuget/App.Metrics.Health.Formatters.Json)|[![NuGet Status](https://img.shields.io/nuget/vpre/App.Metrics.Health.Formatters.Json.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.Health.Formatters.Json/)|[![NuGet Status](https://img.shields.io/nuget/v/App.Metrics.Health.Formatters.Json.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.Health.Formatters.Json/)|
 
-### AspNet Core
-
-|Package|Dev Release|Pre-Release|Release|
-|------|:--------:|:--------:|:--------:|
-|App.Metrics.AspNetCore.Health|[![MyGet Status](https://img.shields.io/myget/appmetrics/v/App.Metrics.AspNetCore.Health.svg?style=flat-square)](https://www.myget.org/feed/appmetrics/package/nuget/App.Metrics.AspNetCore.Health)|[![NuGet Status](https://img.shields.io/nuget/vpre/App.Metrics.AspNetCore.Health.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.AspNetCore.Health/)|[![NuGet Status](https://img.shields.io/nuget/v/App.Metrics.AspNetCore.Health.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.AspNetCore.Health/)
-|App.Metrics.AspNetCore.Health.Formatters.Ascii|[![MyGet Status](https://img.shields.io/myget/appmetrics/v/App.Metrics.AspNetCore.Health.Formatters.Ascii.svg?style=flat-square)](https://www.myget.org/feed/appmetrics/package/nuget/App.Metrics.AspNetCore.Health.Formatters.Ascii)|[![NuGet Status](https://img.shields.io/nuget/vpre/App.Metrics.AspNetCore.Health.Formatters.Ascii.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.AspNetCore.Health.Formatters.Ascii/)|[![NuGet Status](https://img.shields.io/nuget/v/App.Metrics.AspNetCore.Health.Formatters.Ascii.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.AspNetCore.Health.Formatters.Ascii/)
-|App.Metrics.AspNetCore.Health.Formatters.Json|[![MyGet Status](https://img.shields.io/myget/appmetrics/v/App.Metrics.AspNetCore.Health.Formatters.Json.svg?style=flat-square)](https://www.myget.org/feed/appmetrics/package/nuget/App.Metrics.AspNetCore.Health.Formatters.Json)|[![NuGet Status](https://img.shields.io/nuget/vpre/App.Metrics.AspNetCore.Health.Formatters.Json.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.AspNetCore.Health.Formatters.Json/)|[![NuGet Status](https://img.shields.io/nuget/v/App.Metrics.AspNetCore.Health.Formatters.Json.svg?style=flat-square)](https://www.nuget.org/packages/App.Metrics.AspNetCore.Health.Formatters.Json/)
-
 ----------
 
 ## How to build
@@ -101,16 +93,6 @@ See the [contribution guidlines](CONTRIBUTING.md) for details.
 This library is release under Apache 2.0 License ( see LICENSE ) Copyright (c) 2016 Allan Hardy
 
 See [LICENSE](https://github.com/alhardy/AppMetrics/blob/dev/LICENSE)
-
-----------
-
-App Metrics is based on the [Metrics.NET](https://github.com/etishor/Metrics.NET) library, and at the moment uses the same reservoir sampling code from the original library which is a port of the Java [Dropwizard Metrics](https://github.com/dropwizard/metrics) library. 
-
-*Metrics.NET Licensed under these terms*:
-"Metrics.NET is release under Apache 2.0 License Copyright (c) 2014 Iulian Margarintescu" see [LICENSE](https://github.com/etishor/Metrics.NET/blob/master/LICENSE)
-
-*Dropwizard Metrics* Licensed under these terms*:
-"Copyright (c) 2010-2013 Coda Hale, Yammer.com Published under Apache Software License 2.0, see [LICENSE](https://github.com/dropwizard/metrics/blob/3.2-development/LICENSE)"
 
 ----------
 [![Powered By NDepend](https://github.com/alhardy/AppMetrics.DocFx/blob/master/images/PoweredByNDepend.png)](http://www.ndepend.com/)
