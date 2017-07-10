@@ -28,15 +28,24 @@ namespace App.Metrics
                 name,
                 async cancellationToken =>
                 {
-                    using (var tokenWithTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                    try
                     {
-                        tokenWithTimeout.CancelAfter(timeout);
+                        using (var tokenWithTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                        {
+                            tokenWithTimeout.CancelAfter(timeout);
 
-                        var response = await HttpClient.GetAsync(uri, tokenWithTimeout.Token).ConfigureAwait(false);
+                            var response = await HttpClient.GetAsync(uri, tokenWithTimeout.Token).ConfigureAwait(false);
 
-                        return response.IsSuccessStatusCode
-                            ? HealthCheckResult.Healthy($"OK. {uri}")
-                            : HealthCheckResultOnError($"FAILED. {uri} status code was {response.StatusCode}", degradedOnError);
+                            return response.IsSuccessStatusCode
+                                ? HealthCheckResult.Healthy($"OK. {uri}")
+                                : HealthCheckResultOnError($"FAILED. {uri} status code was {response.StatusCode}", degradedOnError);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return degradedOnError
+                            ? HealthCheckResult.Degraded(ex)
+                            : HealthCheckResult.Unhealthy(ex);
                     }
                 });
 
@@ -54,12 +63,21 @@ namespace App.Metrics
                 name,
                 async () =>
                 {
-                    var ping = new Ping();
-                    var result = await ping.SendPingAsync(host, (int)timeout.TotalMilliseconds).ConfigureAwait(false);
+                    try
+                    {
+                        var ping = new Ping();
+                        var result = await ping.SendPingAsync(host, (int)timeout.TotalMilliseconds).ConfigureAwait(false);
 
-                    return result.Status == IPStatus.Success
-                        ? HealthCheckResult.Healthy($"OK. {host}")
-                        : HealthCheckResultOnError($"FAILED. {host} ping result was {result.Status}", degradedOnError);
+                        return result.Status == IPStatus.Success
+                            ? HealthCheckResult.Healthy($"OK. {host}")
+                            : HealthCheckResultOnError($"FAILED. {host} ping result was {result.Status}", degradedOnError);
+                    }
+                    catch (Exception ex)
+                    {
+                        return degradedOnError
+                            ? HealthCheckResult.Degraded(ex)
+                            : HealthCheckResult.Unhealthy(ex);
+                    }
                 });
 
             return registry;
@@ -84,11 +102,20 @@ namespace App.Metrics
                 name,
                 () =>
                 {
-                    var currentSize = Process.GetCurrentProcess().WorkingSet64;
-                    return new ValueTask<HealthCheckResult>(
-                        currentSize <= thresholdBytes
-                            ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
-                            : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes}", degradedOnError));
+                    try
+                    {
+                        var currentSize = Process.GetCurrentProcess().WorkingSet64;
+                        return new ValueTask<HealthCheckResult>(
+                            currentSize <= thresholdBytes
+                                ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
+                                : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes}", degradedOnError));
+                    }
+                    catch (Exception ex)
+                    {
+                        return degradedOnError
+                            ? new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded(ex))
+                            : new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy(ex));
+                    }
                 });
 
             return registry;
@@ -113,11 +140,20 @@ namespace App.Metrics
                 name,
                 () =>
                 {
-                    var currentSize = Process.GetCurrentProcess().PrivateMemorySize64;
-                    return new ValueTask<HealthCheckResult>(
-                        currentSize <= thresholdBytes
-                            ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
-                            : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes} bytes", degradedOnError));
+                    try
+                    {
+                        var currentSize = Process.GetCurrentProcess().PrivateMemorySize64;
+                        return new ValueTask<HealthCheckResult>(
+                            currentSize <= thresholdBytes
+                                ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
+                                : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes} bytes", degradedOnError));
+                    }
+                    catch (Exception ex)
+                    {
+                        return degradedOnError
+                            ? new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded(ex))
+                            : new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy(ex));
+                    }
                 });
 
             return registry;
@@ -142,11 +178,20 @@ namespace App.Metrics
                 name,
                 () =>
                 {
-                    var currentSize = Process.GetCurrentProcess().VirtualMemorySize64;
-                    return new ValueTask<HealthCheckResult>(
-                        currentSize <= thresholdBytes
-                            ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
-                            : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes} bytes", degradedOnError));
+                    try
+                    {
+                        var currentSize = Process.GetCurrentProcess().VirtualMemorySize64;
+                        return new ValueTask<HealthCheckResult>(
+                            currentSize <= thresholdBytes
+                                ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
+                                : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes} bytes", degradedOnError));
+                    }
+                    catch (Exception ex)
+                    {
+                        return degradedOnError
+                            ? new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded(ex))
+                            : new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy(ex));
+                    }
                 });
 
             return registry;

@@ -31,7 +31,7 @@ namespace App.Metrics.Health.Facts
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddHttpGetCheck(name, new Uri("https://github.com"), TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
+            registry.AddHttpGetCheck(name, new Uri(uriString), TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
@@ -53,7 +53,7 @@ namespace App.Metrics.Health.Facts
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddPingCheck(name, "github.com", TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
+            registry.AddPingCheck(name, host, TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace App.Metrics.Health.Facts
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddProcessPhysicalMemoryCheck(name, int.MaxValue, degradedOnError: degradedOnError);
+            registry.AddProcessPhysicalMemoryCheck(name, thresholdBytes, degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
@@ -91,7 +91,7 @@ namespace App.Metrics.Health.Facts
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddProcessPrivateMemorySizeCheck(name, int.MaxValue, degradedOnError: degradedOnError);
+            registry.AddProcessPrivateMemorySizeCheck(name, thresholdBytes, degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace App.Metrics.Health.Facts
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddProcessVirtualMemorySizeCheck(name, long.MaxValue, degradedOnError: degradedOnError);
+            registry.AddProcessVirtualMemorySizeCheck(name, thresholdBytes, degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
