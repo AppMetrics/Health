@@ -19,88 +19,103 @@ namespace App.Metrics.Health.Facts
 
         public HealthCheckFactoryExtensionsTests() { _logger = new LoggerFactory().CreateLogger<HealthCheckRegistry>(); }
 
-        [Fact]
+        [Theory]
         [Trait("Category", "Requires Connectivity")]
-        public async Task Can_execute_http_get_check()
+        [InlineData(HealthCheckStatus.Healthy, "https://github.com", false)]
+        [InlineData(HealthCheckStatus.Degraded, "https://github.unknown", true)]
+        [InlineData(HealthCheckStatus.Unhealthy, "https://github.unknown", false)]
+        public async Task Can_execute_http_get_check(HealthCheckStatus expectedResult, string uriString, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "github home";
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddHttpGetCheck(name, new Uri("https://github.com"), TimeSpan.FromSeconds(10));
+            registry.AddHttpGetCheck(name, new Uri("https://github.com"), TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
 
-            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+            result.Check.Status.Should().Be(expectedResult);
         }
 
 #pragma warning disable xUnit1004 // Test methods should not be skipped
-        [Fact(Skip = "Mock HTTP Call")]
+        [Theory(Skip = "Mock HTTP Call")]
 #pragma warning restore xUnit1004 // Test methods should not be skipped
         [Trait("Category", "Requires Connectivity")]
-        public async Task Can_execute_ping_check()
+        [InlineData(HealthCheckStatus.Healthy, "github.com", false)]
+        [InlineData(HealthCheckStatus.Degraded, "github.unknown", true)]
+        [InlineData(HealthCheckStatus.Unhealthy, "github.unknown", false)]
+        public async Task Can_execute_ping_check(HealthCheckStatus expectedResult, string host, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "github ping";
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddPingCheck(name, "github.com", TimeSpan.FromSeconds(10));
+            registry.AddPingCheck(name, "github.com", TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
 
-            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+            result.Check.Status.Should().Be(expectedResult);
         }
 
-        [Fact]
-        public async Task Can_execute_process_physical_memory_check()
+        [Theory]
+        [InlineData(HealthCheckStatus.Healthy, int.MaxValue, false)]
+        [InlineData(HealthCheckStatus.Degraded, int.MinValue, true)]
+        [InlineData(HealthCheckStatus.Unhealthy, int.MinValue, false)]
+        public async Task Can_execute_process_physical_memory_check(HealthCheckStatus expectedResult, long thresholdBytes, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "physical memory";
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddProcessPhysicalMemoryCheck(name, int.MaxValue);
+            registry.AddProcessPhysicalMemoryCheck(name, int.MaxValue, degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
 
-            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+            result.Check.Status.Should().Be(expectedResult);
         }
 
-        [Fact]
-        public async Task Can_execute_process_private_memory_check()
+        [Theory]
+        [InlineData(HealthCheckStatus.Healthy, int.MaxValue, false)]
+        [InlineData(HealthCheckStatus.Degraded, int.MinValue, true)]
+        [InlineData(HealthCheckStatus.Unhealthy, int.MinValue, false)]
+        public async Task Can_execute_process_private_memory_check(HealthCheckStatus expectedResult, long thresholdBytes, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "private memory";
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddProcessPrivateMemorySizeCheck(name, int.MaxValue);
+            registry.AddProcessPrivateMemorySizeCheck(name, int.MaxValue, degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
 
-            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+            result.Check.Status.Should().Be(expectedResult);
         }
 
-        [Fact]
-        public async Task Can_execute_process_virtual_memory_check()
+        [Theory]
+        [InlineData(HealthCheckStatus.Healthy, long.MaxValue, false)]
+        [InlineData(HealthCheckStatus.Degraded, long.MinValue, true)]
+        [InlineData(HealthCheckStatus.Unhealthy, long.MinValue, false)]
+        public async Task Can_execute_process_virtual_memory_check(HealthCheckStatus expectedResult, long thresholdBytes, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "virtual memory";
 
             var registry = new HealthCheckRegistry(healthChecks);
 
-            registry.AddProcessVirtualMemorySizeCheck(name, long.MaxValue);
+            registry.AddProcessVirtualMemorySizeCheck(name, long.MaxValue, degradedOnError: degradedOnError);
 
             var check = registry.Checks.FirstOrDefault();
             var result = await check.Value.ExecuteAsync().ConfigureAwait(false);
 
-            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+            result.Check.Status.Should().Be(expectedResult);
         }
 
         [Fact]

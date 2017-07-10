@@ -21,7 +21,8 @@ namespace App.Metrics
             this IHealthCheckRegistry registry,
             string name,
             Uri uri,
-            TimeSpan timeout)
+            TimeSpan timeout,
+            bool degradedOnError = false)
         {
             registry.Register(
                 name,
@@ -35,7 +36,7 @@ namespace App.Metrics
 
                         return response.IsSuccessStatusCode
                             ? HealthCheckResult.Healthy($"OK. {uri}")
-                            : HealthCheckResult.Unhealthy($"FAILED. {uri} status code was {response.StatusCode}");
+                            : HealthCheckResultOnError($"FAILED. {uri} status code was {response.StatusCode}", degradedOnError);
                     }
                 });
 
@@ -46,7 +47,8 @@ namespace App.Metrics
             this IHealthCheckRegistry registry,
             string name,
             string host,
-            TimeSpan timeout)
+            TimeSpan timeout,
+            bool degradedOnError = false)
         {
             registry.Register(
                 name,
@@ -57,7 +59,7 @@ namespace App.Metrics
 
                     return result.Status == IPStatus.Success
                         ? HealthCheckResult.Healthy($"OK. {host}")
-                        : HealthCheckResult.Unhealthy($"FAILED. {host} ping result was {result.Status}");
+                        : HealthCheckResultOnError($"FAILED. {host} ping result was {result.Status}", degradedOnError);
                 });
 
             return registry;
@@ -70,8 +72,13 @@ namespace App.Metrics
         /// <param name="registry">The health check registry where the health check is registered.</param>
         /// <param name="name">The name of the health check.</param>
         /// <param name="thresholdBytes">The physical memory threshold in bytes.</param>
+        /// <param name="degradedOnError">Return a degraded status instead of unhealthy on error.</param>
         /// <returns>The health check registry instance</returns>
-        public static IHealthCheckRegistry AddProcessPhysicalMemoryCheck(this IHealthCheckRegistry registry, string name, long thresholdBytes)
+        public static IHealthCheckRegistry AddProcessPhysicalMemoryCheck(
+            this IHealthCheckRegistry registry,
+            string name,
+            long thresholdBytes,
+            bool degradedOnError = false)
         {
             registry.Register(
                 name,
@@ -81,7 +88,7 @@ namespace App.Metrics
                     return new ValueTask<HealthCheckResult>(
                         currentSize <= thresholdBytes
                             ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
-                            : HealthCheckResult.Unhealthy($"FAILED. {currentSize} > {thresholdBytes}"));
+                            : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes}", degradedOnError));
                 });
 
             return registry;
@@ -94,11 +101,13 @@ namespace App.Metrics
         /// <param name="registry">The health check registry where the health check is registered.</param>
         /// <param name="name">The name of the health check.</param>
         /// <param name="thresholdBytes">The private memory threshold in bytes.</param>
+        /// <param name="degradedOnError">Return a degraded status instead of unhealthy on error.</param>
         /// <returns>The health check registry instance</returns>
         public static IHealthCheckRegistry AddProcessPrivateMemorySizeCheck(
             this IHealthCheckRegistry registry,
             string name,
-            long thresholdBytes)
+            long thresholdBytes,
+            bool degradedOnError = false)
         {
             registry.Register(
                 name,
@@ -108,7 +117,7 @@ namespace App.Metrics
                     return new ValueTask<HealthCheckResult>(
                         currentSize <= thresholdBytes
                             ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
-                            : HealthCheckResult.Unhealthy($"FAILED. {currentSize} > {thresholdBytes} bytes"));
+                            : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes} bytes", degradedOnError));
                 });
 
             return registry;
@@ -121,11 +130,13 @@ namespace App.Metrics
         /// <param name="registry">The health check registry where the health check is registered.</param>
         /// <param name="name">The name of the health check.</param>
         /// <param name="thresholdBytes">The virtual memory threshold in bytes.</param>
+        /// <param name="degradedOnError">Return a degraded status instead of unhealthy on error.</param>
         /// <returns>The health check registry instance</returns>
         public static IHealthCheckRegistry AddProcessVirtualMemorySizeCheck(
             this IHealthCheckRegistry registry,
             string name,
-            long thresholdBytes)
+            long thresholdBytes,
+            bool degradedOnError = false)
         {
             registry.Register(
                 name,
@@ -135,10 +146,26 @@ namespace App.Metrics
                     return new ValueTask<HealthCheckResult>(
                         currentSize <= thresholdBytes
                             ? HealthCheckResult.Healthy($"OK. {thresholdBytes} bytes")
-                            : HealthCheckResult.Unhealthy($"FAILED. {currentSize} > {thresholdBytes} bytes"));
+                            : HealthCheckResultOnError($"FAILED. {currentSize} > {thresholdBytes} bytes", degradedOnError));
                 });
 
             return registry;
+        }
+
+        /// <summary>
+        ///     Create a failure (degraded or unhealthy) status response.
+        /// </summary>
+        /// <param name="message">Status message.</param>
+        /// <param name="degradedOnError">
+        ///     If true, create a degraded status response.
+        ///     Otherwise create an unhealthy status response. (default: false)
+        /// </param>
+        /// <returns>Failure status response.</returns>
+        private static HealthCheckResult HealthCheckResultOnError(string message, bool degradedOnError)
+        {
+            return degradedOnError
+                ? HealthCheckResult.Degraded(message)
+                : HealthCheckResult.Unhealthy(message);
         }
     }
 }
