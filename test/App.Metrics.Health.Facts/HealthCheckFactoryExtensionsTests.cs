@@ -15,9 +15,9 @@ namespace App.Metrics.Health.Facts
 {
     public class HealthCheckFactoryExtensionsTests
     {
-        private readonly ILogger<HealthCheckRegistry> _logger;
+        private readonly ILogger<DefaultHealthCheckRegistry> _logger;
 
-        public HealthCheckFactoryExtensionsTests() { _logger = new LoggerFactory().CreateLogger<HealthCheckRegistry>(); }
+        public HealthCheckFactoryExtensionsTests() { _logger = new LoggerFactory().CreateLogger<DefaultHealthCheckRegistry>(); }
 
         [Theory]
         [Trait("Category", "Requires Connectivity")]
@@ -29,7 +29,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "github home";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddHttpGetCheck(name, new Uri(uriString), TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
 
@@ -51,7 +51,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "github ping";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddPingCheck(name, host, TimeSpan.FromSeconds(10), degradedOnError: degradedOnError);
 
@@ -70,7 +70,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "physical memory";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddProcessPhysicalMemoryCheck(name, thresholdBytes, degradedOnError: degradedOnError);
 
@@ -89,7 +89,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "private memory";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddProcessPrivateMemorySizeCheck(name, thresholdBytes, degradedOnError: degradedOnError);
 
@@ -108,7 +108,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "virtual memory";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddProcessVirtualMemorySizeCheck(name, thresholdBytes, degradedOnError: degradedOnError);
 
@@ -124,7 +124,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "physical memory";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddProcessPhysicalMemoryCheck(name, 100);
 
@@ -138,7 +138,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "private memory";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddProcessPrivateMemorySizeCheck(name, 100);
 
@@ -152,7 +152,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "virtual memory";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.AddProcessVirtualMemorySizeCheck(name, 100);
 
@@ -166,7 +166,7 @@ namespace App.Metrics.Health.Facts
             var healthChecks = Enumerable.Empty<HealthCheck>();
             var name = "custom with cancellation token";
 
-            var registry = new HealthCheckRegistry(healthChecks);
+            var registry = new DefaultHealthCheckRegistry(healthChecks);
 
             registry.Register(
                 name,

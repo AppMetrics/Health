@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace App.Metrics.Health.Internal
 {
-    internal sealed class DefaultHealthProvider : IProvideHealth
+    public sealed class DefaultHealthProvider : IProvideHealth
     {
         private readonly IHealthCheckRegistry _healthCheckRegistry;
         private readonly ILogger<DefaultHealthProvider> _logger;

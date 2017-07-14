@@ -56,7 +56,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{936C69BF-F19F-433F-A63E-CE028DF7F656}"
 	ProjectSection(SolutionItems) = preProject
 		src\shared\HttpContextExtensions.cs = src\shared\HttpContextExtensions.cs
-		src\shared\StringExtensions.cs = src\shared\StringExtensions.cs
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Facts", "test\App.Metrics.Health.Facts\App.Metrics.Health.Facts.csproj", "{F9585D75-2714-497B-A490-E6DA981075F5}"

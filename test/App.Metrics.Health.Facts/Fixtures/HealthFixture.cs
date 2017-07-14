@@ -14,7 +14,7 @@ namespace App.Metrics.Health.Facts.Fixtures
 
         public HealthFixture()
         {
-            HealthCheckRegistry = new HealthCheckRegistry();
+            HealthCheckRegistry = new DefaultHealthCheckRegistry();
 
             var healthStatusProvider = new DefaultHealthProvider(
                 _loggerFactory.CreateLogger<DefaultHealthProvider>(),

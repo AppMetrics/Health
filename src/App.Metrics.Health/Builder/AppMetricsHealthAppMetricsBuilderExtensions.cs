@@ -63,7 +63,7 @@ namespace App.Metrics.Builder
         private static IHealthCheckRegistry RegisterHealthCheckRegistry(IServiceProvider provider, Action<IHealthCheckRegistry> setupAction = null)
         {
             var logFactory = provider.GetRequiredService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<HealthCheckRegistry>();
+            var logger = logFactory.CreateLogger<DefaultHealthCheckRegistry>();
 
             var autoScannedHealthChecks = Enumerable.Empty<HealthCheck>();
 
@@ -79,7 +79,7 @@ namespace App.Metrics.Builder
                     "Failed to load auto scanned health checks, health checks won't be registered");
             }
 
-            var factory = new HealthCheckRegistry(autoScannedHealthChecks);
+            var factory = new DefaultHealthCheckRegistry(autoScannedHealthChecks);
             setupAction?.Invoke(factory);
             return factory;
         }

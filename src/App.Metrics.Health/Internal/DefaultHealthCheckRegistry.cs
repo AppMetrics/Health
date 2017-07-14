@@ -1,4 +1,4 @@
-﻿// <copyright file="HealthCheckRegistry.cs" company="Allan Hardy">
+﻿// <copyright file="DefaultHealthCheckRegistry.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace App.Metrics.Health.Internal
 {
-    internal sealed class HealthCheckRegistry : IHealthCheckRegistry
+    public sealed class DefaultHealthCheckRegistry : IHealthCheckRegistry
     {
-        public HealthCheckRegistry(IEnumerable<HealthCheck> healthChecks)
+        public DefaultHealthCheckRegistry(IEnumerable<HealthCheck> healthChecks)
         {
             Register(healthChecks);
         }
 
-        public HealthCheckRegistry()
+        public DefaultHealthCheckRegistry()
         {
         }
 
