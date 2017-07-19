@@ -21,7 +21,7 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             services.AddSingleton<IDatabase, Database>();
 
             services
-                .AddHealthChecks()
+                .AddHealth()
                 .AddChecks(
                     factory =>
                     {
@@ -42,7 +42,7 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IDatabase, Database>();
-            services.AddHealthChecks();
+            services.AddHealth();
 
             var provider = services.BuildServiceProvider();
             var healthProvider = provider.GetRequiredService<IProvideHealth>();
@@ -59,7 +59,7 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             services.AddLogging();
             services.AddSingleton<IDatabase, Database>();
             services
-                .AddHealthChecks()
+                .AddHealth()
                 .AddChecks(
                     registry =>
                     {
@@ -81,7 +81,7 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IDatabase, Database>();
-            services.AddHealthChecks();
+            services.AddHealth();
 
             var provider = services.BuildServiceProvider();
             var healthProvider = provider.GetRequiredService<IProvideHealth>();

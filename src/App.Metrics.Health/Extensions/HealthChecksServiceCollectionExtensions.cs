@@ -19,9 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The application services collection.</param>
         /// <returns>The health check checksBuilder</returns>
-        // ReSharper disable MemberCanBePrivate.Global
-        public static IAppMetricsHealthChecksBuilder AddHealthChecks(this IServiceCollection services)
-            // ReSharper restore MemberCanBePrivate.Global
+        public static IAppMetricsHealthChecksBuilder AddHealth(this IServiceCollection services)
         {
             var builder = services.AddHealthBuilder();
 
@@ -41,10 +39,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </param>
         /// <returns>The health check checksBuilder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        public static IAppMetricsHealthChecksBuilder AddHealth(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<AppMetricsHealthOptions>(configuration);
-            return services.AddHealthChecks();
+            return services.AddHealth();
         }
 
         /// <summary>
@@ -59,14 +57,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </param>
         /// <returns>The health check checksBuilder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealthChecks(
+        public static IAppMetricsHealthChecksBuilder AddHealth(
             this IServiceCollection services,
             Action<AppMetricsHealthOptions> setupAction,
             IConfiguration configuration)
         {
             services.Configure(setupAction);
             services.Configure<AppMetricsHealthOptions>(configuration);
-            return services.AddHealthChecks();
+            return services.AddHealth();
         }
 
         /// <summary>
@@ -81,14 +79,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Any shared configuration options with the options IConfiguration will be overriden by the options delegate.
         /// <returns>The health check checksBuilder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealthChecks(
+        public static IAppMetricsHealthChecksBuilder AddHealth(
             this IServiceCollection services,
             IConfiguration configuration,
             Action<AppMetricsHealthOptions> setupAction)
         {
             services.Configure<AppMetricsHealthOptions>(configuration);
             services.Configure(setupAction);
-            return services.AddHealthChecks();
+            return services.AddHealth();
         }
 
         /// <summary>
@@ -98,10 +96,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="setupAction">The <see cref="AppMetricsHealthOptions">options</see> setup action.</param>
         /// <returns>The health check checksBuilder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealthChecks(this IServiceCollection services, Action<AppMetricsHealthOptions> setupAction)
+        public static IAppMetricsHealthChecksBuilder AddHealth(this IServiceCollection services, Action<AppMetricsHealthOptions> setupAction)
         {
             services.Configure(setupAction);
-            return services.AddHealthChecks();
+            return services.AddHealth();
         }
 
         /// <summary>
@@ -109,8 +107,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The application services collection.</param>
         /// <returns>The health check checksBuilder</returns>
-        // ReSharper disable MemberCanBePrivate.Global
-        internal static IAppMetricsHealthChecksBuilder AddHealthBuilder(this IServiceCollection services) { return new AppMetricsHealthChecksBuilder(services); }
-        // ReSharper restore MemberCanBePrivate.Global
+        private static IAppMetricsHealthChecksBuilder AddHealthBuilder(this IServiceCollection services) { return new AppMetricsHealthChecksBuilder(services); }
     }
 }

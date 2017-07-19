@@ -9,6 +9,7 @@ using App.Metrics.Health;
 using App.Metrics.Health.Configuration;
 using App.Metrics.Health.DependencyInjection.Internal;
 using App.Metrics.Health.Internal;
+using App.Metrics.Health.Internal.NoOp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,9 @@ namespace App.Metrics.Builder
         /// <param name="healthChecksBuilder">The <see cref="IAppMetricsHealthChecksBuilder"/> healthChecksBuilder.</param>
         /// <param name="setupAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
         /// <returns>The <see cref="IAppMetricsHealthChecksBuilder"/></returns>
-        public static IAppMetricsHealthChecksBuilder AddChecks(this IAppMetricsHealthChecksBuilder healthChecksBuilder, Action<IHealthCheckRegistry> setupAction)
+        public static IAppMetricsHealthChecksBuilder AddChecks(
+            this IAppMetricsHealthChecksBuilder healthChecksBuilder,
+            Action<IHealthCheckRegistry> setupAction)
         {
             healthChecksBuilder.Services.TryAddSingleton<HealthCheckFluentMarkerService>();
             healthChecksBuilder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupAction)));
@@ -44,24 +47,44 @@ namespace App.Metrics.Builder
                 checksBuilder.Services,
                 DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(checksBuilder.Environment.ApplicationName));
 
-            checksBuilder.Services.TryAddSingleton<IProvideHealth, DefaultHealthProvider>();
+            checksBuilder.Services.TryAddSingleton<IProvideHealth>(
+                              provider =>
+                              {
+                                  var options = provider.GetRequiredService<AppMetricsHealthOptions>();
+
+                                  if (!options.Enabled)
+                                  {
+                                      return new NoOpHealthProvider();
+                                  }
+
+                                  return new DefaultHealthProvider(
+                                      provider.GetRequiredService<ILogger<DefaultHealthProvider>>(),
+                                      provider.GetRequiredService<IHealthCheckRegistry>());
+                              });
 
             return checksBuilder;
         }
 
-        internal static IAppMetricsHealthChecksBuilder AddRequiredPlatformServices(this IAppMetricsHealthChecksBuilder checksBuilder)
+        internal static void AddRequiredPlatformServices(this IAppMetricsHealthChecksBuilder checksBuilder)
         {
             checksBuilder.Services.TryAddSingleton<HealthCheckMarkerService>();
             checksBuilder.Services.AddOptions();
             checksBuilder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
             checksBuilder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
             checksBuilder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider)));
-
-            return checksBuilder;
         }
 
-        private static IHealthCheckRegistry RegisterHealthCheckRegistry(IServiceProvider provider, Action<IHealthCheckRegistry> setupAction = null)
+        private static IHealthCheckRegistry RegisterHealthCheckRegistry(
+            IServiceProvider provider,
+            Action<IHealthCheckRegistry> setupAction = null)
         {
+            var options = provider.GetRequiredService<AppMetricsHealthOptions>();
+
+            if (!options.Enabled)
+            {
+                return new NoOpHealthCheckRegistry();
+            }
+
             var logFactory = provider.GetRequiredService<ILoggerFactory>();
             var logger = logFactory.CreateLogger<DefaultHealthCheckRegistry>();
 

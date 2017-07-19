@@ -21,7 +21,6 @@
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />	  
 	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(AspNetCoreVersion)" />
-	  <PackageReference Include="Microsoft.Net.Compilers" Version="2.3.0" />    
 	</ItemGroup>
   
 	<ItemGroup>
@@ -30,9 +29,5 @@
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 	</ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
 
 </Project>

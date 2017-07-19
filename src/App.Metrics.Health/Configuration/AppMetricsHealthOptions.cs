@@ -11,5 +11,8 @@ namespace App.Metrics.Health
     [ExcludeFromCodeCoverage]
     public class AppMetricsHealthOptions
     {
+        public AppMetricsHealthOptions() { Enabled = true; }
+
+        public bool Enabled { get; set; }
     }
 }

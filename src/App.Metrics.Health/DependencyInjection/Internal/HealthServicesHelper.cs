@@ -19,7 +19,7 @@ namespace App.Metrics.Health.DependencyInjection.Internal
         {
             if (services.GetService(typeof(HealthCheckMarkerService)) == null)
             {
-                throw new InvalidOperationException("IServiceCollection.AddHealthChecks() needs to be configured on Startup");
+                throw new InvalidOperationException("IServiceCollection.AddHealth() needs to be configured on Startup");
             }
         }
 
@@ -27,7 +27,7 @@ namespace App.Metrics.Health.DependencyInjection.Internal
         {
             if (services.GetService(typeof(HealthCheckFluentMarkerService)) != null)
             {
-                throw new InvalidOperationException("IServiceCollection.AddHealthChecks().AddChecks() can only be called once.");
+                throw new InvalidOperationException("IServiceCollection.AddHealth().AddChecks() can only be called once.");
             }
         }
     }

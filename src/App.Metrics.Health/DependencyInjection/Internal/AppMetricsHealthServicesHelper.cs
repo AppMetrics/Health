@@ -20,7 +20,7 @@ namespace App.Metrics.Health.DependencyInjection.Internal
             if (services.GetService(typeof(HealthCheckMarkerService)) == null)
             {
                 throw new InvalidOperationException(
-                    "IServiceCollection.AddHealthChecks()\n" +
+                    "IServiceCollection.AddHealth()\n" +
                     "IApplicationBuilder.ConfigureServices(...)\n" +
                     "IApplicationBuilder.UseHealthChecks(...)\n");
             }
