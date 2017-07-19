@@ -5,16 +5,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using App.Metrics.Health;
+using App.Metrics;
 
-namespace App.Metrics.Sandbox.HealthChecks
+namespace HealthSandbox.HealthChecks
 {
     public class SampleHealthCheck : HealthCheck
     {
         public SampleHealthCheck()
-#pragma warning disable SA1003, SA1028 // Symbols must be spaced correctly
             : base("Random Health Check")
-#pragma warning restore SA1003, SA1028 // Symbols must be spaced correctly
         {
         }
 
