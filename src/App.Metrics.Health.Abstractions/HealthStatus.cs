@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace App.Metrics
+namespace App.Metrics.Health
 {
     /// <summary>
     ///     Structure describing the status of executing all the health checks operations.

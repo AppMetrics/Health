@@ -5,7 +5,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace App.Metrics
+namespace App.Metrics.Health
 {
     /// <summary>
     ///     Provides access to the current health status of the application by executing regsitered <see cref="HealthCheck" />s

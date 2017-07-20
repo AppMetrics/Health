@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace App.Metrics
+namespace App.Metrics.Health
 {
     public class HealthConstants
     {

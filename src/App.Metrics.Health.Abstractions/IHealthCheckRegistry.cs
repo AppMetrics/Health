@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace App.Metrics
+namespace App.Metrics.Health
 {
     public interface IHealthCheckRegistry
     {

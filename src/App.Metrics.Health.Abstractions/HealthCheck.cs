@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace App.Metrics
+namespace App.Metrics.Health
 {
     public class HealthCheck
     {

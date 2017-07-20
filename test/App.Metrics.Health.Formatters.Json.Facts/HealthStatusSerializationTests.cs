@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using App.Metrics.Health;
 using App.Metrics.Health.Formatters.Json.Facts.Helpers;
 using App.Metrics.Health.Formatters.Json.Serialization;
 using FluentAssertions;

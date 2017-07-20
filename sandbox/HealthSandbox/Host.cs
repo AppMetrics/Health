@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
+using App.Metrics.Health;
 using App.Metrics.Health.Formatters.Ascii;
 using App.Metrics.Health.Formatting;
 using Microsoft.Extensions.Configuration;

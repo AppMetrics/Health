@@ -2,7 +2,7 @@
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
-namespace App.Metrics
+namespace App.Metrics.Health
 {
     public interface IHealthStatusPayloadBuilder<out T>
     {
