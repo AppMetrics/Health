@@ -24,13 +24,13 @@ namespace App.Metrics.Health.Internal
         public Dictionary<string, HealthCheck> Checks { get; } = new Dictionary<string, HealthCheck>();
 
         /// <inheritdoc />
-        public void Register(string name, Func<ValueTask<HealthCheckResult>> check)
+        public void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check)
         {
             Register(new HealthCheck(name, check));
         }
 
         /// <inheritdoc />
-        public void Register(string name, Func<CancellationToken, ValueTask<HealthCheckResult>> check)
+        public void AddCheck(string name, Func<CancellationToken, ValueTask<HealthCheckResult>> check)
         {
             Register(new HealthCheck(name, check));
         }

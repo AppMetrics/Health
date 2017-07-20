@@ -13,8 +13,8 @@ namespace App.Metrics
     {
         Dictionary<string, HealthCheck> Checks { get; }
 
-        void Register(string name, Func<ValueTask<HealthCheckResult>> check);
+        void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check);
 
-        void Register(string name, Func<CancellationToken, ValueTask<HealthCheckResult>> check);
+        void AddCheck(string name, Func<CancellationToken, ValueTask<HealthCheckResult>> check);
     }
 }

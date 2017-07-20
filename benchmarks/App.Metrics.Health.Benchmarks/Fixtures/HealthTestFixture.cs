@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using App.Metrics.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace App.Metrics.Health.Benchmarks.Fixtures
@@ -15,8 +14,12 @@ namespace App.Metrics.Health.Benchmarks.Fixtures
         {
             var services = new ServiceCollection();
             services.AddLogging();
-            services.AddHealth().AddChecks(
-                registry => { registry.Register("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy())); });
+
+            services.AddHealth(
+                checksRegistry =>
+                {
+                    checksRegistry.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
+                });
 
             var provider = services.BuildServiceProvider();
 

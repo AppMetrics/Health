@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics;
-using App.Metrics.Builder;
 using App.Metrics.Health.Formatters.Ascii;
 using App.Metrics.Health.Formatting;
 using Microsoft.Extensions.Configuration;
@@ -48,32 +47,33 @@ namespace HealthSandbox
         {
             services.AddLogging();
 
-            services.AddHealth(Configuration.GetSection("AppMetricsHealthOptions"))
-                    .AddChecks(
-                        registry =>
+            services.AddHealth(
+                Configuration.GetSection("AppMetricsHealthOptions"),
+                checksRegistry =>
+                {
+                    checksRegistry.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
+                    checksRegistry.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
+                    checksRegistry.AddProcessPhysicalMemoryCheck("Working Set", 200);
+
+                    checksRegistry.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
+                    checksRegistry.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
+
+                    checksRegistry.AddCheck(
+                        "DatabaseConnected",
+                        () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
+
+                    checksRegistry.AddCheck(
+                        "DiskSpace",
+                        () =>
                         {
-                            registry.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
-                            registry.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
-                            registry.AddProcessPhysicalMemoryCheck("Working Set", 200);
+                            var freeDiskSpace = GetFreeDiskSpace();
 
-                            registry.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
-                            registry.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
-
-                            registry.Register(
-                                "DatabaseConnected",
-                                () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-                            registry.Register(
-                                "DiskSpace",
-                                () =>
-                                {
-                                    var freeDiskSpace = GetFreeDiskSpace();
-
-                                    return new ValueTask<HealthCheckResult>(
-                                        freeDiskSpace <= 512
-                                            ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-                                            : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-                                });
+                            return new ValueTask<HealthCheckResult>(
+                                freeDiskSpace <= 512
+                                    ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
+                                    : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
                         });
+                });
         }
 
         private static int GetFreeDiskSpace() { return 1024; }

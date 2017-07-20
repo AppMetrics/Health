@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using App.Metrics.Health;
 using App.Metrics.Health.Configuration;
 using App.Metrics.Health.DependencyInjection.Internal;
 using App.Metrics.Health.Internal;
@@ -15,37 +14,21 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-// ReSharper disable CheckNamespace
-namespace App.Metrics.Builder
-    // ReSharper restore CheckNamespace
+namespace App.Metrics.Health.Builder
 {
     public static class AppMetricsHealthAppMetricsBuilderExtensions
     {
-        /// <summary>
-        ///     Allows registration of health checks with the <see cref="IHealthCheckRegistry"/>.
-        /// </summary>
-        /// <param name="healthChecksBuilder">The <see cref="IAppMetricsHealthChecksBuilder"/> healthChecksBuilder.</param>
-        /// <param name="setupAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
-        /// <returns>The <see cref="IAppMetricsHealthChecksBuilder"/></returns>
-        public static IAppMetricsHealthChecksBuilder AddChecks(
-            this IAppMetricsHealthChecksBuilder healthChecksBuilder,
-            Action<IHealthCheckRegistry> setupAction)
-        {
-            healthChecksBuilder.Services.TryAddSingleton<HealthCheckFluentMarkerService>();
-            healthChecksBuilder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupAction)));
-
-            return healthChecksBuilder;
-        }
-
-        // ReSharper disable UnusedMethodReturnValue.Global
-        // ReSharper disable MemberCanBePrivate.Global
-        internal static IAppMetricsHealthChecksBuilder AddCoreServices(this IAppMetricsHealthChecksBuilder checksBuilder)
-            // ReSharper restore MemberCanBePrivate.Global
-            // ReSharper restore UnusedMethodReturnValue.Global
+        internal static void AddCoreServices(
+            this IAppMetricsHealthChecksBuilder checksBuilder,
+            Action<IHealthCheckRegistry> setupAction = null)
         {
             HealthChecksAsServices.AddHealthChecksAsServices(
                 checksBuilder.Services,
                 DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(checksBuilder.Environment.ApplicationName));
+
+            checksBuilder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
+            checksBuilder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
+            checksBuilder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupAction)));
 
             checksBuilder.Services.TryAddSingleton<IProvideHealth>(
                               provider =>
@@ -61,17 +44,12 @@ namespace App.Metrics.Builder
                                       provider.GetRequiredService<ILogger<DefaultHealthProvider>>(),
                                       provider.GetRequiredService<IHealthCheckRegistry>());
                               });
-
-            return checksBuilder;
         }
 
         internal static void AddRequiredPlatformServices(this IAppMetricsHealthChecksBuilder checksBuilder)
         {
             checksBuilder.Services.TryAddSingleton<HealthCheckMarkerService>();
             checksBuilder.Services.AddOptions();
-            checksBuilder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
-            checksBuilder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
-            checksBuilder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider)));
         }
 
         private static IHealthCheckRegistry RegisterHealthCheckRegistry(

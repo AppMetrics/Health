@@ -3,12 +3,9 @@
 // </copyright>
 
 using System;
-using App.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 
-// ReSharper disable CheckNamespace
-namespace App.Metrics.Builder
-    // ReSharper restore CheckNamespace
+namespace App.Metrics.Health.Builder
 {
     internal sealed class AppMetricsHealthChecksBuilder : IAppMetricsHealthChecksBuilder
     {

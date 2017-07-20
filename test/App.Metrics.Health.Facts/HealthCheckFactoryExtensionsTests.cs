@@ -168,7 +168,7 @@ namespace App.Metrics.Health.Facts
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
-            registry.Register(
+            registry.AddCheck(
                 name,
                 async cancellationToken =>
                 {

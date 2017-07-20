@@ -24,7 +24,7 @@ namespace App.Metrics
             TimeSpan timeout,
             bool degradedOnError = false)
         {
-            registry.Register(
+            registry.AddCheck(
                 name,
                 async cancellationToken =>
                 {
@@ -59,7 +59,7 @@ namespace App.Metrics
             TimeSpan timeout,
             bool degradedOnError = false)
         {
-            registry.Register(
+            registry.AddCheck(
                 name,
                 async () =>
                 {
@@ -98,7 +98,7 @@ namespace App.Metrics
             long thresholdBytes,
             bool degradedOnError = false)
         {
-            registry.Register(
+            registry.AddCheck(
                 name,
                 () =>
                 {
@@ -136,7 +136,7 @@ namespace App.Metrics
             long thresholdBytes,
             bool degradedOnError = false)
         {
-            registry.Register(
+            registry.AddCheck(
                 name,
                 () =>
                 {
@@ -174,7 +174,7 @@ namespace App.Metrics
             long thresholdBytes,
             bool degradedOnError = false)
         {
-            registry.Register(
+            registry.AddCheck(
                 name,
                 () =>
                 {

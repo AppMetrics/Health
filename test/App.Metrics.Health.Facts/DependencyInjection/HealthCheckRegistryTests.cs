@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.Threading.Tasks;
-using App.Metrics.Builder;
 using App.Metrics.Health.Facts.TestHelpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,12 +20,11 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             services.AddSingleton<IDatabase, Database>();
 
             services
-                .AddHealth()
-                .AddChecks(
-                    factory =>
+                .AddHealth(checksRegistry =>
                     {
-                        factory.Register("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
+                        checksRegistry.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
                     });
+
             var provider = services.BuildServiceProvider();
             var healthProvider = provider.GetRequiredService<IProvideHealth>();
 
@@ -58,15 +56,15 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddSingleton<IDatabase, Database>();
+
             services
-                .AddHealth()
-                .AddChecks(
-                    registry =>
+                .AddHealth(checksRegistry =>
                     {
-                        registry.Register(
+                        checksRegistry.AddCheck(
                             "DatabaseConnected",
                             () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy("Failed")));
                     });
+
             var provider = services.BuildServiceProvider();
             var healthProvider = provider.GetRequiredService<IProvideHealth>();
 
