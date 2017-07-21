@@ -36,8 +36,8 @@ namespace HealthSandbox
                 TimeSpan.FromSeconds(5),
                 () =>
                 {
+                    Console.Clear();
                     var healthStatus = healthProvider.ReadStatusAsync().GetAwaiter().GetResult();
-                    var formatter = new HealthStatusPayloadFormatter();
                     var payloadBuilder = new AsciiHealthStatusPayloadBuilder();
                     HealthStatusPayloadFormatter.Build(healthStatus, payloadBuilder);
                     Console.WriteLine(payloadBuilder.PayloadFormatted());
@@ -94,8 +94,8 @@ namespace HealthSandbox
             {
                 while (!Console.KeyAvailable)
                 {
-                    action();
                     Thread.Sleep(delayBetweenRun);
+                    action();
                 }
 
                 while (Console.KeyAvailable)

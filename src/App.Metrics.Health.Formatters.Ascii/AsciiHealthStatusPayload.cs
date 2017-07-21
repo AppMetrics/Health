@@ -10,26 +10,26 @@ namespace App.Metrics.Health.Formatters.Ascii
 {
     public class AsciiHealthStatusPayload
     {
-        private static readonly List<AsciiHealthCheckResult> Results = new List<AsciiHealthCheckResult>();
+        private readonly List<AsciiHealthCheckResult> _results = new List<AsciiHealthCheckResult>();
 
-        public static void Add(AsciiHealthCheckResult result)
+        public void Add(AsciiHealthCheckResult result)
         {
             if (result == null)
             {
                 return;
             }
 
-            Results.Add(result);
+            _results.Add(result);
         }
 
-        public static void Format(TextWriter textWriter)
+        public void Format(TextWriter textWriter)
         {
             if (textWriter == null)
             {
                 return;
             }
 
-            var results = Results.ToList();
+            var results = _results.ToList();
 
             var status = GetOverallStatus(results);
 
