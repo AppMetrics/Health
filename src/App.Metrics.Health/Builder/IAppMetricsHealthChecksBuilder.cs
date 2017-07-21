@@ -8,8 +8,6 @@ namespace App.Metrics.Health.Builder
 {
     public interface IAppMetricsHealthChecksBuilder
     {
-        IAppMetricsEnvironment Environment { get; }
-
         IServiceCollection Services { get; }
     }
 }

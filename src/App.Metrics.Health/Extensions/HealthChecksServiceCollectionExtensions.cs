@@ -4,9 +4,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using App.Metrics;
 using App.Metrics.Health;
 using App.Metrics.Health.Builder;
+using App.Metrics.Health.DependencyInjection;
+using App.Metrics.Health.Internal.Extensions;
 using Microsoft.Extensions.Configuration;
 
 // ReSharper disable CheckNamespace

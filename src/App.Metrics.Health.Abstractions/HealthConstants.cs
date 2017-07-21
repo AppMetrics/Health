@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 
 namespace App.Metrics.Health
 {
-    public class HealthConstants
+    public static class HealthConstants
     {
         public const string DegradedStatusDisplay = "Degraded";
         public const string HealthyStatusDisplay = "Healthy";

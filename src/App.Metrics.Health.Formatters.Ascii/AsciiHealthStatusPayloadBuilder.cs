@@ -23,7 +23,7 @@ namespace App.Metrics.Health.Formatters.Ascii
         /// <inheritdoc />
         public void Pack(string name, string message, HealthCheckStatus status)
         {
-            _payload.Add(new AsciiHealthCheckResult(name, message, status));
+            AsciiHealthStatusPayload.Add(new AsciiHealthCheckResult(name, message, status));
         }
 
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace App.Metrics.Health.Formatters.Ascii
         public string PayloadFormatted()
         {
             var result = new StringWriter();
-            _payload.Format(result);
+            AsciiHealthStatusPayload.Format(result);
             return result.ToString();
         }
     }

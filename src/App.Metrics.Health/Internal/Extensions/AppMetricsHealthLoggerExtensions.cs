@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using App.Metrics;
 using App.Metrics.Health;
 
 // ReSharper disable CheckNamespace
@@ -91,8 +90,6 @@ namespace Microsoft.Extensions.Logging
         {
             logger.LogTrace(AppMetricsHealthEventIds.Status, "Executing HealthCheck Get Status");
         }
-
-        internal static void HealthCheckRegistered(this ILogger logger, string name) { _healthCheckRegistered(logger, name, null); }
 
         private static class AppMetricsHealthEventIds
         {

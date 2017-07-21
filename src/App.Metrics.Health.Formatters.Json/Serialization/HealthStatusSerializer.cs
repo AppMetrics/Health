@@ -8,7 +8,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace App.Metrics.Health.Formatters.Json.Serialization
 {
-    public class HealthStatusSerializer : IHealthStatusSerializer
+    public sealed class HealthStatusSerializer : IHealthStatusSerializer
     {
         private readonly JsonSerializerSettings _settings;
 
@@ -26,8 +26,8 @@ namespace App.Metrics.Health.Formatters.Json.Serialization
 
         public HealthStatusSerializer(JsonSerializerSettings serializerSettings) { _settings = serializerSettings; }
 
-        public virtual T Deserialize<T>(string value) { return JsonConvert.DeserializeObject<T>(value, _settings); }
+        public T Deserialize<T>(string value) { return JsonConvert.DeserializeObject<T>(value, _settings); }
 
-        public virtual string Serialize<T>(T value) { return JsonConvert.SerializeObject(value, _settings); }
+        public string Serialize<T>(T value) { return JsonConvert.SerializeObject(value, _settings); }
     }
 }

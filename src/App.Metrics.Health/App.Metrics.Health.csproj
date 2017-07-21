@@ -10,7 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\shared\AppMetricsEnvironment.cs" Link="Infrastructure\AppMetricsEnvironment.cs" />
+    <Compile Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="Infrastructure\**" />
+    <None Remove="Infrastructure\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,10 +22,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\App.Metrics.Health.Abstractions\App.Metrics.Health.Abstractions.csproj" />    
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
   </ItemGroup>
 
 </Project>

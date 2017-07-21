@@ -7,15 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace App.Metrics.Health.Builder
 {
-    internal sealed class AppMetricsHealthChecksBuilder : IAppMetricsHealthChecksBuilder
+    public sealed class AppMetricsHealthChecksBuilder : IAppMetricsHealthChecksBuilder
     {
         internal AppMetricsHealthChecksBuilder(IServiceCollection services)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
-            Environment = new AppMetricsEnvironment();
         }
-
-        public IAppMetricsEnvironment Environment { get; }
 
         public IServiceCollection Services { get; }
     }

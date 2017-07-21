@@ -30,7 +30,7 @@ namespace App.Metrics.Health.Formatters.Ascii.Facts
 
             // Act
             var healthStatus = await _fixture.Health.ReadStatusAsync();
-            formatter.Build(healthStatus, payloadBuilder);
+            HealthStatusPayloadFormatter.Build(healthStatus, payloadBuilder);
 
             // Assert
             payloadBuilder.PayloadFormatted().Should().Be(

@@ -39,7 +39,7 @@ namespace HealthSandbox
                     var healthStatus = healthProvider.ReadStatusAsync().GetAwaiter().GetResult();
                     var formatter = new HealthStatusPayloadFormatter();
                     var payloadBuilder = new AsciiHealthStatusPayloadBuilder();
-                    formatter.Build(healthStatus, payloadBuilder);
+                    HealthStatusPayloadFormatter.Build(healthStatus, payloadBuilder);
                     Console.WriteLine(payloadBuilder.PayloadFormatted());
                 });
         }

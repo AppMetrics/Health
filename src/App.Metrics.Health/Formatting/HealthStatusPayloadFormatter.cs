@@ -8,7 +8,7 @@ namespace App.Metrics.Health.Formatting
 {
     public class HealthStatusPayloadFormatter
     {
-        public void Build<TPayload>(HealthStatus healthStatus, IHealthStatusPayloadBuilder<TPayload> payloadBuilder)
+        public static void Build<TPayload>(HealthStatus healthStatus, IHealthStatusPayloadBuilder<TPayload> payloadBuilder)
         {
             var passed = healthStatus.Results.Where(r => r.Check.Status.IsHealthy()).ToList();
             var failed = healthStatus.Results.Where(r => r.Check.Status.IsUnhealthy()).ToList();

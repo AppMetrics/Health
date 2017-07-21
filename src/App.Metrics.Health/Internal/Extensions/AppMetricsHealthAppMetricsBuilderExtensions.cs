@@ -5,26 +5,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using App.Metrics.Health.Builder;
 using App.Metrics.Health.Configuration;
 using App.Metrics.Health.DependencyInjection.Internal;
-using App.Metrics.Health.Internal;
 using App.Metrics.Health.Internal.NoOp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace App.Metrics.Health.Builder
+namespace App.Metrics.Health.Internal.Extensions
 {
-    public static class AppMetricsHealthAppMetricsBuilderExtensions
+    internal static class AppMetricsHealthAppMetricsBuilderExtensions
     {
-        internal static void AddCoreServices(
+        public static void AddCoreServices(
             this IAppMetricsHealthChecksBuilder checksBuilder,
             Action<IHealthCheckRegistry> setupAction = null)
         {
             HealthChecksAsServices.AddHealthChecksAsServices(
                 checksBuilder.Services,
-                DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(checksBuilder.Environment.ApplicationName));
+                DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(Assembly.GetEntryAssembly().GetName().Name));
 
             checksBuilder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
             checksBuilder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
@@ -46,7 +47,7 @@ namespace App.Metrics.Health.Builder
                               });
         }
 
-        internal static void AddRequiredPlatformServices(this IAppMetricsHealthChecksBuilder checksBuilder)
+        public static void AddRequiredPlatformServices(this IAppMetricsHealthChecksBuilder checksBuilder)
         {
             checksBuilder.Services.TryAddSingleton<HealthCheckMarkerService>();
             checksBuilder.Services.AddOptions();
