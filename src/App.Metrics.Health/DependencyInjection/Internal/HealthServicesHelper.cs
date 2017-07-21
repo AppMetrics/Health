@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace App.Metrics.Health.DependencyInjection.Internal
 {
     [ExcludeFromCodeCoverage]
-    internal static class HealthServicesHelper
+    public static class HealthServicesHelper
     {
         /// <summary>
         ///     Throws InvalidOperationException when MetricsMarkerService is not present
