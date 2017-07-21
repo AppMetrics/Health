@@ -15,9 +15,9 @@ namespace App.Metrics.Health.Facts
         [Fact]
         public async Task Failed_and_does_not_throw_unhandled_exception_if_action_throws_exception_with_brackets_in_message()
         {
-            var name = "test";
+            const string name = "test";
 
-            var check1 = new HealthCheck(name, () => ThrowExceptionWithBracketsInMessage());
+            var check1 = new HealthCheck(name, ThrowExceptionWithBracketsInMessage);
             var result1 = await check1.ExecuteAsync(CancellationToken.None);
             result1.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
 
@@ -46,7 +46,7 @@ namespace App.Metrics.Health.Facts
         public async Task Failed_if_action_throws()
         {
             var name = "test";
-            var check1 = new HealthCheck(name, () => ThrowException());
+            var check1 = new HealthCheck(name, ThrowException);
             var result1 = await check1.ExecuteAsync(CancellationToken.None);
             result1.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
 

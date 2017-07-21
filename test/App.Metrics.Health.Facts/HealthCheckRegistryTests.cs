@@ -18,7 +18,6 @@ namespace App.Metrics.Health.Facts
         private readonly DefaultHealthCheckRegistry _healthCheckRegistry = new DefaultHealthCheckRegistry();
 
         private readonly Func<IHealthCheckRegistry, IProvideHealth> _healthSetup;
-        private IProvideHealth _health;
 
         public HealthCheckRegistryTests()
         {
@@ -28,9 +27,7 @@ namespace App.Metrics.Health.Facts
                     LoggerFactory.CreateLogger<DefaultHealthProvider>(),
                     healthCheckFactory);
 
-                _health = healthManager;
-
-                return _health;
+                return healthManager;
             };
         }
 

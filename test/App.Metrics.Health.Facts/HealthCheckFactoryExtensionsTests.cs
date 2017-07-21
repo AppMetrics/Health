@@ -15,9 +15,7 @@ namespace App.Metrics.Health.Facts
 {
     public class HealthCheckFactoryExtensionsTests
     {
-        private readonly ILogger<DefaultHealthCheckRegistry> _logger;
-
-        public HealthCheckFactoryExtensionsTests() { _logger = new LoggerFactory().CreateLogger<DefaultHealthCheckRegistry>(); }
+        public HealthCheckFactoryExtensionsTests() { new LoggerFactory().CreateLogger<DefaultHealthCheckRegistry>(); }
 
         [Theory]
         [Trait("Category", "Requires Connectivity")]
@@ -27,7 +25,7 @@ namespace App.Metrics.Health.Facts
         public async Task Can_execute_http_get_check(HealthCheckStatus expectedResult, string uriString, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "github home";
+            const string name = "github home";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -49,7 +47,7 @@ namespace App.Metrics.Health.Facts
         public async Task Can_execute_ping_check(HealthCheckStatus expectedResult, string host, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "github ping";
+            const string name = "github ping";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -68,7 +66,7 @@ namespace App.Metrics.Health.Facts
         public async Task Can_execute_process_physical_memory_check(HealthCheckStatus expectedResult, long thresholdBytes, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "physical memory";
+            const string name = "physical memory";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -87,7 +85,7 @@ namespace App.Metrics.Health.Facts
         public async Task Can_execute_process_private_memory_check(HealthCheckStatus expectedResult, long thresholdBytes, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "private memory";
+            const string name = "private memory";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -106,7 +104,7 @@ namespace App.Metrics.Health.Facts
         public async Task Can_execute_process_virtual_memory_check(HealthCheckStatus expectedResult, long thresholdBytes, bool degradedOnError = false)
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "virtual memory";
+            const string name = "virtual memory";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -122,7 +120,7 @@ namespace App.Metrics.Health.Facts
         public void Can_register_process_physical_memory_check()
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "physical memory";
+            const string name = "physical memory";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -136,7 +134,7 @@ namespace App.Metrics.Health.Facts
         public void Can_register_process_private_memory_check()
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "private memory";
+            const string name = "private memory";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -150,7 +148,7 @@ namespace App.Metrics.Health.Facts
         public void Can_register_process_virtual_memory_check()
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "virtual memory";
+            const string name = "virtual memory";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
@@ -164,7 +162,7 @@ namespace App.Metrics.Health.Facts
         public async Task Should_be_unhealthy_when_task_is_cancelled()
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
-            var name = "custom with cancellation token";
+            const string name = "custom with cancellation token";
 
             var registry = new DefaultHealthCheckRegistry(healthChecks);
 
