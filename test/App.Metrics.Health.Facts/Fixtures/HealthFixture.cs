@@ -3,25 +3,17 @@
 // </copyright>
 
 using System;
-using App.Metrics.Health.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace App.Metrics.Health.Facts.Fixtures
 {
     public class HealthFixture : IDisposable
     {
-        private readonly ILoggerFactory _loggerFactory = new LoggerFactory();
-
         public HealthFixture()
         {
-            HealthCheckRegistry = new DefaultHealthCheckRegistry();
-
-            var healthStatusProvider = new DefaultHealthProvider(
-                _loggerFactory.CreateLogger<DefaultHealthProvider>(),
-                HealthCheckRegistry);
+            StartupAssemblyName = typeof(HealthFixture).Assembly.GetName().Name;
         }
 
-        public IHealthCheckRegistry HealthCheckRegistry { get; }
+        public string StartupAssemblyName { get; }
 
         public void Dispose() { }
     }

@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using App.Metrics.Health.Builder;
 using App.Metrics.Health.Configuration;
 using App.Metrics.Health.DependencyInjection.Internal;
@@ -21,11 +20,12 @@ namespace App.Metrics.Health.Internal.Extensions
     {
         public static void AddCoreServices(
             this IAppMetricsHealthChecksBuilder checksBuilder,
+            string startupAssemblyName,
             Action<IHealthCheckRegistry> setupAction = null)
         {
             HealthChecksAsServices.AddHealthChecksAsServices(
                 checksBuilder.Services,
-                DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(Assembly.GetEntryAssembly().GetName().Name));
+                DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(startupAssemblyName));
 
             checksBuilder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
             checksBuilder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();

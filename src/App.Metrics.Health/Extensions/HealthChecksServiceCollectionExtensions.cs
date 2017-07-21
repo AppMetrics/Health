@@ -4,9 +4,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using App.Metrics.Health;
 using App.Metrics.Health.Builder;
-using App.Metrics.Health.DependencyInjection;
 using App.Metrics.Health.Internal.Extensions;
 using Microsoft.Extensions.Configuration;
 
@@ -26,10 +26,31 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             Action<IHealthCheckRegistry> setupChecksAction = null)
         {
+            var startupAssemblyName = setupChecksAction.GetMethodInfo().DeclaringType.GetTypeInfo().Assembly.GetName().Name;
+
+#pragma warning disable CS0612
+            return services.AddHealth(startupAssemblyName, setupChecksAction);
+#pragma warning restore CS0612
+        }
+
+        /// <summary>
+        ///     Adds the health check services and configuration to the <see cref="IServiceCollection">IServiceCollection</see>.
+        ///     DEVNOTE: Workaround for https://github.com/Microsoft/vstest/issues/649
+        /// </summary>
+        /// <param name="services">The application services collection.</param>
+        /// <param name="startupAssemblyName">The name of the assembly containing the startup type.</param>
+        /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
+        /// <returns>The health check checksBuilder</returns>
+        [Obsolete]
+        public static IAppMetricsHealthChecksBuilder AddHealth(
+            this IServiceCollection services,
+            string startupAssemblyName,
+            Action<IHealthCheckRegistry> setupChecksAction = null)
+        {
             var builder = services.AddHealthBuilder();
 
             builder.AddRequiredPlatformServices();
-            builder.AddCoreServices(setupChecksAction);
+            builder.AddCoreServices(startupAssemblyName, setupChecksAction);
 
             return builder;
         }
