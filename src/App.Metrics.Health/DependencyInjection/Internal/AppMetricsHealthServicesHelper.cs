@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace App.Metrics.Health.DependencyInjection.Internal
 {
     [ExcludeFromCodeCoverage]
-    internal static class AppMetricsHealthServicesHelper
+    public static class AppMetricsHealthServicesHelper
     {
         /// <summary>
         ///     Throws InvalidOperationException when HealthCheckMarkerService is not present
@@ -19,10 +19,7 @@ namespace App.Metrics.Health.DependencyInjection.Internal
         {
             if (services.GetService(typeof(HealthCheckMarkerService)) == null)
             {
-                throw new InvalidOperationException(
-                    "IServiceCollection.AddHealth()\n" +
-                    "IApplicationBuilder.ConfigureServices(...)\n" +
-                    "IApplicationBuilder.UseHealthChecks(...)\n");
+                throw new InvalidOperationException("IServiceCollection.AddHealth() needs to be configured on Startup");
             }
         }
     }

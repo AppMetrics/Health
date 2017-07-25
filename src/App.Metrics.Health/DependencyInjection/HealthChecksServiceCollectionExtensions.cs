@@ -21,8 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The application services collection.</param>
         /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
-        /// <returns>The health check checksBuilder</returns>
-        public static IAppMetricsHealthChecksBuilder AddHealth(
+        /// <returns>The health check builder</returns>
+        public static IAppMetricsHealthBuilder AddHealth(
             this IServiceCollection services,
             Action<IHealthCheckRegistry> setupChecksAction = null)
         {
@@ -40,9 +40,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The application services collection.</param>
         /// <param name="startupAssemblyName">The name of the assembly containing the startup type.</param>
         /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
-        /// <returns>The health check checksBuilder</returns>
+        /// <returns>The health check builder</returns>
         [Obsolete]
-        public static IAppMetricsHealthChecksBuilder AddHealth(
+        public static IAppMetricsHealthBuilder AddHealth(
             this IServiceCollection services,
             string startupAssemblyName,
             Action<IHealthCheckRegistry> setupChecksAction = null)
@@ -63,9 +63,9 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     The <see cref="IConfiguration">IConfiguration</see> from where to load <see cref="AppMetricsHealthOptions">options</see>.
         /// </param>
         /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
-        /// <returns>The health check checksBuilder</returns>
+        /// <returns>The health check builder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealth(
+        public static IAppMetricsHealthBuilder AddHealth(
             this IServiceCollection services,
             IConfiguration configuration,
             Action<IHealthCheckRegistry> setupChecksAction = null)
@@ -86,9 +86,9 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     overridden by using this configuration.
         /// </param>
         /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
-        /// <returns>The health check checksBuilder</returns>
+        /// <returns>The health check builder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealth(
+        public static IAppMetricsHealthBuilder AddHealth(
             this IServiceCollection services,
             Action<AppMetricsHealthOptions> setupOptionsAction,
             IConfiguration configuration,
@@ -111,9 +111,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="setupOptionsAction">The <see cref="AppMetricsHealthOptions">options</see> setup action.</param>
         /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
         /// Any shared configuration options with the options IConfiguration will be overriden by the options delegate.
-        /// <returns>The health check checksBuilder</returns>
+        /// <returns>The health check builder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealth(
+        public static IAppMetricsHealthBuilder AddHealth(
             this IServiceCollection services,
             IConfiguration configuration,
             Action<AppMetricsHealthOptions> setupOptionsAction,
@@ -131,9 +131,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The application services collection.</param>
         /// <param name="setupOptionsAction">The <see cref="AppMetricsHealthOptions">options</see> setup action.</param>
         /// <param name="setupChecksAction">The <see cref="IHealthCheckRegistry"/> setup action allowing health checks to be regsitered.</param>
-        /// <returns>The health check checksBuilder</returns>
+        /// <returns>The health check builder</returns>
         [ExcludeFromCodeCoverage] // DEVNOTE: No need to test Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-        public static IAppMetricsHealthChecksBuilder AddHealth(
+        public static IAppMetricsHealthBuilder AddHealth(
             this IServiceCollection services,
             Action<AppMetricsHealthOptions> setupOptionsAction,
             Action<IHealthCheckRegistry> setupChecksAction = null)
@@ -147,7 +147,7 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Adds the health check services and configuration to the <see cref="IServiceCollection">IServiceCollection</see>.
         /// </summary>
         /// <param name="services">The application services collection.</param>
-        /// <returns>The health check checksBuilder</returns>
-        private static IAppMetricsHealthChecksBuilder AddHealthBuilder(this IServiceCollection services) { return new AppMetricsHealthChecksBuilder(services); }
+        /// <returns>The health check builder</returns>
+        private static IAppMetricsHealthBuilder AddHealthBuilder(this IServiceCollection services) { return new AppMetricsHealthBuilder(services); }
     }
 }

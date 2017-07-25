@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthChecksBuilder.cs" company="Allan Hardy">
+﻿// <copyright file="AppMetricsHealthBuilder.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -7,9 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace App.Metrics.Health.Builder
 {
-    public sealed class AppMetricsHealthChecksBuilder : IAppMetricsHealthChecksBuilder
+    public sealed class AppMetricsHealthBuilder : IAppMetricsHealthBuilder
     {
-        internal AppMetricsHealthChecksBuilder(IServiceCollection services)
+        internal AppMetricsHealthBuilder(IServiceCollection services)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
         }

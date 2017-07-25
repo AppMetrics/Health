@@ -19,19 +19,19 @@ namespace App.Metrics.Health.Internal.Extensions
     internal static class AppMetricsHealthAppMetricsBuilderExtensions
     {
         public static void AddCoreServices(
-            this IAppMetricsHealthChecksBuilder checksBuilder,
+            this IAppMetricsHealthBuilder builder,
             string startupAssemblyName,
             Action<IHealthCheckRegistry> setupAction = null)
         {
             HealthChecksAsServices.AddHealthChecksAsServices(
-                checksBuilder.Services,
+                builder.Services,
                 DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(startupAssemblyName));
 
-            checksBuilder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
-            checksBuilder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
-            checksBuilder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupAction)));
+            builder.Services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
+            builder.Services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
+            builder.Services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupAction)));
 
-            checksBuilder.Services.TryAddSingleton<IProvideHealth>(
+            builder.Services.TryAddSingleton<IProvideHealth>(
                               provider =>
                               {
                                   var options = provider.GetRequiredService<AppMetricsHealthOptions>();
@@ -47,10 +47,10 @@ namespace App.Metrics.Health.Internal.Extensions
                               });
         }
 
-        public static void AddRequiredPlatformServices(this IAppMetricsHealthChecksBuilder checksBuilder)
+        public static void AddRequiredPlatformServices(this IAppMetricsHealthBuilder builder)
         {
-            checksBuilder.Services.TryAddSingleton<HealthCheckMarkerService>();
-            checksBuilder.Services.AddOptions();
+            builder.Services.TryAddSingleton<HealthCheckMarkerService>();
+            builder.Services.AddOptions();
         }
 
         private static IHealthCheckRegistry RegisterHealthCheckRegistry(

@@ -4,16 +4,15 @@
 
 using System;
 using System.Threading.Tasks;
-using App.Metrics.Health;
 
 // ReSharper disable CheckNamespace
-namespace App.Metrics
-    // ReSharper restore CheckNamespace
+namespace App.Metrics.Health
+// ReSharper restore CheckNamespace
 {
     public static class MetricHealthCheckFactoryExtensions
     {
 #pragma warning disable SA1008, SA1009
-        internal static ValueTask<HealthCheckResult> PerformCheck<T>(
+        public static ValueTask<HealthCheckResult> PerformCheck<T>(
             this IHealthCheckRegistry registry,
             Func<T, (string message, bool result)> passing,
             Func<T, (string message, bool result)> warning,
