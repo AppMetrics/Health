@@ -111,8 +111,8 @@ namespace HealthSandbox
             {
                 while (!Console.KeyAvailable)
                 {
-                    Thread.Sleep(delayBetweenRun);
                     action();
+                    Thread.Sleep(delayBetweenRun);
                 }
 
                 while (Console.KeyAvailable)
