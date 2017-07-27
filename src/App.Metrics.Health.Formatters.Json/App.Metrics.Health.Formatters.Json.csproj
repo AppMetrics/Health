@@ -8,13 +8,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>appmetrics;healthcheck;json</PackageTags>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\App.Metrics.Health.Abstractions\App.Metrics.Health.Abstractions.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\App.Metrics.Health.Core\App.Metrics.Health.Core.csproj" />
   </ItemGroup>
 
 </Project>

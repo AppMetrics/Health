@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\App.Metrics.Health.Abstractions\App.Metrics.Health.Abstractions.csproj" />
+    <ProjectReference Include="..\App.Metrics.Health.Core\App.Metrics.Health.Core.csproj" />
   </ItemGroup>
 
 </Project>

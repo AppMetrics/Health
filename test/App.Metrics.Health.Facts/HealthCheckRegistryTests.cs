@@ -48,7 +48,7 @@ namespace App.Metrics.Health.Facts
 
             var health = _healthSetup(_healthCheckRegistry);
 
-            var status = await health.ReadStatusAsync();
+            var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Degraded);
             status.Results.Length.Should().Be(2);
@@ -62,7 +62,7 @@ namespace App.Metrics.Health.Facts
 
             var health = _healthSetup(_healthCheckRegistry);
 
-            var status = await health.ReadStatusAsync();
+            var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Unhealthy);
             status.Results.Length.Should().Be(2);
@@ -76,7 +76,7 @@ namespace App.Metrics.Health.Facts
 
             var health = _healthSetup(_healthCheckRegistry);
 
-            var status = await health.ReadStatusAsync();
+            var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Healthy);
             status.Results.Length.Should().Be(2);
@@ -91,7 +91,7 @@ namespace App.Metrics.Health.Facts
 
             var health = _healthSetup(_healthCheckRegistry);
 
-            var status = await health.ReadStatusAsync();
+            var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Unhealthy);
             status.Results.Length.Should().Be(3);

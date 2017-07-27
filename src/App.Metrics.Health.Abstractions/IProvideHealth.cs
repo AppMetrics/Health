@@ -20,6 +20,6 @@ namespace App.Metrics.Health
         ///     The current health status of the application. A single health check failure will result in an un-healthy
         ///     result
         /// </returns>
-        ValueTask<HealthStatus> ReadStatusAsync(CancellationToken cancellationToken = default(CancellationToken));
+        ValueTask<HealthStatus> ReadAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

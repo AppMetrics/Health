@@ -12,7 +12,7 @@ namespace App.Metrics.Health.Benchmarks.BenchmarkDotNetBenchmarks
         [Benchmark]
         public void ReadHealth()
         {
-            var result = FixtureWithHealth.Health.ReadStatusAsync().GetAwaiter().GetResult();
+            var result = FixtureWithHealth.Health.ReadAsync().GetAwaiter().GetResult();
             Debug.WriteLine("Health status: " + result.Status);
         }
     }
