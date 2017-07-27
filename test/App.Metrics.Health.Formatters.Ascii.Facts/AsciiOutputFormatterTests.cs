@@ -27,7 +27,7 @@ namespace App.Metrics.Health.Formatters.Ascii.Facts
             // Arrange
             string result;
             _fixture.HealthCheckRegistry.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
-            var formatter = new AsciiOutputFormatter();
+            var formatter = new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions());
 
             // Act
             var healthStatus = await _fixture.Health.ReadAsync();
