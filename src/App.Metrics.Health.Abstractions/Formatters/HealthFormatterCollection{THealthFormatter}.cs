@@ -34,5 +34,25 @@ namespace App.Metrics.Health.Formatters
                 }
             }
         }
+
+        public THealthFormatter GetType<T>()
+            where T : THealthFormatter
+        {
+            return GetType(typeof(T));
+        }
+
+        public THealthFormatter GetType(Type formatterType)
+        {
+            for (var i = Count - 1; i >= 0; i--)
+            {
+                var formatter = this[i];
+                if (formatter.GetType() == formatterType)
+                {
+                    return formatter;
+                }
+            }
+
+            return default(THealthFormatter);
+        }
     }
 }

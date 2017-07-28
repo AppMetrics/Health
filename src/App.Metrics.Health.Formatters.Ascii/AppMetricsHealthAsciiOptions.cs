@@ -2,9 +2,11 @@
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
+using App.Metrics.Health.Configuration;
+
 namespace App.Metrics.Health.Formatters.Ascii
 {
-    public class AppMetricsHealthAsciiOptions
+    public class AppMetricsHealthAsciiOptions : AppMetricsHealthFormattingOptions
     {
         public AppMetricsHealthAsciiOptions()
         {
