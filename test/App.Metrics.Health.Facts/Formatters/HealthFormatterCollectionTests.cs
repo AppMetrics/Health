@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// <copyright file="HealthFormatterCollectionTests.cs" company="Allan Hardy">
+// Copyright (c) Allan Hardy. All rights reserved.
+// </copyright>
+
+using System.Collections.Generic;
 using App.Metrics.Health.Formatters;
 using App.Metrics.Health.Formatters.Ascii;
 using App.Metrics.Health.Formatters.Json;
@@ -129,7 +133,7 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Returns_default_when_attempting_to_get_type_with_mediatype_not_added()
         {
             // Arrange
-            var mediaType = new AppMetricsHealthMediaTypeValue("application", "vnd.appmetrics.health", "v1", "json");
+            var mediaType = new AppMetricsHealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
             var formatters =
                 new HealthFormatterCollection
                 {
