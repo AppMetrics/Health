@@ -15,10 +15,9 @@ namespace App.Metrics.Health.Formatters.Ascii
     {
         private readonly AppMetricsHealthAsciiOptions _options;
 
-        public AsciiOutputFormatter(AppMetricsHealthAsciiOptions options)
-        {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-        }
+        public AsciiOutputFormatter(AppMetricsHealthAsciiOptions options) { _options = options ?? throw new ArgumentNullException(nameof(options)); }
+
+        public AppMetricsHealthMediaTypeValue MediaType => new AppMetricsHealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
 
         public Task WriteAsync(
             Stream output,
@@ -58,6 +57,18 @@ namespace App.Metrics.Health.Formatters.Ascii
             return output.WriteAsync(bytes, 0, bytes.Length, cancellationToken);
         }
 
+        private string FormatReadable(string label, string value)
+        {
+            var pad = string.Empty;
+
+            if (label.Length + 2 + _options.Separator.Length < _options.Padding)
+            {
+                pad = new string(' ', _options.Padding - label.Length - 1 - _options.Separator.Length);
+            }
+
+            return $"{pad}{label} {_options.Separator} {value}";
+        }
+
         private string GetOverallStatus(HealthCheck.Result[] results)
         {
             var status = HealthConstants.DegradedStatusDisplay;
@@ -89,18 +100,6 @@ namespace App.Metrics.Health.Formatters.Ascii
             writer.Write(FormatReadable("STATUS", HealthConstants.HealthStatusDisplay[checkResult.Check.Status]));
             writer.Write("\n--------------------------------------------------------------");
             writer.Write('\n');
-        }
-
-        private string FormatReadable(string label, string value)
-        {
-            var pad = string.Empty;
-
-            if (label.Length + 2 + _options.Separator.Length < _options.Padding)
-            {
-                pad = new string(' ', _options.Padding - label.Length - 1 - _options.Separator.Length);
-            }
-
-            return $"{pad}{label} {_options.Separator} {value}";
         }
     }
 }

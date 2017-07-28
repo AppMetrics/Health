@@ -13,6 +13,8 @@ namespace App.Metrics.Health.Formatters.Ascii.Facts.TestHelpers
 {
     public class CustomAsciiOutputFormatter : IHealthOutputFormatter
     {
+        public AppMetricsHealthMediaTypeValue MediaType => new AppMetricsHealthMediaTypeValue("text", "vnd.custom.health", "v1", "plain");
+
         public Task WriteAsync(
             Stream output,
             HealthStatus healthStatus,

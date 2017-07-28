@@ -11,6 +11,12 @@ namespace App.Metrics.Health.Formatters
 {
     public interface IHealthOutputFormatter
     {
-        Task WriteAsync(Stream output, HealthStatus healthStatus, Encoding encoding, CancellationToken cancellationToken = default(CancellationToken));
+        AppMetricsHealthMediaTypeValue MediaType { get; }
+
+        Task WriteAsync(
+            Stream output,
+            HealthStatus healthStatus,
+            Encoding encoding,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

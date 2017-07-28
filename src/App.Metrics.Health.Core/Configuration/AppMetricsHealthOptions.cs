@@ -15,7 +15,7 @@ namespace App.Metrics.Health
         public AppMetricsHealthOptions()
         {
             Enabled = true;
-            OutputFormatters = new HealthFormatterCollection<IHealthOutputFormatter>();
+            OutputFormatters = new HealthFormatterCollection();
         }
 
         public bool Enabled { get; set; }
@@ -26,6 +26,6 @@ namespace App.Metrics.Health
         /// <value>
         ///     A list of <see cref="IHealthOutputFormatter" />s that are used by this application.
         /// </value>
-        public HealthFormatterCollection<IHealthOutputFormatter> OutputFormatters { get; }
+        public HealthFormatterCollection OutputFormatters { get; }
     }
 }
