@@ -5,9 +5,7 @@
 using System.Diagnostics.CodeAnalysis;
 using App.Metrics.Health.Formatters;
 
-// ReSharper disable CheckNamespace
 namespace App.Metrics.Health
-    // ReSharper restore CheckNamespace
 {
     [ExcludeFromCodeCoverage]
     public class AppMetricsHealthOptions

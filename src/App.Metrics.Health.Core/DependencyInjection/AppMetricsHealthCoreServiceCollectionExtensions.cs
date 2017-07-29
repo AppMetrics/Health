@@ -6,17 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using App.Metrics.Health.Configuration;
+using App.Metrics.Health;
 using App.Metrics.Health.DependencyInjection.Internal;
+using App.Metrics.Health.Internal;
 using App.Metrics.Health.Internal.NoOp;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace App.Metrics.Health.Internal.Extensions
+// ReSharper disable CheckNamespace
+namespace Microsoft.Extensions.DependencyInjection
+    // ReSharper restore CheckNamespace
 {
-    public static class AppMetricsHealthAppMetricsBuilderExtensions
+    public static class AppMetricsHealthCoreServiceCollectionExtensions
     {
         public static IAppMetricsHealthCoreBuilder AddHealthCore(
             this IServiceCollection services,

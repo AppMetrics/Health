@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
+using App.Metrics.Health.Formatters.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -66,6 +67,7 @@ namespace HealthSandbox
 
             // To add additional formatters
             // options => options.OutputFormatters.Add(new AsciiOutputFormatter()),
+            // options => options.DefaultOutputFormatter = new JsonOutputFormatter(),
             // Configuration.GetSection("AppMetricsHealthOptions"),
 
             services.AddHealth(

@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Options;
 
-namespace App.Metrics.Health.Configuration
+namespace App.Metrics.Health.Internal
 {
     public class ConfigureAppMetricsHealthOptions : IConfigureOptions<AppMetricsHealthOptions>
     {

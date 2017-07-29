@@ -14,6 +14,7 @@ namespace App.Metrics.Health.Builder
             Services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
+        /// <inheritdoc />
         public IServiceCollection Services { get; }
     }
 }

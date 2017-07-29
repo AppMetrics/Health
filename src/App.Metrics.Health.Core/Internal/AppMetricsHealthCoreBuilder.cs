@@ -11,6 +11,7 @@ namespace App.Metrics.Health.Internal
     {
         public AppMetricsHealthCoreBuilder(IServiceCollection services) { Services = services ?? throw new ArgumentNullException(nameof(services)); }
 
+        /// <inheritdoc />
         public IServiceCollection Services { get; }
     }
 }
