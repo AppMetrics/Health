@@ -66,9 +66,9 @@ namespace HealthSandbox
 
             // To add additional formatters
             // options => options.OutputFormatters.Add(new AsciiOutputFormatter()),
+            // Configuration.GetSection("AppMetricsHealthOptions"),
 
             services.AddHealth(
-                Configuration.GetSection("AppMetricsHealthOptions"),
                 checksRegistry =>
                 {
                     checksRegistry.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);

@@ -18,7 +18,14 @@ namespace App.Metrics.Health.Formatters.Ascii.Internal
 
         public void Configure(AppMetricsHealthOptions options)
         {
-            options.OutputFormatters.Add(new AsciiOutputFormatter(_asciiOptions));
+            var formatter = new AsciiOutputFormatter(_asciiOptions);
+
+            if (options.DefaultOutputFormatter == null)
+            {
+                options.DefaultOutputFormatter = formatter;
+            }
+
+            options.OutputFormatters.Add(formatter);
         }
     }
 }

@@ -18,7 +18,14 @@ namespace App.Metrics.Health.Formatters.Json.Internal
 
         public void Configure(AppMetricsHealthOptions options)
         {
-            options.OutputFormatters.Add(new JsonOutputFormatter(_jsonOptions.SerializerSettings));
+            var formatter = new JsonOutputFormatter(_jsonOptions.SerializerSettings);
+
+            if (options.DefaultOutputFormatter == null)
+            {
+                options.DefaultOutputFormatter = formatter;
+            }
+
+            options.OutputFormatters.Add(formatter);
         }
     }
 }
