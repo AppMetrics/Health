@@ -11,7 +11,7 @@ namespace App.Metrics.Health
 {
     public interface IHealthCheckRegistry
     {
-        Dictionary<string, HealthCheck> Checks { get; }
+        IReadOnlyDictionary<string, HealthCheck> Checks { get; }
 
         void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check);
 

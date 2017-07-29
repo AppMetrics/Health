@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -69,7 +70,7 @@ namespace App.Metrics.Health.Formatters.Ascii
             return $"{pad}{label} {_options.Separator} {value}";
         }
 
-        private string GetOverallStatus(HealthCheck.Result[] results)
+        private string GetOverallStatus(IEnumerable<HealthCheck.Result> results)
         {
             var status = HealthConstants.DegradedStatusDisplay;
 

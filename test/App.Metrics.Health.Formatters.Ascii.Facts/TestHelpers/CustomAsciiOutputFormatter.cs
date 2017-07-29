@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -53,7 +54,7 @@ namespace App.Metrics.Health.Formatters.Ascii.Facts.TestHelpers
             return output.WriteAsync(bytes, 0, bytes.Length, cancellationToken);
         }
 
-        private static string GetOverallStatus(HealthCheck.Result[] results)
+        private static string GetOverallStatus(IEnumerable<HealthCheck.Result> results)
         {
             var status = HealthConstants.DegradedStatusDisplay;
 

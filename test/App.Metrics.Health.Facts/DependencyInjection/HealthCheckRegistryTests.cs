@@ -2,6 +2,7 @@
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
+using System.Linq;
 using System.Threading.Tasks;
 using App.Metrics.Health.Facts.Fixtures;
 using App.Metrics.Health.Facts.TestHelpers;
@@ -38,7 +39,6 @@ namespace App.Metrics.Health.Facts.DependencyInjection
 
             var result = await healthProvider.ReadAsync();
 
-            result.HasRegisteredChecks.Should().BeTrue();
             result.Results.Should().HaveCount(2);
         }
 
@@ -96,7 +96,6 @@ namespace App.Metrics.Health.Facts.DependencyInjection
 
             var result = await healthProvider.ReadAsync();
 
-            result.HasRegisteredChecks.Should().BeTrue();
             result.Results.Should().HaveCount(1);
         }
     }

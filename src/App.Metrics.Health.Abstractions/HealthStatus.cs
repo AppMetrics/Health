@@ -14,18 +14,8 @@ namespace App.Metrics.Health
     {
         public HealthStatus(IEnumerable<HealthCheck.Result> results)
         {
-            Results = results.ToArray();
-
-            HasRegisteredChecks = Results.Length > 0;
+            Results = results;
         }
-
-        /// <summary>
-        ///     Gets a value indicating whether this health checks have registered checks.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance has registered checks; otherwise, <c>false</c>.
-        /// </value>
-        public bool HasRegisteredChecks { get; }
 
         /// <summary>
         ///     Gets result of each health check operation
@@ -33,7 +23,7 @@ namespace App.Metrics.Health
         /// <value>
         ///     The health check results.
         /// </value>
-        public HealthCheck.Result[] Results { get; }
+        public IEnumerable<HealthCheck.Result> Results { get; }
 
         /// <summary>
         ///     Gets all health checks passed.

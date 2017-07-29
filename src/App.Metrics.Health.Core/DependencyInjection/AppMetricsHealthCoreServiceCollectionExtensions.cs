@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthAppMetricsBuilderExtensions.cs" company="Allan Hardy">
+﻿// <copyright file="AppMetricsHealthCoreServiceCollectionExtensions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -40,7 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddSingleton<HealthCheckMarkerService>();
             services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
-            services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, ConfigureAppMetricsHealthOptions>();
+            services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, AppMetricsHealthOptionsSetup>();
             services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupChecksAction)));
 
             services.TryAddSingleton<IProvideHealth>(

@@ -11,17 +11,22 @@ namespace App.Metrics.Health.Internal
 {
     public sealed class DefaultHealthCheckRegistry : IHealthCheckRegistry
     {
+        private readonly Dictionary<string, HealthCheck> _checks;
+
         public DefaultHealthCheckRegistry(IEnumerable<HealthCheck> healthChecks)
         {
+            _checks = new Dictionary<string, HealthCheck>(StringComparer.OrdinalIgnoreCase);
+
             Register(healthChecks);
         }
 
         public DefaultHealthCheckRegistry()
         {
+            _checks = new Dictionary<string, HealthCheck>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <inheritdoc />
-        public Dictionary<string, HealthCheck> Checks { get; } = new Dictionary<string, HealthCheck>();
+        public IReadOnlyDictionary<string, HealthCheck> Checks => _checks;
 
         /// <inheritdoc />
         public void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check)
@@ -39,13 +44,13 @@ namespace App.Metrics.Health.Internal
         {
             foreach (var check in healthChecks)
             {
-                Checks.Add(check.Name, check);
+                _checks.Add(check.Name, check);
             }
         }
 
         internal void Register(HealthCheck healthCheck)
         {
-            Checks.Add(healthCheck.Name, healthCheck);
+            _checks.Add(healthCheck.Name, healthCheck);
         }
     }
 }

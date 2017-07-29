@@ -58,11 +58,11 @@ namespace Microsoft.Extensions.Logging
             var currentTimestamp = Stopwatch.GetTimestamp();
             var elapsed = new TimeSpan((long)(TimestampToTicks * (currentTimestamp - startTimestamp)));
 
-            if (healthStatus.HasRegisteredChecks)
+            if (healthStatus.Results.Any())
             {
                 if (healthStatus.Status.IsHealthy())
                 {
-                    _healthGetStatusExecuted(logger, elapsed.TotalMilliseconds, healthStatus.Results.Length, null);
+                    _healthGetStatusExecuted(logger, elapsed.TotalMilliseconds, healthStatus.Results.Count(), null);
                     return;
                 }
 

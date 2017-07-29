@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using App.Metrics.Health.Internal;
 using FluentAssertions;
@@ -51,7 +52,7 @@ namespace App.Metrics.Health.Facts
             var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Degraded);
-            status.Results.Length.Should().Be(2);
+            status.Results.Count().Should().Be(2);
         }
 
         [Fact]
@@ -65,7 +66,7 @@ namespace App.Metrics.Health.Facts
             var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Unhealthy);
-            status.Results.Length.Should().Be(2);
+            status.Results.Count().Should().Be(2);
         }
 
         [Fact]
@@ -79,7 +80,7 @@ namespace App.Metrics.Health.Facts
             var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Healthy);
-            status.Results.Length.Should().Be(2);
+            status.Results.Count().Should().Be(2);
         }
 
         [Fact]
@@ -94,7 +95,7 @@ namespace App.Metrics.Health.Facts
             var status = await health.ReadAsync();
 
             status.Status.Should().Be(HealthCheckStatus.Unhealthy);
-            status.Results.Length.Should().Be(3);
+            status.Results.Count().Should().Be(3);
         }
     }
 }
