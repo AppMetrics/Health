@@ -66,6 +66,12 @@ namespace App.Metrics.Health.DependencyInjection.Internal
                 return false;
             }
 
+            // Don't register base HealthCheck
+            if (typeInfo.AsType() == typeof(HealthCheck))
+            {
+                return false;
+            }
+
             if (!typeInfo.Name.EndsWith(HealthCheckTypeName, StringComparison.OrdinalIgnoreCase) &&
                 !DerivesFromHealthCheck(typeInfo, candidateAssemblies))
             {

@@ -18,9 +18,7 @@ namespace App.Metrics.Health.DependencyInjection.Internal
                                                                        {
                                                                            "App.Metrics.Health",
                                                                            "App.Metrics.Health.Core",
-                                                                           "App.Metrics.Health.Abstractions",
-                                                                           "App.Metrics.Health.Formatters.Ascii",
-                                                                           "App.Metrics.Health.Formatters.Json"
+                                                                           "App.Metrics.Health.Abstractions"
                                                                        };
 
         internal static IEnumerable<Assembly> DiscoverAssemblies(string entryPointAssemblyName)
@@ -56,10 +54,14 @@ namespace App.Metrics.Health.DependencyInjection.Internal
 
         private static bool IsCandidateLibrary(RuntimeLibrary library)
         {
+            if (ReferenceAssemblies == null)
+            {
+                return false;
+            }
+
             Debug.Assert(ReferenceAssemblies != null, "reference assemblies not null");
 
-            return !ReferenceAssemblies.Contains(library.Name) &&
-                   library.Dependencies.Any(dependency => ReferenceAssemblies.Contains(dependency.Name));
+            return ReferenceAssemblies.Contains(library.Name) || library.Dependencies.Any(d => ReferenceAssemblies.Contains(d.Name));
         }
 
         // ReSharper restore MemberCanBePrivate.Global
