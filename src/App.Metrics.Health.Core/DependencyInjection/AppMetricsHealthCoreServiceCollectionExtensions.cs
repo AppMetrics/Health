@@ -2,9 +2,6 @@
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using App.Metrics.Health;
 using App.Metrics.Health.DependencyInjection.Internal;
@@ -21,18 +18,14 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class AppMetricsHealthCoreServiceCollectionExtensions
     {
         public static IAppMetricsHealthCoreBuilder AddHealthCore(
-            this IServiceCollection services,
-            Action<IHealthCheckRegistry> setupChecksAction = null)
+            this IServiceCollection services)
         {
-            var startupAssemblyName = setupChecksAction == null ? Assembly.GetEntryAssembly().GetName().Name : setupChecksAction.GetMethodInfo().DeclaringType.GetTypeInfo().Assembly.GetName().Name;
+            var startupAssemblyName = Assembly.GetEntryAssembly().GetName().Name;
 
-            return services.AddHealthCore(startupAssemblyName, setupChecksAction);
+            return services.AddHealthCore(startupAssemblyName);
         }
 
-        public static IAppMetricsHealthCoreBuilder AddHealthCore(
-            this IServiceCollection services,
-            string startupAssemblyName,
-            Action<IHealthCheckRegistry> setupChecksAction = null)
+        public static IAppMetricsHealthCoreBuilder AddHealthCore(this IServiceCollection services, string startupAssemblyName)
         {
             HealthChecksAsServices.AddHealthChecksAsServices(
                 services,
@@ -40,8 +33,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddSingleton<HealthCheckMarkerService>();
             services.TryAddSingleton(resolver => resolver.GetRequiredService<IOptions<AppMetricsHealthOptions>>().Value);
-            services.TryAddSingleton<IConfigureOptions<AppMetricsHealthOptions>, AppMetricsHealthOptionsSetup>();
-            services.Replace(ServiceDescriptor.Singleton(provider => RegisterHealthCheckRegistry(provider, setupChecksAction)));
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<AppMetricsHealthOptions>, AppMetricsHealthOptionsSetup>());
 
             services.TryAddSingleton<IProvideHealth>(
                               provider =>
@@ -53,45 +46,10 @@ namespace Microsoft.Extensions.DependencyInjection
                                       return new NoOpHealthProvider();
                                   }
 
-                                  return new DefaultHealthProvider(
-                                      provider.GetRequiredService<ILogger<DefaultHealthProvider>>(),
-                                      provider.GetRequiredService<IHealthCheckRegistry>());
+                                  return new DefaultHealthProvider(provider.GetRequiredService<ILogger<DefaultHealthProvider>>(), options.Checks);
                               });
 
             return new AppMetricsHealthCoreBuilder(services);
-        }
-
-        private static IHealthCheckRegistry RegisterHealthCheckRegistry(
-            IServiceProvider provider,
-            Action<IHealthCheckRegistry> setupAction = null)
-        {
-            var options = provider.GetRequiredService<AppMetricsHealthOptions>();
-
-            if (!options.Enabled)
-            {
-                return new NoOpHealthCheckRegistry();
-            }
-
-            var logFactory = provider.GetRequiredService<ILoggerFactory>();
-            var logger = logFactory.CreateLogger<DefaultHealthCheckRegistry>();
-
-            var autoScannedHealthChecks = Enumerable.Empty<HealthCheck>();
-
-            try
-            {
-                autoScannedHealthChecks = provider.GetRequiredService<IEnumerable<HealthCheck>>();
-            }
-            catch (InvalidOperationException ex)
-            {
-                logger.LogError(
-                    new EventId(5000),
-                    ex,
-                    "Failed to load auto scanned health checks, health checks won't be registered");
-            }
-
-            var factory = new DefaultHealthCheckRegistry(autoScannedHealthChecks);
-            setupAction?.Invoke(factory);
-            return factory;
         }
     }
 }

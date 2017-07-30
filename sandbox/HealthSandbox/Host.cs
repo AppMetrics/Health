@@ -70,28 +70,52 @@ namespace HealthSandbox
             // options => options.DefaultOutputFormatter = new JsonOutputFormatter(),
             // Configuration.GetSection("AppMetricsHealthOptions"),
 
-            services.AddHealth(
-                checksRegistry =>
-                {
-                    checksRegistry.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
-                    checksRegistry.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
-                    checksRegistry.AddProcessPhysicalMemoryCheck("Working Set", 200);
-                    checksRegistry.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
-                    checksRegistry.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
-                    checksRegistry.AddCheck(
-                        "DatabaseConnected",
-                        () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-                    checksRegistry.AddCheck(
-                        "DiskSpace",
-                        () =>
+            // services.AddHealth(
+            //    options =>
+            //    {
+            //        options.Checks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
+            //        options.Checks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
+            //        options.Checks.AddProcessPhysicalMemoryCheck("Working Set", 200);
+            //        options.Checks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
+            //        options.Checks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
+            //        options.Checks.AddCheck(
+            //            "DatabaseConnected",
+            //            () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
+            //        options.Checks.AddCheck(
+            //            "DiskSpace",
+            //            () =>
+            //            {
+            //                var freeDiskSpace = GetFreeDiskSpace();
+            //                return new ValueTask<HealthCheckResult>(
+            //                    freeDiskSpace <= 512
+            //                        ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
+            //                        : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
+            //            });
+            //    })
+
+            services.AddHealth()
+                .AddHealthOptions(
+                        options =>
                         {
-                            var freeDiskSpace = GetFreeDiskSpace();
-                            return new ValueTask<HealthCheckResult>(
-                                freeDiskSpace <= 512
-                                    ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-                                    : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-                        });
-                })
+                            options.Checks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
+                            options.Checks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
+                            options.Checks.AddProcessPhysicalMemoryCheck("Working Set", 200);
+                            options.Checks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
+                            options.Checks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
+                            options.Checks.AddCheck(
+                                "DatabaseConnected",
+                                () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
+                            options.Checks.AddCheck(
+                                "DiskSpace",
+                                () =>
+                                {
+                                    var freeDiskSpace = GetFreeDiskSpace();
+                                    return new ValueTask<HealthCheckResult>(
+                                        freeDiskSpace <= 512
+                                            ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
+                                            : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
+                                });
+                        })
                 .AddAsciiOptions(options => { options.Separator = ":"; })
                 .AddJsonOptions(options => { });
         }

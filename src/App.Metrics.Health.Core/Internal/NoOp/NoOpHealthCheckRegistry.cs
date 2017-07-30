@@ -15,6 +15,9 @@ namespace App.Metrics.Health.Internal.NoOp
         public IReadOnlyDictionary<string, HealthCheck> Checks { get; } = new Dictionary<string, HealthCheck>();
 
         /// <inheritdoc />
+        public void AddChecks(IEnumerable<HealthCheck> checks) { }
+
+        /// <inheritdoc />
         public void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check) { }
 
         /// <inheritdoc />

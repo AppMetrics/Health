@@ -29,6 +29,12 @@ namespace App.Metrics.Health.Internal
         public IReadOnlyDictionary<string, HealthCheck> Checks => _checks;
 
         /// <inheritdoc />
+        public void AddChecks(IEnumerable<HealthCheck> checks)
+        {
+            Register(checks);
+        }
+
+        /// <inheritdoc />
         public void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check)
         {
             Register(new HealthCheck(name, check));

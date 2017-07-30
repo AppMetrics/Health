@@ -13,6 +13,8 @@ namespace App.Metrics.Health
     {
         IReadOnlyDictionary<string, HealthCheck> Checks { get; }
 
+        void AddChecks(IEnumerable<HealthCheck> checks);
+
         void AddCheck(string name, Func<ValueTask<HealthCheckResult>> check);
 
         void AddCheck(string name, Func<CancellationToken, ValueTask<HealthCheckResult>> check);

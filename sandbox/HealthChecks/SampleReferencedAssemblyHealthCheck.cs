@@ -1,4 +1,4 @@
-﻿// <copyright file="SampleHealthCheck.cs" company="Allan Hardy">
+﻿// <copyright file="SampleReferencedAssemblyHealthCheck.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -7,12 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
 
-namespace HealthSandbox.HealthChecks
+namespace HealthChecks
 {
-    public class SampleHealthCheck : HealthCheck
+    public class SampleReferencedAssemblyHealthCheck : HealthCheck
     {
-        public SampleHealthCheck()
-            : base("Random Health Check")
+        public SampleReferencedAssemblyHealthCheck()
+            : base("Referenced Health Check")
         {
         }
 

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\build\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\App.Metrics.Health.Abstractions\App.Metrics.Health.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -29,9 +29,9 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             services
                 .AddHealth(
                     _fixture.StartupAssemblyName,
-                    checksRegistry =>
+                    options =>
                     {
-                        checksRegistry.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
+                        options.Checks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
                     });
 
             var provider = services.BuildServiceProvider();
@@ -68,9 +68,9 @@ namespace App.Metrics.Health.Facts.DependencyInjection
             services
                 .AddHealth(
                     _fixture.StartupAssemblyName,
-                    checksRegistry =>
+                    options =>
                     {
-                        checksRegistry.AddCheck(
+                        options.Checks.AddCheck(
                             "DatabaseConnected",
                             () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy("Failed")));
                     });

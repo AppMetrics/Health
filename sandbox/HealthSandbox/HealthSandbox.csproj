@@ -14,6 +14,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\App.Metrics.Health\App.Metrics.Health.csproj" />
+		<ProjectReference Include="..\HealthChecks\HealthChecks.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

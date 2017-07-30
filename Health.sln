@@ -71,6 +71,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthSandbox", "sandbox\He
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Core", "src\App.Metrics.Health.Core\App.Metrics.Health.Core.csproj", "{2A0D8967-A8BF-4F19-B705-2B6EA5BD1DA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthChecks", "sandbox\HealthChecks\HealthChecks.csproj", "{ACB92FD1-3FFC-4530-83BC-75F186ACDB9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,10 @@ Global
 		{2A0D8967-A8BF-4F19-B705-2B6EA5BD1DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A0D8967-A8BF-4F19-B705-2B6EA5BD1DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A0D8967-A8BF-4F19-B705-2B6EA5BD1DA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACB92FD1-3FFC-4530-83BC-75F186ACDB9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACB92FD1-3FFC-4530-83BC-75F186ACDB9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACB92FD1-3FFC-4530-83BC-75F186ACDB9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACB92FD1-3FFC-4530-83BC-75F186ACDB9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +147,7 @@ Global
 		{9135F93C-062A-49E6-AB29-4D114E27DC61} = {A335612E-C4C6-4AF4-98A9-EB9FF40CA258}
 		{3BE70936-89A6-4371-8F0C-E1EE5C9F1928} = {C0BC96C5-46E1-4323-9C5D-58D9A96549CD}
 		{2A0D8967-A8BF-4F19-B705-2B6EA5BD1DA7} = {2D805782-756E-4C98-B22E-F502BEE95318}
+		{ACB92FD1-3FFC-4530-83BC-75F186ACDB9D} = {C0BC96C5-46E1-4323-9C5D-58D9A96549CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8699A1D-0BA1-403C-86E9-C789CD2645EB}

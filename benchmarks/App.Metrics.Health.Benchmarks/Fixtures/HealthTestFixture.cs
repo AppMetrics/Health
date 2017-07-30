@@ -16,9 +16,9 @@ namespace App.Metrics.Health.Benchmarks.Fixtures
             services.AddLogging();
 
             services.AddHealth(
-                checksRegistry =>
+                options =>
                 {
-                    checksRegistry.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
+                    options.Checks.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
                 });
 
             var provider = services.BuildServiceProvider();

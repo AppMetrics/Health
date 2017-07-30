@@ -4,6 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using App.Metrics.Health.Formatters;
+using App.Metrics.Health.Internal;
 
 namespace App.Metrics.Health
 {
@@ -14,6 +15,7 @@ namespace App.Metrics.Health
         {
             Enabled = true;
             OutputFormatters = new HealthFormatterCollection();
+            Checks = new DefaultHealthCheckRegistry();
         }
 
         /// <summary>
@@ -23,6 +25,8 @@ namespace App.Metrics.Health
         ///     The default <see cref="IHealthOutputFormatter" />s that is used by this application.
         /// </value>
         public IHealthOutputFormatter DefaultOutputFormatter { get; set; }
+
+        public IHealthCheckRegistry Checks { get; set; }
 
         public bool Enabled { get; set; }
 

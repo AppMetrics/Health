@@ -12,4 +12,4 @@ Job=Core  Runtime=Core
 ```
  |     Method |     Mean |     Error |    StdDev |  Gen 0 | Allocated |
  |----------- |---------:|----------:|----------:|-------:|----------:|
- | ReadHealth | 1.582 us | 0.0316 us | 0.0296 us | 0.1984 |     840 B |
+ | ReadHealth | 1.685 us | 0.0173 us | 0.0162 us | 0.1984 |     840 B |
