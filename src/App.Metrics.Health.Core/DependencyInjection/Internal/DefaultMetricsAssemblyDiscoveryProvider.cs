@@ -2,9 +2,7 @@
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyModel;
@@ -13,14 +11,9 @@ namespace App.Metrics.Health.DependencyInjection.Internal
 {
     internal static class DefaultMetricsAssemblyDiscoveryProvider
     {
-        // ReSharper disable MemberCanBePrivate.Global
-        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.Ordinal)
-                                                                       {
-                                                                           "App.Metrics.Health",
-                                                                           "App.Metrics.Health.Core",
-                                                                           "App.Metrics.Health.Abstractions"
-                                                                       };
+        private static readonly string ReferenceAssembliesPrefix = "App.Metrics";
 
+        // ReSharper disable MemberCanBePrivate.Global
         internal static IEnumerable<Assembly> DiscoverAssemblies(string entryPointAssemblyName)
         {
             var entryAssembly = Assembly.Load(new AssemblyName(entryPointAssemblyName));
@@ -44,24 +37,12 @@ namespace App.Metrics.Health.DependencyInjection.Internal
 
         internal static IEnumerable<RuntimeLibrary> GetCandidateLibraries(DependencyContext dependencyContext)
         {
-            if (ReferenceAssemblies == null)
-            {
-                return Enumerable.Empty<RuntimeLibrary>();
-            }
-
             return dependencyContext.RuntimeLibraries.Where(IsCandidateLibrary);
         }
 
         private static bool IsCandidateLibrary(RuntimeLibrary library)
         {
-            if (ReferenceAssemblies == null)
-            {
-                return false;
-            }
-
-            Debug.Assert(ReferenceAssemblies != null, "reference assemblies not null");
-
-            return ReferenceAssemblies.Contains(library.Name) || library.Dependencies.Any(d => ReferenceAssemblies.Contains(d.Name));
+            return library.Name.StartsWith(ReferenceAssembliesPrefix) || library.Dependencies.Any(d => d.Name.StartsWith(ReferenceAssembliesPrefix));
         }
 
         // ReSharper restore MemberCanBePrivate.Global
