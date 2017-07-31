@@ -5,7 +5,7 @@
 using System;
 using System.Reflection;
 using App.Metrics.Health;
-using App.Metrics.Health.Builder;
+using App.Metrics.Health.Internal;
 using Microsoft.Extensions.Configuration;
 
 // ReSharper disable CheckNamespace

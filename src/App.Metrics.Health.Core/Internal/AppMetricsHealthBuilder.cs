@@ -5,7 +5,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace App.Metrics.Health.Builder
+namespace App.Metrics.Health.Internal
 {
     public sealed class AppMetricsHealthBuilder : IAppMetricsHealthBuilder
     {
