@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace App.Metrics.Health.DependencyInjection.Internal
 {
-    [ExcludeFromCodeCoverage]
     public static class AppMetricsHealthServicesHelper
     {
         /// <summary>

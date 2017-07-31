@@ -2,13 +2,11 @@
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
 using App.Metrics.Health.Formatters;
 using App.Metrics.Health.Internal;
 
 namespace App.Metrics.Health
 {
-    [ExcludeFromCodeCoverage]
     public class AppMetricsHealthOptions
     {
         public AppMetricsHealthOptions()

@@ -93,19 +93,45 @@ namespace HealthSandbox
             //            });
             //    })
 
+            // services.AddHealth()
+            //     .AddHealthOptions(
+            //             options =>
+            //             {
+            //                 options.Checks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
+            //                 options.Checks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
+            //                 options.Checks.AddProcessPhysicalMemoryCheck("Working Set", 200);
+            //                 options.Checks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
+            //                 options.Checks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
+            //                 options.Checks.AddCheck(
+            //                     "DatabaseConnected",
+            //                     () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
+            //                 options.Checks.AddCheck(
+            //                     "DiskSpace",
+            //                     () =>
+            //                     {
+            //                         var freeDiskSpace = GetFreeDiskSpace();
+            //                         return new ValueTask<HealthCheckResult>(
+            //                             freeDiskSpace <= 512
+            //                                 ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
+            //                                 : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
+            //                     });
+            //             })
+            //     .AddAsciiOptions(options => { options.Separator = ":"; })
+            //     .AddJsonOptions(options => { });
+
             services.AddHealth()
-                .AddHealthOptions(
-                        options =>
+                    .AddChecks(
+                        registry =>
                         {
-                            options.Checks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
-                            options.Checks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
-                            options.Checks.AddProcessPhysicalMemoryCheck("Working Set", 200);
-                            options.Checks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
-                            options.Checks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
-                            options.Checks.AddCheck(
+                            registry.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
+                            registry.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
+                            registry.AddProcessPhysicalMemoryCheck("Working Set", 200);
+                            registry.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
+                            registry.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
+                            registry.AddCheck(
                                 "DatabaseConnected",
                                 () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-                            options.Checks.AddCheck(
+                            registry.AddCheck(
                                 "DiskSpace",
                                 () =>
                                 {
@@ -116,8 +142,8 @@ namespace HealthSandbox
                                             : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
                                 });
                         })
-                .AddAsciiOptions(options => { options.Separator = ":"; })
-                .AddJsonOptions(options => { });
+                    .AddAsciiOptions(options => { options.Separator = ":"; })
+                    .AddJsonOptions(options => { });
         }
 
         private static int GetFreeDiskSpace() { return 1024; }
