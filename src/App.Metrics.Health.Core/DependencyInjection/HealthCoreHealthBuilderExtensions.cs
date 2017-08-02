@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthBuilderExtensions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthCoreHealthBuilderExtensions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -10,19 +10,19 @@ namespace Microsoft.Extensions.DependencyInjection
     // ReSharper restore CheckNamespace
 {
     /// <summary>
-    ///     Extensions for configuring App Metrics health using an <see cref="IAppMetricsHealthBuilder" />.
+    ///     Extensions for configuring App Metrics health using an <see cref="IHealthBuilder" />.
     /// </summary>
-    public static class AppMetricsHealthBuilderExtensions
+    public static class HealthCoreHealthBuilderExtensions
     {
         /// <summary>
-        ///     Registers an action to configure <see cref="AppMetricsHealthOptions" />.
+        ///     Registers an action to configure <see cref="HealthOptions" />.
         /// </summary>
-        /// <param name="builder">The <see cref="IAppMetricsHealthBuilder" />.</param>
-        /// <param name="setupAction">An <see cref="Action{AppMetricsHealthOptions}" />.</param>
-        /// <returns>The <see cref="IAppMetricsHealthBuilder" /> instance.</returns>
-        public static IAppMetricsHealthBuilder AddHealthOptions(
-            this IAppMetricsHealthBuilder builder,
-            Action<AppMetricsHealthOptions> setupAction)
+        /// <param name="builder">The <see cref="IHealthBuilder" />.</param>
+        /// <param name="setupAction">An <see cref="Action{HealthOptions}" />.</param>
+        /// <returns>The <see cref="IHealthBuilder" /> instance.</returns>
+        public static IHealthBuilder AddHealthOptions(
+            this IHealthBuilder builder,
+            Action<HealthOptions> setupAction)
         {
             if (builder == null)
             {
@@ -42,11 +42,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         ///     Registers an action to register health checks.
         /// </summary>
-        /// <param name="builder">The <see cref="IAppMetricsHealthBuilder" />.</param>
+        /// <param name="builder">The <see cref="IHealthBuilder" />.</param>
         /// <param name="setupAction">An <see cref="Action{IHealthCheckRegistry}" />.</param>
-        /// <returns>The <see cref="IAppMetricsHealthBuilder" /> instance.</returns>
-        public static IAppMetricsHealthBuilder AddChecks(
-            this IAppMetricsHealthBuilder builder,
+        /// <returns>The <see cref="IHealthBuilder" /> instance.</returns>
+        public static IHealthBuilder AddChecks(
+            this IHealthBuilder builder,
             Action<IHealthCheckRegistry> setupAction)
         {
             if (builder == null)
@@ -56,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (setupAction != null)
             {
-                builder.Services.Configure<AppMetricsHealthOptions>(options => setupAction(options.Checks));
+                builder.Services.Configure<HealthOptions>(options => setupAction(options.Checks));
             }
 
             return builder;

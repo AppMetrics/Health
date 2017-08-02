@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace App.Metrics.Health.Formatters.Json.Internal
 {
-    public class AppMetricsHealthJsonOptionsSetup : IConfigureOptions<AppMetricsHealthOptions>
+    public class AppMetricsHealthJsonOptionsSetup : IConfigureOptions<HealthOptions>
     {
         private readonly AppMetricsHealthJsonOptions _jsonOptions;
 
@@ -16,7 +16,7 @@ namespace App.Metrics.Health.Formatters.Json.Internal
             _jsonOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }
 
-        public void Configure(AppMetricsHealthOptions options)
+        public void Configure(HealthOptions options)
         {
             var formatter = new JsonOutputFormatter(_jsonOptions.SerializerSettings);
 

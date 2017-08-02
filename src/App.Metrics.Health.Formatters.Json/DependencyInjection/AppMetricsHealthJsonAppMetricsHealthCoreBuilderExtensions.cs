@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class AppMetricsHealthJsonAppMetricsHealthCoreBuilderExtensions
     {
-        public static IAppMetricsHealthCoreBuilder AddJsonFormatter(this IAppMetricsHealthCoreBuilder builder)
+        public static IHealthCoreBuilder AddJsonFormatter(this IHealthCoreBuilder builder)
         {
             if (builder == null)
             {
@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         internal static void AddAsciiFormatterServices(IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<AppMetricsHealthOptions>, AppMetricsHealthJsonOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<HealthOptions>, AppMetricsHealthJsonOptionsSetup>());
         }
     }
 }

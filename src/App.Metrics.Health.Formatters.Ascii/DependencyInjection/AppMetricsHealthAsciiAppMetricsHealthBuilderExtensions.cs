@@ -11,8 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class AppMetricsHealthAsciiAppMetricsHealthBuilderExtensions
     {
-        public static IAppMetricsHealthBuilder AddAsciiOptions(
-            this IAppMetricsHealthBuilder builder,
+        public static IHealthBuilder AddAsciiOptions(
+            this IHealthBuilder builder,
             Action<AppMetricsHealthAsciiOptions> setupAction)
         {
             if (builder == null)

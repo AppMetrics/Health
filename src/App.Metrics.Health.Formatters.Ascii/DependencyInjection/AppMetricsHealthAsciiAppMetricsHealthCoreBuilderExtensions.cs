@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class AppMetricsHealthAsciiAppMetricsHealthCoreBuilderExtensions
     {
-        public static IAppMetricsHealthCoreBuilder AddAsciiFormatter(this IAppMetricsHealthCoreBuilder builder)
+        public static IHealthCoreBuilder AddAsciiFormatter(this IHealthCoreBuilder builder)
         {
             if (builder == null)
             {
@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         internal static void AddAsciiFormatterServices(IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<AppMetricsHealthOptions>, AppMetricsHealthAsciiOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<HealthOptions>, AppMetricsHealthAsciiOptionsSetup>());
         }
     }
 }

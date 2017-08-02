@@ -11,8 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class AppMetricsHealthJsonAppMetricsHealthBuilderExtensions
     {
-        public static IAppMetricsHealthBuilder AddJsonOptions(
-            this IAppMetricsHealthBuilder builder,
+        public static IHealthBuilder AddJsonOptions(
+            this IHealthBuilder builder,
             Action<AppMetricsHealthJsonOptions> setupAction)
         {
             if (builder == null)

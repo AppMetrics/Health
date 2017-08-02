@@ -31,7 +31,7 @@ namespace HealthSandbox
             var provider = serviceCollection.BuildServiceProvider();
 
             var healthProvider = provider.GetRequiredService<IProvideHealth>();
-            var healthOptionsAccessor = provider.GetRequiredService<IOptions<AppMetricsHealthOptions>>();
+            var healthOptionsAccessor = provider.GetRequiredService<IOptions<HealthOptions>>();
 
             var cancellationTokenSource = new CancellationTokenSource();
 
@@ -68,7 +68,7 @@ namespace HealthSandbox
             // To add additional formatters
             // options => options.OutputFormatters.Add(new AsciiOutputFormatter()),
             // options => options.DefaultOutputFormatter = new JsonOutputFormatter(),
-            // Configuration.GetSection("AppMetricsHealthOptions"),
+            // Configuration.GetSection("HealthOptions"),
 
             // services.AddHealth(
             //    options =>

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace App.Metrics.Health.Formatters.Ascii.Internal
 {
-    public class AppMetricsHealthAsciiOptionsSetup : IConfigureOptions<AppMetricsHealthOptions>
+    public class AppMetricsHealthAsciiOptionsSetup : IConfigureOptions<HealthOptions>
     {
         private readonly AppMetricsHealthAsciiOptions _asciiOptions;
 
@@ -16,7 +16,7 @@ namespace App.Metrics.Health.Formatters.Ascii.Internal
             _asciiOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }
 
-        public void Configure(AppMetricsHealthOptions options)
+        public void Configure(HealthOptions options)
         {
             var formatter = new AsciiOutputFormatter(_asciiOptions);
 

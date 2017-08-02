@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthOptions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthOptions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -7,9 +7,12 @@ using App.Metrics.Health.Internal;
 
 namespace App.Metrics.Health
 {
-    public class AppMetricsHealthOptions
+    /// <summary>
+    ///     Top level container for all configuration settings of Health
+    /// </summary>
+    public class HealthOptions
     {
-        public AppMetricsHealthOptions()
+        public HealthOptions()
         {
             Enabled = true;
             OutputFormatters = new HealthFormatterCollection();

@@ -21,8 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Adds the health check services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(this IServiceCollection services)
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(this IServiceCollection services)
         {
             return services.AddHealth(Assembly.GetEntryAssembly().GetName().Name);
         }
@@ -32,8 +32,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="startupAssemblyName">The name of this application's entry assembly.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(
             this IServiceCollection services,
             string startupAssemblyName)
         {
@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddJsonFormatter();
             builder.AddAsciiFormatter();
 
-            return new AppMetricsHealthBuilder(builder.Services);
+            return new HealthBuilder(builder.Services);
         }
 
         /// <summary>
@@ -51,12 +51,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
         /// <param name="startupAssemblyName">The name of this application's entry assembly.</param>
-        /// <param name="setupAction">An <see cref="Action{AppMetricsHealthOptions}"/> to configure the provided <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(
+        /// <param name="setupAction">An <see cref="Action{HealthOptions}"/> to configure the provided <see cref="HealthOptions"/>.</param>
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(
             this IServiceCollection services,
             string startupAssemblyName,
-            Action<AppMetricsHealthOptions> setupAction)
+            Action<HealthOptions> setupAction)
         {
             var builder = services.AddHealth(startupAssemblyName);
 
@@ -69,15 +69,15 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Adds the health check services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> from where to load <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(
+        /// <param name="configuration">The <see cref="IConfiguration"/> from where to load <see cref="HealthOptions"/>.</param>
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(
             this IServiceCollection services,
             IConfiguration configuration)
         {
             var builder = services.AddHealth();
 
-            services.Configure<AppMetricsHealthOptions>(configuration);
+            services.Configure<HealthOptions>(configuration);
 
             return builder;
         }
@@ -86,18 +86,18 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Adds the health check services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="setupAction">An <see cref="Action{AppMetricsHealthOptions}"/> to configure the provided <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> from where to load <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(
+        /// <param name="setupAction">An <see cref="Action{HealthOptions}"/> to configure the provided <see cref="HealthOptions"/>.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/> from where to load <see cref="HealthOptions"/>.</param>
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(
             this IServiceCollection services,
-            Action<AppMetricsHealthOptions> setupAction,
+            Action<HealthOptions> setupAction,
             IConfiguration configuration)
         {
             var builder = services.AddHealth();
 
             services.Configure(setupAction);
-            services.Configure<AppMetricsHealthOptions>(configuration);
+            services.Configure<HealthOptions>(configuration);
 
             return builder;
         }
@@ -106,17 +106,17 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Adds the health check services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> from where to load <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <param name="setupAction">An <see cref="Action{AppMetricsHealthOptions}"/> to configure the provided <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(
+        /// <param name="configuration">The <see cref="IConfiguration"/> from where to load <see cref="HealthOptions"/>.</param>
+        /// <param name="setupAction">An <see cref="Action{HealthOptions}"/> to configure the provided <see cref="HealthOptions"/>.</param>
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(
             this IServiceCollection services,
             IConfiguration configuration,
-            Action<AppMetricsHealthOptions> setupAction)
+            Action<HealthOptions> setupAction)
         {
             var buidler = services.AddHealth();
 
-            services.Configure<AppMetricsHealthOptions>(configuration);
+            services.Configure<HealthOptions>(configuration);
             services.Configure(setupAction);
 
             return buidler;
@@ -126,11 +126,11 @@ namespace Microsoft.Extensions.DependencyInjection
         ///     Adds the health check services to the specified <see cref="IServiceCollection"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="setupAction">An <see cref="Action{AppMetricsHealthOptions}"/> to configure the provided <see cref="AppMetricsHealthOptions"/>.</param>
-        /// <returns>An <see cref="IAppMetricsHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
-        public static IAppMetricsHealthBuilder AddHealth(
+        /// <param name="setupAction">An <see cref="Action{HealthOptions}"/> to configure the provided <see cref="HealthOptions"/>.</param>
+        /// <returns>An <see cref="IHealthBuilder"/> that can be used to further configure the App Metrics health services.</returns>
+        public static IHealthBuilder AddHealth(
             this IServiceCollection services,
-            Action<AppMetricsHealthOptions> setupAction)
+            Action<HealthOptions> setupAction)
         {
             var builder = services.AddHealth();
 

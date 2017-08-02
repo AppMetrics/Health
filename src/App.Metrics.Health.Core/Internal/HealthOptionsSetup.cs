@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthOptionsSetup.cs" company="Allan Hardy">
+﻿// <copyright file="HealthOptionsSetup.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -11,24 +11,27 @@ using Microsoft.Extensions.Options;
 
 namespace App.Metrics.Health.Internal
 {
-    public class AppMetricsHealthOptionsSetup : IConfigureOptions<AppMetricsHealthOptions>
+    /// <summary>
+    ///     Sets up default options for <see cref="HealthOptions"/>.
+    /// </summary>
+    public class HealthOptionsSetup : IConfigureOptions<HealthOptions>
     {
         private readonly IServiceProvider _provider;
-        private readonly ILogger<AppMetricsHealthOptionsSetup> _logger;
+        private readonly ILogger<HealthOptionsSetup> _logger;
 
-        public AppMetricsHealthOptionsSetup(ILogger<AppMetricsHealthOptionsSetup> logger, IServiceProvider provider)
+        public HealthOptionsSetup(ILogger<HealthOptionsSetup> logger, IServiceProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc />
-        public void Configure(AppMetricsHealthOptions options)
+        public void Configure(HealthOptions options)
         {
             RegisterHealthCheckRegistry(options);
         }
 
-        private void RegisterHealthCheckRegistry(AppMetricsHealthOptions options)
+        private void RegisterHealthCheckRegistry(HealthOptions options)
         {
             if (!options.Enabled)
             {
