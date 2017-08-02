@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthAsciiOptionsSetup.cs" company="Allan Hardy">
+﻿// <copyright file="HealthAsciiOptionsSetup.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -7,11 +7,14 @@ using Microsoft.Extensions.Options;
 
 namespace App.Metrics.Health.Formatters.Ascii.Internal
 {
-    public class AppMetricsHealthAsciiOptionsSetup : IConfigureOptions<HealthOptions>
+    /// <summary>
+    ///     Sets up default ASCII options for <see cref="HealthOptions"/>.
+    /// </summary>
+    public class HealthAsciiOptionsSetup : IConfigureOptions<HealthOptions>
     {
         private readonly HealthAsciiOptions _asciiOptions;
 
-        public AppMetricsHealthAsciiOptionsSetup(IOptions<HealthAsciiOptions> asciiOptions)
+        public HealthAsciiOptionsSetup(IOptions<HealthAsciiOptions> asciiOptions)
         {
             _asciiOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }

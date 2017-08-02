@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         internal static void AddAsciiFormatterServices(IServiceCollection services)
         {
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<HealthOptions>, AppMetricsHealthAsciiOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<HealthOptions>, HealthAsciiOptionsSetup>());
         }
     }
 }

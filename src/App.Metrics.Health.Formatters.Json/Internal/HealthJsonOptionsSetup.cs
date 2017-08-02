@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthJsonOptionsSetup.cs" company="Allan Hardy">
+﻿// <copyright file="HealthJsonOptionsSetup.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -7,11 +7,14 @@ using Microsoft.Extensions.Options;
 
 namespace App.Metrics.Health.Formatters.Json.Internal
 {
-    public class AppMetricsHealthJsonOptionsSetup : IConfigureOptions<HealthOptions>
+    /// <summary>
+    ///     Sets up default JSON options for <see cref="HealthOptions"/>.
+    /// </summary>
+    public class HealthJsonOptionsSetup : IConfigureOptions<HealthOptions>
     {
         private readonly HealthJsonOptions _jsonOptions;
 
-        public AppMetricsHealthJsonOptionsSetup(IOptions<HealthJsonOptions> asciiOptions)
+        public HealthJsonOptionsSetup(IOptions<HealthJsonOptions> asciiOptions)
         {
             _jsonOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }
