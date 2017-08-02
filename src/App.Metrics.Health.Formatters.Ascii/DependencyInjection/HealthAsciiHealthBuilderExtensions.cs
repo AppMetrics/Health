@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthAsciiAppMetricsHealthBuilderExtensions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthAsciiHealthBuilderExtensions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -9,11 +9,11 @@ using App.Metrics.Health.Formatters.Ascii;
 namespace Microsoft.Extensions.DependencyInjection
     // ReSharper restore CheckNamespace
 {
-    public static class AppMetricsHealthAsciiAppMetricsHealthBuilderExtensions
+    public static class HealthAsciiHealthBuilderExtensions
     {
         public static IHealthBuilder AddAsciiOptions(
             this IHealthBuilder builder,
-            Action<AppMetricsHealthAsciiOptions> setupAction)
+            Action<HealthAsciiOptions> setupAction)
         {
             if (builder == null)
             {

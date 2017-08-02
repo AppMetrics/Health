@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthJsonAppMetricsHealthBuilderExtensions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthJsonHealthBuilderExtensions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -9,11 +9,11 @@ using App.Metrics.Health.Formatters.Json;
 namespace Microsoft.Extensions.DependencyInjection
     // ReSharper restore CheckNamespace
 {
-    public static class AppMetricsHealthJsonAppMetricsHealthBuilderExtensions
+    public static class HealthJsonHealthBuilderExtensions
     {
         public static IHealthBuilder AddJsonOptions(
             this IHealthBuilder builder,
-            Action<AppMetricsHealthJsonOptions> setupAction)
+            Action<HealthJsonOptions> setupAction)
         {
             if (builder == null)
             {

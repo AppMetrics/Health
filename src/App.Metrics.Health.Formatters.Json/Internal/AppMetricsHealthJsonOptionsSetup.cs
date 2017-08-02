@@ -9,9 +9,9 @@ namespace App.Metrics.Health.Formatters.Json.Internal
 {
     public class AppMetricsHealthJsonOptionsSetup : IConfigureOptions<HealthOptions>
     {
-        private readonly AppMetricsHealthJsonOptions _jsonOptions;
+        private readonly HealthJsonOptions _jsonOptions;
 
-        public AppMetricsHealthJsonOptionsSetup(IOptions<AppMetricsHealthJsonOptions> asciiOptions)
+        public AppMetricsHealthJsonOptionsSetup(IOptions<HealthJsonOptions> asciiOptions)
         {
             _jsonOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }

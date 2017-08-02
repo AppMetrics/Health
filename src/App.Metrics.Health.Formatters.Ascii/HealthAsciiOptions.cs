@@ -1,12 +1,12 @@
-﻿// <copyright file="AppMetricsHealthAsciiOptions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthAsciiOptions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
 namespace App.Metrics.Health.Formatters.Ascii
 {
-    public class AppMetricsHealthAsciiOptions
+    public class HealthAsciiOptions
     {
-        public AppMetricsHealthAsciiOptions()
+        public HealthAsciiOptions()
         {
             Padding = 20;
             Separator = "=";

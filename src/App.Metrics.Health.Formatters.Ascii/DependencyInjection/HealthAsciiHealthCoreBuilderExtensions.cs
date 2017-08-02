@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthAsciiAppMetricsHealthCoreBuilderExtensions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthAsciiHealthCoreBuilderExtensions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Extensions.DependencyInjection
     // ReSharper restore CheckNamespace
 {
-    public static class AppMetricsHealthAsciiAppMetricsHealthCoreBuilderExtensions
+    public static class HealthAsciiHealthCoreBuilderExtensions
     {
         public static IHealthCoreBuilder AddAsciiFormatter(this IHealthCoreBuilder builder)
         {

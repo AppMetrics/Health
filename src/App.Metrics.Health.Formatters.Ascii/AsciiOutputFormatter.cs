@@ -14,9 +14,9 @@ namespace App.Metrics.Health.Formatters.Ascii
 {
     public class AsciiOutputFormatter : IHealthOutputFormatter
     {
-        private readonly AppMetricsHealthAsciiOptions _options;
+        private readonly HealthAsciiOptions _options;
 
-        public AsciiOutputFormatter(AppMetricsHealthAsciiOptions options) { _options = options ?? throw new ArgumentNullException(nameof(options)); }
+        public AsciiOutputFormatter(HealthAsciiOptions options) { _options = options ?? throw new ArgumentNullException(nameof(options)); }
 
         public AppMetricsHealthMediaTypeValue MediaType => new AppMetricsHealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
 

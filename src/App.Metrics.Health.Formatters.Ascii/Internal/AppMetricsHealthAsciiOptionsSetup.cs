@@ -9,9 +9,9 @@ namespace App.Metrics.Health.Formatters.Ascii.Internal
 {
     public class AppMetricsHealthAsciiOptionsSetup : IConfigureOptions<HealthOptions>
     {
-        private readonly AppMetricsHealthAsciiOptions _asciiOptions;
+        private readonly HealthAsciiOptions _asciiOptions;
 
-        public AppMetricsHealthAsciiOptionsSetup(IOptions<AppMetricsHealthAsciiOptions> asciiOptions)
+        public AppMetricsHealthAsciiOptionsSetup(IOptions<HealthAsciiOptions> asciiOptions)
         {
             _asciiOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }

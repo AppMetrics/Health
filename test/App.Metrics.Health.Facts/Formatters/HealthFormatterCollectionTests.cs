@@ -21,7 +21,7 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions()),
+                    new AsciiOutputFormatter(new HealthAsciiOptions()),
                     new JsonOutputFormatter()
                 };
 
@@ -40,7 +40,7 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions()),
+                    new AsciiOutputFormatter(new HealthAsciiOptions()),
                     new JsonOutputFormatter()
                 };
 
@@ -59,7 +59,7 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions()),
+                    new AsciiOutputFormatter(new HealthAsciiOptions()),
                     new JsonOutputFormatter()
                 };
 
@@ -77,7 +77,7 @@ namespace App.Metrics.Health.Facts.Formatters
             // Arrange
             var mediaType = new AppMetricsHealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
             var formatters = new HealthFormatterCollection(
-                new List<IHealthOutputFormatter> { new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions()) });
+                new List<IHealthOutputFormatter> { new AsciiOutputFormatter(new HealthAsciiOptions()) });
 
             // Act
             formatters.RemoveType(mediaType);
@@ -90,7 +90,7 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Can_remove_type()
         {
             // Arrange
-            var formatters = new HealthFormatterCollection { new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions()) };
+            var formatters = new HealthFormatterCollection { new AsciiOutputFormatter(new HealthAsciiOptions()) };
 
             // Act
             formatters.RemoveType<AsciiOutputFormatter>();
@@ -103,7 +103,7 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Can_remove_type_passing_in_type()
         {
             // Arrange
-            var formatters = new HealthFormatterCollection { new AsciiOutputFormatter(new AppMetricsHealthAsciiOptions()) };
+            var formatters = new HealthFormatterCollection { new AsciiOutputFormatter(new HealthAsciiOptions()) };
 
             // Act
             formatters.RemoveType(typeof(AsciiOutputFormatter));
