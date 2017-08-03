@@ -1,4 +1,4 @@
-﻿// <copyright file="AppMetricsHealthMediaTypeValue.cs" company="Allan Hardy">
+﻿// <copyright file="HealthMediaTypeValue.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -6,9 +6,9 @@ using System;
 
 namespace App.Metrics.Health.Formatters
 {
-    public struct AppMetricsHealthMediaTypeValue
+    public struct HealthMediaTypeValue
     {
-        public AppMetricsHealthMediaTypeValue(string type, string subType, string version, string format)
+        public HealthMediaTypeValue(string type, string subType, string version, string format)
         {
             if (string.IsNullOrWhiteSpace(type))
             {
@@ -46,9 +46,9 @@ namespace App.Metrics.Health.Formatters
 
         public string Version { get; }
 
-        public static bool operator ==(AppMetricsHealthMediaTypeValue left, AppMetricsHealthMediaTypeValue right) { return left.Equals(right); }
+        public static bool operator ==(HealthMediaTypeValue left, HealthMediaTypeValue right) { return left.Equals(right); }
 
-        public static bool operator !=(AppMetricsHealthMediaTypeValue left, AppMetricsHealthMediaTypeValue right) { return !left.Equals(right); }
+        public static bool operator !=(HealthMediaTypeValue left, HealthMediaTypeValue right) { return !left.Equals(right); }
 
         public override bool Equals(object obj)
         {
@@ -57,7 +57,7 @@ namespace App.Metrics.Health.Formatters
                 return false;
             }
 
-            return obj is AppMetricsHealthMediaTypeValue && Equals((AppMetricsHealthMediaTypeValue)obj);
+            return obj is HealthMediaTypeValue && Equals((HealthMediaTypeValue)obj);
         }
 
         public override int GetHashCode()
@@ -74,7 +74,7 @@ namespace App.Metrics.Health.Formatters
 
         public override string ToString() { return $"{Type}/{SubType}-{Version}+{Format}"; }
 
-        public bool Equals(AppMetricsHealthMediaTypeValue other)
+        public bool Equals(HealthMediaTypeValue other)
         {
             return string.Equals(Format, other.Format) && string.Equals(Type, other.Type) && string.Equals(SubType, other.SubType) &&
                    string.Equals(Version, other.Version);

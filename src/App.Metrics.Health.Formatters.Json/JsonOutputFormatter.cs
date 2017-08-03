@@ -22,7 +22,7 @@ namespace App.Metrics.Health.Formatters.Json
             _serializerSettings = serializerSettings ?? throw new ArgumentNullException(nameof(serializerSettings));
         }
 
-        public AppMetricsHealthMediaTypeValue MediaType => new AppMetricsHealthMediaTypeValue("application", "vnd.appmetrics.health", "v1", "json");
+        public HealthMediaTypeValue MediaType => new HealthMediaTypeValue("application", "vnd.appmetrics.health", "v1", "json");
 
         public Task WriteAsync(
             Stream output,

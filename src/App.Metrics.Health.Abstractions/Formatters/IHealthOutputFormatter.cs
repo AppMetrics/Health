@@ -11,7 +11,7 @@ namespace App.Metrics.Health.Formatters
 {
     public interface IHealthOutputFormatter
     {
-        AppMetricsHealthMediaTypeValue MediaType { get; }
+        HealthMediaTypeValue MediaType { get; }
 
         Task WriteAsync(
             Stream output,

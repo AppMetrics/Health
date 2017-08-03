@@ -37,7 +37,7 @@ namespace App.Metrics.Health.Formatters
             return default(IHealthOutputFormatter);
         }
 
-        public IHealthOutputFormatter GetType(AppMetricsHealthMediaTypeValue mediaTypeValue)
+        public IHealthOutputFormatter GetType(HealthMediaTypeValue mediaTypeValue)
         {
             for (var i = Count - 1; i >= 0; i--)
             {
@@ -69,7 +69,7 @@ namespace App.Metrics.Health.Formatters
             }
         }
 
-        public void RemoveType(AppMetricsHealthMediaTypeValue mediaTypeValue)
+        public void RemoveType(HealthMediaTypeValue mediaTypeValue)
         {
             for (var i = Count - 1; i >= 0; i--)
             {

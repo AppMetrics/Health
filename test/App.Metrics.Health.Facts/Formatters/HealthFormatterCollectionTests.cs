@@ -17,7 +17,7 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Can_get_by_mediatype()
         {
             // Arrange
-            var mediaType = new AppMetricsHealthMediaTypeValue("application", "vnd.appmetrics.health", "v1", "json");
+            var mediaType = new HealthMediaTypeValue("application", "vnd.appmetrics.health", "v1", "json");
             var formatters =
                 new HealthFormatterCollection
                 {
@@ -75,7 +75,7 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Can_remove_by_mediatype()
         {
             // Arrange
-            var mediaType = new AppMetricsHealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
+            var mediaType = new HealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
             var formatters = new HealthFormatterCollection(
                 new List<IHealthOutputFormatter> { new AsciiOutputFormatter(new HealthAsciiOptions()) });
 
@@ -133,7 +133,7 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Returns_default_when_attempting_to_get_type_with_mediatype_not_added()
         {
             // Arrange
-            var mediaType = new AppMetricsHealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
+            var mediaType = new HealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
             var formatters =
                 new HealthFormatterCollection
                 {
