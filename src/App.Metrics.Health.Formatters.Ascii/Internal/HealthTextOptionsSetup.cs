@@ -1,4 +1,4 @@
-﻿// <copyright file="HealthAsciiOptionsSetup.cs" company="Allan Hardy">
+﻿// <copyright file="HealthTextOptionsSetup.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
@@ -10,18 +10,18 @@ namespace App.Metrics.Health.Formatters.Ascii.Internal
     /// <summary>
     ///     Sets up default ASCII options for <see cref="HealthOptions"/>.
     /// </summary>
-    public class HealthAsciiOptionsSetup : IConfigureOptions<HealthOptions>
+    public class HealthTextOptionsSetup : IConfigureOptions<HealthOptions>
     {
-        private readonly HealthAsciiOptions _asciiOptions;
+        private readonly HealthTextOptions _textOptions;
 
-        public HealthAsciiOptionsSetup(IOptions<HealthAsciiOptions> asciiOptions)
+        public HealthTextOptionsSetup(IOptions<HealthTextOptions> asciiOptions)
         {
-            _asciiOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
+            _textOptions = asciiOptions.Value ?? throw new ArgumentNullException(nameof(asciiOptions));
         }
 
         public void Configure(HealthOptions options)
         {
-            var formatter = new AsciiOutputFormatter(_asciiOptions);
+            var formatter = new HealthStatusTextOutputFormatter(_textOptions);
 
             if (options.DefaultOutputFormatter == null)
             {

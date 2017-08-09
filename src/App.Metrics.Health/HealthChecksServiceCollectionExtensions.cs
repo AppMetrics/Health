@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Add default framework
             builder.AddJsonFormatter();
-            builder.AddAsciiFormatter();
+            builder.AddTextFormatter();
 
             return new HealthBuilder(builder.Services);
         }

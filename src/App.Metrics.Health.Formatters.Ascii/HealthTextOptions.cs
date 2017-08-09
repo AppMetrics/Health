@@ -1,15 +1,18 @@
-﻿// <copyright file="HealthAsciiOptions.cs" company="Allan Hardy">
+﻿// <copyright file="HealthTextOptions.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
+using System.Text;
+
 namespace App.Metrics.Health.Formatters.Ascii
 {
-    public class HealthAsciiOptions
+    public class HealthTextOptions
     {
-        public HealthAsciiOptions()
+        public HealthTextOptions()
         {
             Padding = 20;
             Separator = "=";
+            Encoding = Encoding.UTF8;
         }
 
         /// <summary>
@@ -27,5 +30,7 @@ namespace App.Metrics.Health.Formatters.Ascii
         ///     The separator to apply between on health check labels and messages/status
         /// </value>
         public string Separator { get; set; }
+
+        public Encoding Encoding { get; set; }
     }
 }

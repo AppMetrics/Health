@@ -51,7 +51,7 @@ namespace HealthSandbox
 
                         using (var stream = new MemoryStream())
                         {
-                            formatter.WriteAsync(stream, healthStatus, Encoding.UTF8, cancellationTokenSource.Token).GetAwaiter().GetResult();
+                            formatter.WriteAsync(stream, healthStatus, cancellationTokenSource.Token).GetAwaiter().GetResult();
 
                             var result = Encoding.UTF8.GetString(stream.ToArray());
 
@@ -67,7 +67,7 @@ namespace HealthSandbox
 
             // To add additional formatters
             // options => options.OutputFormatters.Add(new AsciiOutputFormatter()),
-            // options => options.DefaultOutputFormatter = new JsonOutputFormatter(),
+            // options => options.DefaultOutputFormatter = new HealthStatusJsonOutputFormatter(),
             // Configuration.GetSection("HealthOptions"),
 
             // services.AddHealth(
@@ -116,7 +116,7 @@ namespace HealthSandbox
             //                                 : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
             //                     });
             //             })
-            //     .AddAsciiOptions(options => { options.Separator = ":"; })
+            //     .AddTextOptions(options => { options.Separator = ":"; })
             //     .AddJsonOptions(options => { });
 
             services.AddHealth()
@@ -142,7 +142,7 @@ namespace HealthSandbox
                                             : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
                                 });
                         })
-                    .AddAsciiOptions(options => { options.Separator = ":"; })
+                    .AddTextOptions(options => { options.Separator = ":"; })
                     .AddJsonOptions(options => { });
         }
 

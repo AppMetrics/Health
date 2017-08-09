@@ -24,7 +24,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
         public JsonOutputFormatterTests(ITestOutputHelper output)
         {
             _output = output;
-            _formatter = new JsonOutputFormatter(DefaultJsonSerializerSettings.CreateSerializerSettings());
+            _formatter = new HealthStatusJsonOutputFormatter(DefaultJsonSerializerSettings.CreateSerializerSettings());
 
             var healthyOne = new HealthCheck.Result("test_one_healthy", HealthCheckResult.Healthy("first check was good"));
             var healthyTwo = new HealthCheck.Result("test_two_healthy", HealthCheckResult.Healthy("second check was good"));
@@ -65,7 +65,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             // Act
             using (var stream = new MemoryStream())
             {
-                await _formatter.WriteAsync(stream, _healthStatus, Encoding.UTF8);
+                await _formatter.WriteAsync(stream, _healthStatus);
 
                 result = Encoding.UTF8.GetString(stream.ToArray()).ParseAsJson();
             }
@@ -88,7 +88,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             // Act
             using (var stream = new MemoryStream())
             {
-                await _formatter.WriteAsync(stream, healthStatus, Encoding.UTF8);
+                await _formatter.WriteAsync(stream, healthStatus);
 
                 result = Encoding.UTF8.GetString(stream.ToArray()).ParseAsJson();
             }
@@ -111,7 +111,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             // Act
             using (var stream = new MemoryStream())
             {
-                await _formatter.WriteAsync(stream, healthStatus, Encoding.UTF8);
+                await _formatter.WriteAsync(stream, healthStatus);
 
                 result = Encoding.UTF8.GetString(stream.ToArray()).ParseAsJson();
             }
@@ -129,7 +129,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             // Act
             using (var stream = new MemoryStream())
             {
-                await _formatter.WriteAsync(stream, _healthStatus, Encoding.UTF8);
+                await _formatter.WriteAsync(stream, _healthStatus);
 
                 json = Encoding.UTF8.GetString(stream.ToArray());
             }

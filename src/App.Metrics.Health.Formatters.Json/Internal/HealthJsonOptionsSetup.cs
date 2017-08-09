@@ -21,7 +21,7 @@ namespace App.Metrics.Health.Formatters.Json.Internal
 
         public void Configure(HealthOptions options)
         {
-            var formatter = new JsonOutputFormatter(_jsonOptions.SerializerSettings);
+            var formatter = new HealthStatusJsonOutputFormatter(_jsonOptions.SerializerSettings);
 
             if (options.DefaultOutputFormatter == null)
             {

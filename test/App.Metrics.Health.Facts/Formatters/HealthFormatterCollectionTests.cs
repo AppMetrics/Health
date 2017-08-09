@@ -21,8 +21,8 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new AsciiOutputFormatter(new HealthAsciiOptions()),
-                    new JsonOutputFormatter()
+                    new HealthStatusTextOutputFormatter(),
+                    new HealthStatusJsonOutputFormatter()
                 };
 
             // Act
@@ -30,7 +30,7 @@ namespace App.Metrics.Health.Facts.Formatters
 
             // Assert
             formatter.Should().NotBeNull();
-            formatter.Should().BeOfType<JsonOutputFormatter>();
+            formatter.Should().BeOfType<HealthStatusJsonOutputFormatter>();
         }
 
         [Fact]
@@ -40,16 +40,16 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new AsciiOutputFormatter(new HealthAsciiOptions()),
-                    new JsonOutputFormatter()
+                    new HealthStatusTextOutputFormatter(),
+                    new HealthStatusJsonOutputFormatter()
                 };
 
             // Act
-            var formatter = formatters.GetType<AsciiOutputFormatter>();
+            var formatter = formatters.GetType<HealthStatusTextOutputFormatter>();
 
             // Assert
             formatter.Should().NotBeNull();
-            formatter.Should().BeOfType<AsciiOutputFormatter>();
+            formatter.Should().BeOfType<HealthStatusTextOutputFormatter>();
         }
 
         [Fact]
@@ -59,16 +59,16 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new AsciiOutputFormatter(new HealthAsciiOptions()),
-                    new JsonOutputFormatter()
+                    new HealthStatusTextOutputFormatter(),
+                    new HealthStatusJsonOutputFormatter()
                 };
 
             // Act
-            var formatter = formatters.GetType(typeof(AsciiOutputFormatter));
+            var formatter = formatters.GetType(typeof(HealthStatusTextOutputFormatter));
 
             // Assert
             formatter.Should().NotBeNull();
-            formatter.Should().BeOfType<AsciiOutputFormatter>();
+            formatter.Should().BeOfType<HealthStatusTextOutputFormatter>();
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace App.Metrics.Health.Facts.Formatters
             // Arrange
             var mediaType = new HealthMediaTypeValue("text", "vnd.appmetrics.health", "v1", "plain");
             var formatters = new HealthFormatterCollection(
-                new List<IHealthOutputFormatter> { new AsciiOutputFormatter(new HealthAsciiOptions()) });
+                new List<IHealthOutputFormatter> { new HealthStatusTextOutputFormatter() });
 
             // Act
             formatters.RemoveType(mediaType);
@@ -90,10 +90,10 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Can_remove_type()
         {
             // Arrange
-            var formatters = new HealthFormatterCollection { new AsciiOutputFormatter(new HealthAsciiOptions()) };
+            var formatters = new HealthFormatterCollection { new HealthStatusTextOutputFormatter() };
 
             // Act
-            formatters.RemoveType<AsciiOutputFormatter>();
+            formatters.RemoveType<HealthStatusTextOutputFormatter>();
 
             // Assert
             formatters.Count.Should().Be(0);
@@ -103,10 +103,10 @@ namespace App.Metrics.Health.Facts.Formatters
         public void Can_remove_type_passing_in_type()
         {
             // Arrange
-            var formatters = new HealthFormatterCollection { new AsciiOutputFormatter(new HealthAsciiOptions()) };
+            var formatters = new HealthFormatterCollection { new HealthStatusTextOutputFormatter() };
 
             // Act
-            formatters.RemoveType(typeof(AsciiOutputFormatter));
+            formatters.RemoveType(typeof(HealthStatusTextOutputFormatter));
 
             // Assert
             formatters.Count.Should().Be(0);
@@ -119,11 +119,11 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new JsonOutputFormatter()
+                    new HealthStatusJsonOutputFormatter()
                 };
 
             // Act
-            var formatter = formatters.GetType<AsciiOutputFormatter>();
+            var formatter = formatters.GetType<HealthStatusTextOutputFormatter>();
 
             // Assert
             formatter.Should().BeNull();
@@ -137,7 +137,7 @@ namespace App.Metrics.Health.Facts.Formatters
             var formatters =
                 new HealthFormatterCollection
                 {
-                    new JsonOutputFormatter()
+                    new HealthStatusJsonOutputFormatter()
                 };
 
             // Act

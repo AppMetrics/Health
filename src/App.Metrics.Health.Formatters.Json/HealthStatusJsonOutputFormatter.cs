@@ -1,23 +1,22 @@
-﻿// <copyright file="JsonOutputFormatter.cs" company="Allan Hardy">
+﻿// <copyright file="HealthStatusJsonOutputFormatter.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
 using System;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace App.Metrics.Health.Formatters.Json
 {
-    public class JsonOutputFormatter : IHealthOutputFormatter
+    public class HealthStatusJsonOutputFormatter : IHealthOutputFormatter
     {
         private readonly JsonSerializerSettings _serializerSettings;
 
-        public JsonOutputFormatter() { _serializerSettings = DefaultJsonSerializerSettings.CreateSerializerSettings(); }
+        public HealthStatusJsonOutputFormatter() { _serializerSettings = DefaultJsonSerializerSettings.CreateSerializerSettings(); }
 
-        public JsonOutputFormatter(JsonSerializerSettings serializerSettings)
+        public HealthStatusJsonOutputFormatter(JsonSerializerSettings serializerSettings)
         {
             _serializerSettings = serializerSettings ?? throw new ArgumentNullException(nameof(serializerSettings));
         }
@@ -27,7 +26,6 @@ namespace App.Metrics.Health.Formatters.Json
         public Task WriteAsync(
             Stream output,
             HealthStatus healthStatus,
-            Encoding encoding,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (output == null)
@@ -35,16 +33,17 @@ namespace App.Metrics.Health.Formatters.Json
                 throw new ArgumentNullException(nameof(output));
             }
 
-            if (encoding == null)
+            var serilizer = JsonSerializer.Create(_serializerSettings);
+
+            using (var streamWriter = new StreamWriter(output))
             {
-                throw new ArgumentNullException(nameof(encoding));
+                using (var textWriter = new JsonTextWriter(streamWriter))
+                {
+                    serilizer.Serialize(textWriter, healthStatus);
+                }
             }
 
-            var json = JsonConvert.SerializeObject(healthStatus, _serializerSettings);
-
-            var bytes = encoding.GetBytes(json);
-
-            return output.WriteAsync(bytes, 0, bytes.Length, cancellationToken);
+            return Task.CompletedTask;
         }
     }
 }

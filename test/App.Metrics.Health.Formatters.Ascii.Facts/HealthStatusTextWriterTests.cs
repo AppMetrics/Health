@@ -1,21 +1,21 @@
-// <copyright file="AsciiOutputFormatterTests.cs" company="Allan Hardy">
+// <copyright file="HealthStatusTextWriterTests.cs" company="Allan Hardy">
 // Copyright (c) Allan Hardy. All rights reserved.
 // </copyright>
 
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using App.Metrics.Health.Formatters.Ascii.Facts.Fixtures;
+using App.Metrics.Health.Serialization;
 using FluentAssertions;
 using Xunit;
 
 namespace App.Metrics.Health.Formatters.Ascii.Facts
 {
-    public class AsciiOutputFormatterTests
+    public class HealthStatusTextWriterTests
     {
         private readonly HealthFixture _fixture;
 
-        public AsciiOutputFormatterTests()
+        public HealthStatusTextWriterTests()
         {
             // DEVNOTE: Don't want Metrics to be shared between tests
             _fixture = new HealthFixture();
@@ -25,23 +25,23 @@ namespace App.Metrics.Health.Formatters.Ascii.Facts
         public async Task Can_apply_ascii_health_formatting()
         {
             // Arrange
-            string result;
             _fixture.HealthCheckRegistry.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
-            var formatter = new AsciiOutputFormatter(new HealthAsciiOptions());
+            var serializer = new HealthStatusSerializer();
 
             // Act
             var healthStatus = await _fixture.Health.ReadAsync();
 
-            using (var stream = new MemoryStream())
+            using (var sw = new StringWriter())
             {
-                formatter.WriteAsync(stream, healthStatus, Encoding.UTF8).GetAwaiter().GetResult();
+                using (var writer = new HealthStatusTextWriter(sw))
+                {
+                    serializer.Serialize(writer, healthStatus);
+                }
 
-                result = Encoding.UTF8.GetString(stream.ToArray());
+                // Assert
+                sw.ToString().Should().Be(
+                    "# OVERALL STATUS: Healthy\n--------------------------------------------------------------\n# CHECK: test\n\n           MESSAGE = OK\n            STATUS = Healthy\n--------------------------------------------------------------\n");
             }
-
-            // Assert
-            result.Should().Be(
-                "# OVERALL STATUS: Healthy\n--------------------------------------------------------------\n# CHECK: test\n\n           MESSAGE = OK\n            STATUS = Healthy\n--------------------------------------------------------------\n");
         }
     }
 }
