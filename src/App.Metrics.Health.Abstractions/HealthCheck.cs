@@ -68,7 +68,7 @@ namespace App.Metrics.Health
                 var checkResult = await CheckAsync(cancellationToken);
                 return new Result(Name, checkResult);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex.GetType() != typeof(OperationCanceledException))
             {
                 return new Result(Name, HealthCheckResult.Unhealthy(ex));
             }
