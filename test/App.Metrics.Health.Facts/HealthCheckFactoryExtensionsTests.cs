@@ -159,7 +159,7 @@ namespace App.Metrics.Health.Facts
         }
 
         [Fact]
-        public async Task Should_be_unhealthy_when_task_is_cancelled()
+        public void Should_throw_when_task_is_cancelled()
         {
             var healthChecks = Enumerable.Empty<HealthCheck>();
             const string name = "custom with cancellation token";
@@ -178,9 +178,15 @@ namespace App.Metrics.Health.Facts
             token.CancelAfter(200);
 
             var check = registry.Checks.FirstOrDefault();
-            var result = await check.Value.ExecuteAsync(token.Token).ConfigureAwait(false);
 
-            result.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
+            Action action = () =>
+            {
+                var result = check.Value.ExecuteAsync(token.Token).GetAwaiter().GetResult();
+
+                result.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
+            };
+
+            action.ShouldThrow<OperationCanceledException>();
         }
     }
 }
