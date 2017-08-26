@@ -7,15 +7,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using App.Metrics.Health.Internal;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace App.Metrics.Health.Facts
 {
     public class HealthCheckRegistryTests
     {
-        private static readonly ILoggerFactory LoggerFactory = new LoggerFactory();
-
         private readonly DefaultHealthCheckRegistry _healthCheckRegistry = new DefaultHealthCheckRegistry();
 
         private readonly Func<IHealthCheckRegistry, IProvideHealth> _healthSetup;
@@ -24,9 +21,7 @@ namespace App.Metrics.Health.Facts
         {
             _healthSetup = healthCheckFactory =>
             {
-                var healthManager = new DefaultHealthProvider(
-                    LoggerFactory.CreateLogger<DefaultHealthProvider>(),
-                    healthCheckFactory);
+                var healthManager = new DefaultHealthProvider(healthCheckFactory);
 
                 return healthManager;
             };

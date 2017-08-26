@@ -10,7 +10,6 @@ using App.Metrics.Health.Internal;
 using App.Metrics.Health.Internal.NoOp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable CheckNamespace
@@ -183,6 +182,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         internal static void AddHealthCoreServices(IServiceCollection services, string startupAssemblyName)
         {
+            services.AddOptions();
+
             HealthChecksAsServices.AddHealthChecksAsServices(
                 services,
                 DefaultMetricsAssemblyDiscoveryProvider.DiscoverAssemblies(startupAssemblyName));
@@ -200,7 +201,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         return new NoOpHealthProvider();
                     }
 
-                    return new DefaultHealthProvider(provider.GetRequiredService<ILogger<DefaultHealthProvider>>(), options.Value.Checks);
+                    return new DefaultHealthProvider(options.Value.Checks);
                 });
         }
     }

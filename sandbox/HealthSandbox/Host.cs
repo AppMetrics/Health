@@ -8,10 +8,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
-using App.Metrics.Health.Formatters.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace HealthSandbox
 {
@@ -63,7 +63,11 @@ namespace HealthSandbox
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.LiterateConsole()
+                .WriteTo.Seq("http://localhost:5341")
+                .CreateLogger();
 
             // To add additional formatters
             // options => options.OutputFormatters.Add(new AsciiOutputFormatter()),

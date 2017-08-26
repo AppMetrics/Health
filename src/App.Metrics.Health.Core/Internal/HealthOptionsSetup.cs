@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using App.Metrics.Health.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace App.Metrics.Health.Internal
@@ -16,13 +16,12 @@ namespace App.Metrics.Health.Internal
     /// </summary>
     public class HealthOptionsSetup : IConfigureOptions<HealthOptions>
     {
+        private static readonly ILog Logger = LogProvider.For<HealthOptionsSetup>();
         private readonly IServiceProvider _provider;
-        private readonly ILogger<HealthOptionsSetup> _logger;
 
-        public HealthOptionsSetup(ILogger<HealthOptionsSetup> logger, IServiceProvider provider)
+        public HealthOptionsSetup(IServiceProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc />
@@ -46,8 +45,7 @@ namespace App.Metrics.Health.Internal
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogError(
-                    new EventId(5000),
+                Logger.Error(
                     ex,
                     "Failed to load auto scanned health checks, health checks won't be registered");
             }

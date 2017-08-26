@@ -4,20 +4,15 @@
 
 using System;
 using App.Metrics.Health.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace App.Metrics.Health.Formatters.Ascii.Facts.Fixtures
 {
     public class HealthFixture : IDisposable
     {
-        private readonly ILoggerFactory _loggerFactory = new LoggerFactory();
-
         public HealthFixture()
         {
             HealthCheckRegistry = new DefaultHealthCheckRegistry();
-            var healthStatusProvider = new DefaultHealthProvider(
-                _loggerFactory.CreateLogger<DefaultHealthProvider>(),
-                HealthCheckRegistry);
+            var healthStatusProvider = new DefaultHealthProvider(HealthCheckRegistry);
             Health = healthStatusProvider;
         }
 

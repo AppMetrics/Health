@@ -3,49 +3,23 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using App.Metrics.Health;
 
 // ReSharper disable CheckNamespace
-// ReSharper disable RedundantStringInterpolation
-// ReSharper disable UnusedMember.Local
-namespace Microsoft.Extensions.Logging
+namespace App.Metrics.Health.Logging
     // ReSharper restore CheckNamespace
 {
     [ExcludeFromCodeCoverage]
     internal static class AppMetricsHealthLoggerExtensions
     {
-        static AppMetricsHealthLoggerExtensions()
-        {
-            _healthCheckRegistered = LoggerMessage.Define<string>(
-                LogLevel.Trace,
-                AppMetricsHealthEventIds.Registration,
-                $"Health Check Registered: {{name}}");
-            _healthGetStatusExecuted = LoggerMessage.Define<double, int>(
-                LogLevel.Information,
-                AppMetricsHealthEventIds.Status,
-                $"Executed {nameof(HealthStatus)}, in {{elapsedMilliseconds}}ms, IsHealthy: True. {{checksPassed}} health check results passed.");
-
-            _healthGetStatusExecutedFailed = LoggerMessage.Define<double, int, int, int, IEnumerable<string>, IEnumerable<string>>(
-                LogLevel.Information,
-                AppMetricsHealthEventIds.Status,
-                $"Executed {nameof(HealthStatus)}, in {{elapsedMilliseconds}}ms, IsHealthy: False. {{checksPassed}} health check results passed. {{checksFailed}} health check results failed. Failed Checks: {{failedChecks}}. {{checksDegraded}} health check results degredated. Degraded Checks: {{degredatedChecks}}");
-
-            _healthGetStatusExecutedNoResults = LoggerMessage.Define(
-                LogLevel.Information,
-                AppMetricsHealthEventIds.Status,
-                $"Executed {nameof(HealthStatus)}, 0 health check results.");
-        }
-
         internal static void HealthCheckGetStatusExecuted(
-            this ILogger logger,
+            this ILog logger,
             HealthStatus healthStatus,
             long startTimestamp)
         {
-            if (!logger.IsEnabled(LogLevel.Trace))
+            if (!logger.IsTraceEnabled())
             {
                 return;
             }
@@ -62,7 +36,10 @@ namespace Microsoft.Extensions.Logging
             {
                 if (healthStatus.Status.IsHealthy())
                 {
-                    _healthGetStatusExecuted(logger, elapsed.TotalMilliseconds, healthStatus.Results.Count(), null);
+                    logger.Info(
+                        "Executed HealthStatus, in {ElapsedMilliseconds}ms, IsHealthy: True. {ChecksPassed} health check results passed.",
+                        elapsed.TotalMilliseconds,
+                        healthStatus.Results.Count());
                     return;
                 }
 
@@ -72,49 +49,24 @@ namespace Microsoft.Extensions.Logging
                 var failedChecks = healthStatus.Results.Where(h => h.Check.Status.IsUnhealthy()).Select(h => h.Name);
                 var degradedChecks = healthStatus.Results.Where(h => h.Check.Status.IsDegraded()).Select(h => h.Name);
 
-                _healthGetStatusExecutedFailed(
-                    logger,
+                logger.Info(
+                    "Executed HealthStatus, in {ElapsedMilliseconds}ms, IsHealthy: False. {ChecksPassed} health check results passed. {ChecksFailed} health check results failed. Failed Checks: {FailedChecks}. {ChecksDegraded} health check results degredated. Degraded Checks: {DegredatedChecks}",
                     elapsed.TotalMilliseconds,
                     checksFailed,
                     checksDegraded,
                     checksPassed,
                     degradedChecks,
-                    failedChecks,
-                    null);
+                    failedChecks);
             }
 
-            _healthGetStatusExecutedNoResults(logger, null);
+            logger.Info("Executed HealthStatus, 0 health check results.");
         }
 
-        internal static void HealthCheckGetStatusExecuting(this ILogger logger)
+        internal static void HealthCheckGetStatusExecuting(this ILog logger)
         {
-            logger.LogTrace(AppMetricsHealthEventIds.Status, "Executing HealthCheck Get Status");
+            logger.Trace("Executing HealthCheck Get Status");
         }
 
-        private static class AppMetricsHealthEventIds
-        {
-            public const int Registration = HealthStart + 1;
-            public const int Status = HealthStart + 2;
-
-            private const int HealthStart = 3000;
-        }
-#pragma warning disable SA1201
-
-        // ReSharper disable InconsistentNaming
-        private static readonly Action<ILogger, string, Exception> _healthCheckRegistered;
-
-        private static readonly Action<ILogger, double, int, Exception> _healthGetStatusExecuted;
-
-        private static readonly Action<ILogger, double, int, int, int, IEnumerable<string>, IEnumerable<string>, Exception>
-            _healthGetStatusExecutedFailed;
-
-        private static readonly Action<ILogger, Exception> _healthGetStatusExecutedNoResults;
         private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
-
-        // ReSharper restore InconsistentNaming
-#pragma warning restore SA1201
     }
-
-    // ReSharper restore RedundantStringInterpolation
-    // ReSharper restore UnusedMember.Local
 }
