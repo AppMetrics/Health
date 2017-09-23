@@ -17,7 +17,7 @@ namespace App.Metrics.Health.Facts.TestHelpers
             _database = database;
         }
 
-        protected override ValueTask<HealthCheckResult> CheckAsync(CancellationToken token = default(CancellationToken))
+        protected override ValueTask<HealthCheckResult> CheckAsync(CancellationToken token = default)
         {
             // exceptions will be caught and the result will be unhealthy
             _database.Ping();

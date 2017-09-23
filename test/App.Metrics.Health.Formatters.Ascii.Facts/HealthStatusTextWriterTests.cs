@@ -4,7 +4,7 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using App.Metrics.Health.Formatters.Ascii.Facts.Fixtures;
+using App.Metrics.Health.Builder;
 using App.Metrics.Health.Serialization;
 using FluentAssertions;
 using Xunit;
@@ -13,23 +13,19 @@ namespace App.Metrics.Health.Formatters.Ascii.Facts
 {
     public class HealthStatusTextWriterTests
     {
-        private readonly HealthFixture _fixture;
-
-        public HealthStatusTextWriterTests()
-        {
-            // DEVNOTE: Don't want Metrics to be shared between tests
-            _fixture = new HealthFixture();
-        }
-
         [Fact]
         public async Task Can_apply_ascii_health_formatting()
         {
             // Arrange
-            _fixture.HealthCheckRegistry.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
+            var health = new HealthBuilder()
+                .OutputHealth.AsPlainText()
+                .HealthChecks.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()))
+                .Build();
+
             var serializer = new HealthStatusSerializer();
 
             // Act
-            var healthStatus = await _fixture.Health.ReadAsync();
+            var healthStatus = await health.HealthCheckRunner.ReadAsync();
 
             using (var sw = new StringWriter())
             {

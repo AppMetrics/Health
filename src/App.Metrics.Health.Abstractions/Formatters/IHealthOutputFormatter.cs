@@ -15,6 +15,6 @@ namespace App.Metrics.Health.Formatters
         Task WriteAsync(
             Stream output,
             HealthStatus healthStatus,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
     }
 }

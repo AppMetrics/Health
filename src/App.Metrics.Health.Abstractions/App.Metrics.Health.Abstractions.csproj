@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <Description>App Metrics Health abstractions and interfaces.</Description>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
     <RootNamespace>App.Metrics.Health</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>appmetrics;healthchecks</PackageTags>
@@ -21,12 +21,8 @@
   <ItemGroup>
     <PackageReference Include="LibLog" Version="$(LibLogVersion)" />
     <PackageReference Include="Microsoft.CSharp" Version="$(MicrosoftCSharpVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="$(CoreFxVersion)" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="App_Packages\" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   
 </Project>

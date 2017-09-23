@@ -61,7 +61,7 @@ namespace App.Metrics.Health
         /// <returns>
         ///     The <see cref="Result" /> of running the health check
         /// </returns>
-        public async ValueTask<Result> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async ValueTask<Result> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace App.Metrics.Health
             }
         }
 
-        protected virtual ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default)
         {
             return _check(cancellationToken);
         }

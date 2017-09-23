@@ -34,7 +34,7 @@ namespace App.Metrics.Health.Formatters
                 }
             }
 
-            return default(IHealthOutputFormatter);
+            return default;
         }
 
         public IHealthOutputFormatter GetType(HealthMediaTypeValue mediaTypeValue)
@@ -48,7 +48,7 @@ namespace App.Metrics.Health.Formatters
                 }
             }
 
-            return default(IHealthOutputFormatter);
+            return default;
         }
 
         public void RemoveType<T>()
@@ -79,6 +79,19 @@ namespace App.Metrics.Health.Formatters
                     RemoveAt(i);
                 }
             }
+        }
+
+        public void TryAdd<TFormatter>(IHealthOutputFormatter formatter)
+            where TFormatter : IHealthOutputFormatter
+        {
+            RemoveType<TFormatter>();
+            Add(formatter);
+        }
+
+        public void TryAdd(IHealthOutputFormatter formatter)
+        {
+            RemoveType(formatter.GetType());
+            Add(formatter);
         }
     }
 }

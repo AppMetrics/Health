@@ -59,7 +59,9 @@ namespace App.Metrics.Health.Formatters.Ascii
         {
             if (disposing)
             {
+                #if NET452
                 _textWriter?.Close();
+                #endif
                 _textWriter?.Dispose();
             }
         }
@@ -80,8 +82,9 @@ namespace App.Metrics.Health.Formatters.Ascii
         {
             var status = HealthConstants.DegradedStatusDisplay;
 
-            var failed = results.Any(c => c.Check.Status == HealthCheckStatus.Unhealthy);
-            var degraded = results.Any(c => c.Check.Status == HealthCheckStatus.Degraded);
+            var enumerable = results as HealthCheck.Result[] ?? results.ToArray();
+            var failed = enumerable.Any(c => c.Check.Status == HealthCheckStatus.Unhealthy);
+            var degraded = enumerable.Any(c => c.Check.Status == HealthCheckStatus.Degraded);
 
             if (!degraded && !failed)
             {

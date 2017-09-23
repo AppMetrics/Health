@@ -7,6 +7,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health.Serialization;
+#if !NETSTANDARD1_6
+using App.Metrics.Health.Internal;
+#endif
 
 namespace App.Metrics.Health.Formatters.Ascii
 {
@@ -26,7 +29,7 @@ namespace App.Metrics.Health.Formatters.Ascii
         public Task WriteAsync(
             Stream output,
             HealthStatus healthStatus,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (output == null)
             {
@@ -43,7 +46,11 @@ namespace App.Metrics.Health.Formatters.Ascii
                 }
             }
 
+#if !NETSTANDARD1_6
+            return AppMetricsHealthTaskHelper.CompletedTask();
+#else
             return Task.CompletedTask;
+#endif
         }
     }
 }

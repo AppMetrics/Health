@@ -27,10 +27,5 @@ namespace App.Metrics.Health
                     { HealthCheckStatus.Degraded, DegradedStatusDisplay },
                     { HealthCheckStatus.Ignored, IgnoredStatusDisplay }
                 });
-
-        public static class TagKeys
-        {
-            public const string HealthCheckName = "health_check_name";
-        }
     }
 }

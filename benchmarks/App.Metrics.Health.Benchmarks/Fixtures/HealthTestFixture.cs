@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using App.Metrics.Health.Builder;
 
 namespace App.Metrics.Health.Benchmarks.Fixtures
 {
@@ -12,21 +12,14 @@ namespace App.Metrics.Health.Benchmarks.Fixtures
     {
         public HealthTestFixture()
         {
-            var services = new ServiceCollection();
-            services.AddLogging();
+            var health = new HealthBuilder()
+                .HealthChecks.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()))
+                .Build();
 
-            services.AddHealth(
-                options =>
-                {
-                    options.Checks.AddCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()));
-                });
-
-            var provider = services.BuildServiceProvider();
-
-            Health = provider.GetRequiredService<IProvideHealth>();
+            HealthCheckRunner = health.HealthCheckRunner;
         }
 
-        public IProvideHealth Health { get; }
+        public IRunHealthChecks HealthCheckRunner { get; }
 
         public void Dispose() { }
     }

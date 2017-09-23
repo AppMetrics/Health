@@ -17,7 +17,7 @@ namespace HealthSandbox.HealthChecks
         }
 
         /// <inheritdoc />
-        protected override ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default(CancellationToken))
+        protected override ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default)
         {
             if (DateTime.UtcNow.Second <= 20)
             {

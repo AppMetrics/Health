@@ -8,10 +8,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
+using HealthSandbox.HealthChecks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Serilog;
+using static System.Console;
 
 namespace HealthSandbox
 {
@@ -19,161 +19,95 @@ namespace HealthSandbox
     {
         public static IConfigurationRoot Configuration { get; set; }
 
-        // public static async Task Main(string[] args)
-        public static void Main(string[] args)
+        public static IHealthRoot Health { get; set; }
+
+        public static async Task Main()
         {
             Init();
 
-            IServiceCollection serviceCollection = new ServiceCollection();
-
-            ConfigureServices(serviceCollection);
-
-            var provider = serviceCollection.BuildServiceProvider();
-
-            var healthProvider = provider.GetRequiredService<IProvideHealth>();
-            var healthOptionsAccessor = provider.GetRequiredService<IOptions<HealthOptions>>();
-
             var cancellationTokenSource = new CancellationTokenSource();
 
-            RunUntilEsc(
+            await RunUntilEscAsync(
                 TimeSpan.FromSeconds(10),
                 cancellationTokenSource,
-                () =>
+                async () =>
                 {
-                    Console.Clear();
+                    Clear();
 
-                    var healthStatus = healthProvider.ReadAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();
+                    var healthStatus = await Health.HealthCheckRunner.ReadAsync(cancellationTokenSource.Token);
 
-                    foreach (var formatter in healthOptionsAccessor.Value.OutputFormatters)
+                    foreach (var formatter in Health.OutputHealthFormatters)
                     {
-                        Console.WriteLine($"Formatter: {formatter.GetType().FullName}");
-                        Console.WriteLine("-------------------------------------------");
+                        WriteLine($"Formatter: {formatter.GetType().FullName}");
+                        WriteLine("-------------------------------------------");
 
                         using (var stream = new MemoryStream())
                         {
-                            formatter.WriteAsync(stream, healthStatus, cancellationTokenSource.Token).GetAwaiter().GetResult();
+                            await formatter.WriteAsync(stream, healthStatus, cancellationTokenSource.Token);
 
                             var result = Encoding.UTF8.GetString(stream.ToArray());
 
-                            Console.WriteLine(result);
+                            WriteLine(result);
                         }
                     }
                 });
         }
 
-        private static void ConfigureServices(IServiceCollection services)
+        private static void Init()
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            Configuration = builder.Build();
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.LiterateConsole()
                 .WriteTo.Seq("http://localhost:5341")
                 .CreateLogger();
 
-            // To add additional formatters
-            // options => options.OutputFormatters.Add(new AsciiOutputFormatter()),
-            // options => options.DefaultOutputFormatter = new HealthStatusJsonOutputFormatter(),
-            // Configuration.GetSection("HealthOptions"),
+            Health = AppMetricsHealth.CreateDefaultBuilder()
+                .HealthChecks.AddCheck(new SampleHealthCheck())
+                .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
+                .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
+                .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
+                .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
+                .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10))
+                .HealthChecks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
+                .HealthChecks.AddCheck(
+                    "DiskSpace",
+                    () =>
+                    {
+                        var freeDiskSpace = GetFreeDiskSpace();
+                        return new ValueTask<HealthCheckResult>(
+                            freeDiskSpace <= 512
+                                ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
+                                : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
+                    })
+                .Build();
 
-            // services.AddHealth(
-            //    options =>
-            //    {
-            //        options.Checks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
-            //        options.Checks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
-            //        options.Checks.AddProcessPhysicalMemoryCheck("Working Set", 200);
-            //        options.Checks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
-            //        options.Checks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
-            //        options.Checks.AddCheck(
-            //            "DatabaseConnected",
-            //            () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-            //        options.Checks.AddCheck(
-            //            "DiskSpace",
-            //            () =>
-            //            {
-            //                var freeDiskSpace = GetFreeDiskSpace();
-            //                return new ValueTask<HealthCheckResult>(
-            //                    freeDiskSpace <= 512
-            //                        ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-            //                        : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-            //            });
-            //    })
-
-            // services.AddHealth()
-            //     .AddHealthOptions(
-            //             options =>
-            //             {
-            //                 options.Checks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
-            //                 options.Checks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
-            //                 options.Checks.AddProcessPhysicalMemoryCheck("Working Set", 200);
-            //                 options.Checks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
-            //                 options.Checks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
-            //                 options.Checks.AddCheck(
-            //                     "DatabaseConnected",
-            //                     () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-            //                 options.Checks.AddCheck(
-            //                     "DiskSpace",
-            //                     () =>
-            //                     {
-            //                         var freeDiskSpace = GetFreeDiskSpace();
-            //                         return new ValueTask<HealthCheckResult>(
-            //                             freeDiskSpace <= 512
-            //                                 ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-            //                                 : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-            //                     });
-            //             })
-            //     .AddTextOptions(options => { options.Separator = ":"; })
-            //     .AddJsonOptions(options => { });
-
-            services.AddHealth()
-                    .AddChecks(
-                        registry =>
-                        {
-                            registry.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200);
-                            registry.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200);
-                            registry.AddProcessPhysicalMemoryCheck("Working Set", 200);
-                            registry.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10));
-                            registry.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10));
-                            registry.AddCheck(
-                                "DatabaseConnected",
-                                () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")));
-                            registry.AddCheck(
-                                "DiskSpace",
-                                () =>
-                                {
-                                    var freeDiskSpace = GetFreeDiskSpace();
-                                    return new ValueTask<HealthCheckResult>(
-                                        freeDiskSpace <= 512
-                                            ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-                                            : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-                                });
-                        })
-                    .AddTextOptions(options => { options.Separator = ":"; })
-                    .AddJsonOptions(options => { });
+            int GetFreeDiskSpace()
+            {
+                return 1024;
+            }
         }
 
-        private static int GetFreeDiskSpace() { return 1024; }
-
-        private static void Init()
+        private static async Task RunUntilEscAsync(TimeSpan delayBetweenRun, CancellationTokenSource cancellationTokenSource, Func<Task> action)
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json");
-
-            Configuration = builder.Build();
-        }
-
-        private static void RunUntilEsc(TimeSpan delayBetweenRun, CancellationTokenSource cancellationTokenSource, Action action)
-        {
-            Console.WriteLine("Press ESC to stop");
+            WriteLine("Press ESC to stop");
 
             while (true)
             {
-                while (!Console.KeyAvailable)
+                while (!KeyAvailable)
                 {
-                    action();
+                    await action();
                     Thread.Sleep(delayBetweenRun);
                 }
 
-                while (Console.KeyAvailable)
+                while (KeyAvailable)
                 {
-                    var key = Console.ReadKey(false).Key;
+                    var key = ReadKey(false).Key;
 
                     if (key == ConsoleKey.Escape)
                     {

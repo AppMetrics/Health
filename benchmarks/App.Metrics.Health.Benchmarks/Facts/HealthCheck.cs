@@ -21,7 +21,7 @@ namespace App.Metrics.Health.Benchmarks.Facts
             SimpleBenchmarkRunner.Run(
                 async () =>
                 {
-                    var result = await _fixture.Health.ReadAsync();
+                    var result = await _fixture.HealthCheckRunner.ReadAsync();
                     Debug.WriteLine("Health status: " + result.Status);
                 });
         }
