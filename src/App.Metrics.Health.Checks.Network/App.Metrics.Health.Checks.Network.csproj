@@ -9,7 +9,7 @@
     <PackageTags>appmetrics;healthchecks;http</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
     <PackageReference Include="System.Net.Ping" Version="4.3.0" />
   </ItemGroup>
 
