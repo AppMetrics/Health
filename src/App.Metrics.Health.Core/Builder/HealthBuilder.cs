@@ -94,7 +94,7 @@ namespace App.Metrics.Health.Builder
             var health = new DefaultHealth(_checks.Values);
             var defaultMetricsOutputFormatter = _defaultMetricsHealthFormatter ?? _healthFormatterCollection.FirstOrDefault();
 
-            if (_options.Enabled)
+            if (_options.Enabled && health.Checks.Any())
             {
                 healthCheckRunner = new DefaultHealthCheckRunner(health.Checks);
             }
