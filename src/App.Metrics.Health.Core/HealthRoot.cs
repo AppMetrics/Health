@@ -8,7 +8,7 @@ using App.Metrics.Health.Formatters;
 
 namespace App.Metrics.Health
 {
-    internal class HealthRoot : IHealthRoot, IHealth
+    public class HealthRoot : IHealthRoot, IHealth
     {
         private readonly IHealth _health;
 
