@@ -57,6 +57,8 @@ namespace App.Metrics.Health.Logging
                     checksPassed,
                     degradedChecks,
                     failedChecks);
+
+                return;
             }
 
             logger.Info("Executed HealthStatus, 0 health check results.");

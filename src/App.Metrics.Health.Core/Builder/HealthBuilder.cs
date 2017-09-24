@@ -92,6 +92,7 @@ namespace App.Metrics.Health.Builder
             IRunHealthChecks healthCheckRunner;
 
             var health = new DefaultHealth(_checks.Values);
+            var defaultMetricsOutputFormatter = _defaultMetricsHealthFormatter ?? _healthFormatterCollection.FirstOrDefault();
 
             if (_options.Enabled)
             {
@@ -106,7 +107,7 @@ namespace App.Metrics.Health.Builder
                 health,
                 _options,
                 _healthFormatterCollection,
-                _defaultMetricsHealthFormatter ?? _healthFormatterCollection.FirstOrDefault(),
+                defaultMetricsOutputFormatter,
                 healthCheckRunner);
         }
     }
