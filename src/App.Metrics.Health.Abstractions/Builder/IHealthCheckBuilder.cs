@@ -25,6 +25,9 @@ namespace App.Metrics.Health
         IHealthBuilder AddCheck<THealthCheck>(THealthCheck check)
             where THealthCheck : HealthCheck;
 
+        IHealthBuilder AddCheck<THealthCheck>()
+            where THealthCheck : HealthCheck, new();
+
         IHealthBuilder AddChecks(IEnumerable<HealthCheck> checks);
     }
 }

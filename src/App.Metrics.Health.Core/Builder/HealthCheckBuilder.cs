@@ -42,6 +42,17 @@ namespace App.Metrics.Health.Builder
         }
 
         /// <inheritdoc />
+        public IHealthBuilder AddCheck<THealthCheck>()
+            where THealthCheck : HealthCheck, new()
+        {
+            var check = new THealthCheck();
+
+            Register(check);
+
+            return Builder;
+        }
+
+        /// <inheritdoc />
         public IHealthBuilder AddCheck(string name, Func<ValueTask<HealthCheckResult>> check)
         {
             Register(new HealthCheck(name, check));

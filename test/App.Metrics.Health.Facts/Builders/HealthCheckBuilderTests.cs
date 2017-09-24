@@ -62,6 +62,20 @@ namespace App.Metrics.Health.Facts.Builders
         }
 
         [Fact]
+        public void Can_register_type_health_checks()
+        {
+            // Arrange
+            var builder = new HealthBuilder();
+
+            // Act
+            var health = builder.HealthChecks.AddCheck<SampleHealthCheck>().Build();
+
+            // Assert
+            health.Checks.Count().Should().Be(1);
+            health.Checks.Single().Name.Should().Be("SampleHealthCheck");
+        }
+
+        [Fact]
         public void Can_register_mulitple_health_checks()
         {
             // Arrange
