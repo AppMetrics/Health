@@ -49,25 +49,10 @@ namespace App.Metrics.Health.Formatters.Json.Converters
                                  .Select(c => new KeyValuePair<string, string>(c.Name, c.Check.Message))
                                  .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            if (healthy.Any())
-            {
-                target.Healthy = healthy;
-            }
-
-            if (unhealthy.Any())
-            {
-                target.Unhealthy = unhealthy;
-            }
-
-            if (degraded.Any())
-            {
-                target.Degraded = degraded;
-            }
-
-            if (ignored.Any())
-            {
-                target.Ignored = ignored;
-            }
+            target.Healthy = healthy.Any() ? healthy : null;
+            target.Unhealthy = unhealthy.Any() ? unhealthy : null;
+            target.Degraded = degraded.Any() ? degraded : null;
+            target.Ignored = ignored.Any() ? ignored : null;
 
             serializer.Serialize(writer, target);
         }
