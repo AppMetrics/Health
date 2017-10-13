@@ -1,9 +1,9 @@
-# App Metrics Health <img src="http://app-metrics.io/logo.png" alt="App Metrics" width="50px"/> 
+# App Metrics Health <img src="https://avatars0.githubusercontent.com/u/29864085?v=4&s=200" alt="App Metrics" width="50px"/> 
 [![Official Site](https://img.shields.io/badge/site-appmetrics-blue.svg?style=flat-square)](http://app-metrics.io/getting-started/intro.html) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/app-metrics/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What is App Metrics Health?
 
-App Metrics Health is an open-source and cross-platform .NET library used define health checks within an application, see the [Getting Started Guide](http://app-metrics.io/getting-started/health-checks/index.html).
+App Metrics Health is an open-source and cross-platform .NET library used define health checks within an application, see the [Getting Started Guide](https://www.app-metrics.io/health-checks/).
 
 ## Latest Builds, Packages & Repo Stats
 
@@ -96,9 +96,9 @@ See the [contribution guidlines](CONTRIBUTING.md) for details.
 
 This library is release under Apache 2.0 License ( see LICENSE ) Copyright (c) 2016 Allan Hardy
 
-See [LICENSE](https://github.com/alhardy/AppMetrics/blob/master/LICENSE)
+See [LICENSE](https://github.com/AppMetrics/AppMetrics/blob/master/LICENSE)
 
 ----------
-[![Powered By NDepend](https://github.com/alhardy/AppMetrics.DocFx/blob/master/images/PoweredByNDepend.png)](http://www.ndepend.com/)
+[![Powered By NDepend](https://github.com/AppMetrics/AppMetrics.DocFx/blob/master/images/PoweredByNDepend.png)](http://www.ndepend.com/)
 
 ----------
