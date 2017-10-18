@@ -13,7 +13,7 @@
 		<PackageProjectUrl>https://www.app-metrics.io/health-checks/</PackageProjectUrl>
 		<PackageLicenseUrl>https://github.com/alhardy/AppMetrics/blob/master/LICENSE</PackageLicenseUrl>
 		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>git://github.com/alhardy/AppMetrics</RepositoryUrl>
+		<RepositoryUrl>git://github.com/AppMetrics/Health</RepositoryUrl>
 		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
 		<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
@@ -24,11 +24,7 @@
 	  <SignAssembly>true</SignAssembly>
 	  <PublicSign Condition="'$(OS)' != 'Windows_NT'">true</PublicSign>
 	  <DebugType>embedded</DebugType>
-	</PropertyGroup>
-
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETFramework'">
-    <PackageReference Include="NETStandard.Library.NETFramework" Version="$(NETStandardLibraryNETFrameworkVersion)" />
-  </ItemGroup>
+	</PropertyGroup>  
 
 	<ItemGroup>
 		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />		
