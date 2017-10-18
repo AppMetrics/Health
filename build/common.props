@@ -11,7 +11,7 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageIconUrl>https://app-metrics.io/images/logo.png</PackageIconUrl>
 		<PackageProjectUrl>https://www.app-metrics.io/health-checks/</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/alhardy/AppMetrics/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageLicenseUrl>https://github.com/AppMetrics/AppMetrics/blob/master/LICENSE</PackageLicenseUrl>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>git://github.com/AppMetrics/Health</RepositoryUrl>
 		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
