@@ -1,0 +1,121 @@
+﻿// <copyright file="Host.cs" company="Allan Hardy">
+// Copyright (c) Allan Hardy. All rights reserved.
+// </copyright>
+
+using System;
+using System.IO;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using App.Metrics.Health;
+using HealthSandbox.HealthChecks;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using static System.Console;
+
+namespace HealthSandbox
+{
+    public static class Host
+    {
+        public static IConfigurationRoot Configuration { get; set; }
+
+        public static IHealthRoot Health { get; set; }
+
+        public static async Task Main()
+        {
+            Init();
+
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            await RunUntilEscAsync(
+                TimeSpan.FromSeconds(10),
+                cancellationTokenSource,
+                async () =>
+                {
+                    Clear();
+
+                    var healthStatus = await Health.HealthCheckRunner.ReadAsync(cancellationTokenSource.Token);
+
+                    foreach (var formatter in Health.OutputHealthFormatters)
+                    {
+                        WriteLine($"Formatter: {formatter.GetType().FullName}");
+                        WriteLine("-------------------------------------------");
+
+                        using (var stream = new MemoryStream())
+                        {
+                            await formatter.WriteAsync(stream, healthStatus, cancellationTokenSource.Token);
+
+                            var result = Encoding.UTF8.GetString(stream.ToArray());
+
+                            WriteLine(result);
+                        }
+                    }
+                });
+        }
+
+        private static void Init()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            Configuration = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.LiterateConsole()
+                .WriteTo.Seq("http://localhost:5341")
+                .CreateLogger();
+
+            Health = AppMetricsHealth.CreateDefaultBuilder()
+                .HealthChecks.AddCheck(new SampleHealthCheck())
+                .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
+                .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
+                .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
+                .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
+                .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10))
+                .HealthChecks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
+                .HealthChecks.AddCheck(
+                    "DiskSpace",
+                    () =>
+                    {
+                        var freeDiskSpace = GetFreeDiskSpace();
+                        return new ValueTask<HealthCheckResult>(
+                            freeDiskSpace <= 512
+                                ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
+                                : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
+                    })
+                .Build();
+
+            int GetFreeDiskSpace()
+            {
+                return 1024;
+            }
+        }
+
+        private static async Task RunUntilEscAsync(TimeSpan delayBetweenRun, CancellationTokenSource cancellationTokenSource, Func<Task> action)
+        {
+            WriteLine("Press ESC to stop");
+
+            while (true)
+            {
+                while (!KeyAvailable)
+                {
+                    await action();
+                    Thread.Sleep(delayBetweenRun);
+                }
+
+                while (KeyAvailable)
+                {
+                    var key = ReadKey(false).Key;
+
+                    if (key == ConsoleKey.Escape)
+                    {
+                        cancellationTokenSource.Cancel();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}

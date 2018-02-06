@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\build\common.props" />
+
+  <PropertyGroup>
+    <Description>App Metrics health core components.</Description>
+    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
+    <RootNamespace>App.Metrics.Health</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>    
+    <PackageTags>appmetrics;healthchecks</PackageTags>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\App.Metrics.Health.Abstractions\App.Metrics.Health.Abstractions.csproj" />
+    <ProjectReference Include="..\App.Metrics.Health.Formatters.Ascii\App.Metrics.Health.Formatters.Ascii.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <Reference Include="System" />
+    <Reference Include="System.Collections" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>

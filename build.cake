@@ -1,6 +1,5 @@
 #addin Cake.Coveralls
 #addin Cake.ReSharperReports
-#addin Cake.Incubator
 
 #tool "nuget:?package=xunit.runner.console"
 #tool "nuget:?package=JetBrains.dotCover.CommandLineTools"
@@ -14,11 +13,13 @@
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
+var packageRelease				= HasArgument("packageRelease") ? Argument<bool>("packageRelease") :
+                                  EnvironmentVariable("packageRelease") != null ? bool.Parse(EnvironmentVariable("packageRelease")) : false;
 var target                      = Argument("target", "Default");
 var configuration               = HasArgument("BuildConfiguration") ? Argument<string>("BuildConfiguration") :
                                   EnvironmentVariable("BuildConfiguration") != null ? EnvironmentVariable("BuildConfiguration") : "Release";
 var coverWith					= HasArgument("CoverWith") ? Argument<string>("CoverWith") :
-                                  EnvironmentVariable("CoverWith") != null ? EnvironmentVariable("CoverWith") : "OpenCover"; // None, DotCover, OpenCover
+                                  EnvironmentVariable("CoverWith") != null ? EnvironmentVariable("CoverWith") : "DotCover"; // None, DotCover, OpenCover
 var skipReSharperCodeInspect    = HasArgument("SkipCodeInspect") ? Argument<bool>("SkipCodeInspect", false) || !IsRunningOnWindows(): true;
 var preReleaseSuffix            = HasArgument("PreReleaseSuffix") ? Argument<string>("PreReleaseSuffix") :
 	                              (AppVeyor.IsRunningOnAppVeyor && EnvironmentVariable("PreReleaseSuffix") == null) || (AppVeyor.IsRunningOnAppVeyor && AppVeyor.Environment.Repository.Tag.IsTag) ? null :
@@ -30,11 +31,22 @@ var buildNumber                 = HasArgument("BuildNumber") ? Argument<int>("Bu
 var gitUser						= HasArgument("GitUser") ? Argument<string>("GitUser") : EnvironmentVariable("GitUser");
 var gitPassword					= HasArgument("GitPassword") ? Argument<string>("GitPassword") : EnvironmentVariable("GitPassword");
 var skipHtmlCoverageReport		= HasArgument("SkipHtmlCoverageReport") ? Argument<bool>("SkipHtmlCoverageReport", true) || !IsRunningOnWindows() : true;
+var linkSources					= HasArgument("LinkSources") ? Argument<bool>("LinkSources") :
+                                  EnvironmentVariable("LinkSources") != null ? bool.Parse(EnvironmentVariable("LinkSources")) : true;
 
 //////////////////////////////////////////////////////////////////////
 // DEFINE FILES & DIRECTORIES
 //////////////////////////////////////////////////////////////////////
-var packDirs                    = new [] { Directory("./src/App.Metrics"), Directory("./src/App.Metrics.Concurrency"), Directory("./src/App.Metrics.Extensions.Middleware"), Directory("./src/App.Metrics.Extensions.Mvc"), Directory("./src/App.Metrics.Formatters.Json"), Directory("./src/App.Metrics.Formatters.Ascii") };
+var packDirs                    = new [] {
+											Directory("./src/App.Metrics.Health"),
+											Directory("./src/App.Metrics.Health.Abstractions"),
+											Directory("./src/App.Metrics.Health.Checks.Http"),
+											Directory("./src/App.Metrics.Health.Checks.Network"),
+											Directory("./src/App.Metrics.Health.Checks.Process"),
+											Directory("./src/App.Metrics.Health.Core"),
+											Directory("./src/App.Metrics.Health.Formatters.Ascii"),
+											Directory("./src/App.Metrics.Health.Formatters.Json")									
+										};
 var artifactsDir                = (DirectoryPath) Directory("./artifacts");
 var testResultsDir              = (DirectoryPath) artifactsDir.Combine("test-results");
 var coverageResultsDir          = (DirectoryPath) artifactsDir.Combine("coverage");
@@ -44,10 +56,10 @@ var htmlCoverageReport			= coverageResultsDir.FullPath + "/coverage.html";
 var mergedCoverageSnapshots		= coverageResultsDir.FullPath + "/coverage.dcvr";
 var xmlCoverageReport			= coverageResultsDir.FullPath + "/coverage.xml";
 var packagesDir                 = artifactsDir.Combine("packages");
-var resharperSettings			= "./AppMetrics.sln.DotSettings";
+var resharperSettings			= "./Health.sln.DotSettings";
 var inspectCodeXml				= string.Format("{0}/inspectCode.xml", reSharperReportsDir);
 var inspectCodeHtml				= string.Format("{0}/inspectCode.html", reSharperReportsDir);
-var solutionFile				= "./AppMetrics.sln";
+var solutionFile				= "./Health.sln";
 var solution					= ParseSolution(new FilePath(solutionFile));
 
 //////////////////////////////////////////////////////////////////////
@@ -58,17 +70,24 @@ var openCoverFilter				= "+[App.Metrics*]* -[xunit.*]* -[*.Facts]*";
 var openCoverExcludeFile        = "*/*Designer.cs;*/*.g.cs;*/*.g.i.cs";
 var coverIncludeFilter			= "+:App.Metrics*";
 var coverExcludeFilter			= "-:*.Facts";
-var excludeFromCoverage			= "*.AppMetricsExcludeFromCodeCoverage*";
+var excludeFromCoverage			= "*.ExcludeFromCodeCoverage*";
 string versionSuffix			= null;
 
 if (!string.IsNullOrEmpty(preReleaseSuffix))
 {
-	versionSuffix = preReleaseSuffix + "-" + buildNumber.ToString("D4");
+	if (packageRelease)
+	{
+		versionSuffix = preReleaseSuffix;
+	}
+	else
+	{
+		versionSuffix = preReleaseSuffix + "-" + buildNumber.ToString("D4");
+	}
 }
- else if (AppVeyor.IsRunningOnAppVeyor && !AppVeyor.Environment.Repository.Tag.IsTag)
- {
- 	versionSuffix = buildNumber.ToString("D4");
- }
+else if (AppVeyor.IsRunningOnAppVeyor && !AppVeyor.Environment.Repository.Tag.IsTag && !packageRelease)
+{
+	versionSuffix = buildNumber.ToString("D4");
+}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -117,7 +136,7 @@ Task("Restore")
 {	
 	var settings = new DotNetCoreRestoreSettings
     {        
-        Sources = new [] { "https://api.nuget.org/v3/index.json", "https://www.myget.org/F/alhardy/api/v3/index.json" }
+        Sources = new [] { "https://api.nuget.org/v3/index.json", "https://www.myget.org/F/appmetrics/api/v3/index.json" }
     };
 
 	DotNetCoreRestore(solutionFile, settings);
@@ -133,7 +152,13 @@ Task("Build")
 	Context.Information("Building using versionSuffix: " + versionSuffix);
 
 	// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
-	settings.ArgumentCustomization = args=>args.Append("/t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/alhardy/api/v3/index.json;");
+	settings.ArgumentCustomization = args => {
+			args.Append("/t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;");
+			if (linkSources) {
+				args.Append("/p:SourceLinkCreate=true");
+			}	
+			return args;
+		};	
 
 
 	if (IsRunningOnWindows())
@@ -142,31 +167,26 @@ Task("Build")
 	}
 	else
 	{
-		var projects = solution.GetProjects();
-
-		foreach(var project in projects)
-        {
-			// Ignore Net452 on non-windows environments
-			if (project.Path.ToString().Contains("Net452"))
-			{
-				continue;
-			}
-
-			var parsedProject = ParseProject(new FilePath(project.Path.ToString()), configuration);
-
-			if (parsedProject.IsLibrary() && !project.Path.ToString().Contains(".Sandbox")&& !project.Path.ToString().Contains(".Facts") && !project.Path.ToString().Contains(".Benchmarks"))
-			{				
-				settings.Framework = "netstandard1.6";				
-			}
-			else
-			{
-				settings.Framework = "netcoreapp1.1";
-			}
-
-			Context.Information("Building as " + settings.Framework + ": " +  project.Path.ToString());
-
-			DotNetCoreBuild(project.Path.ToString(), settings);
-		}
+		// var projects = solution.GetProjects();
+		// 
+		// foreach(var project in projects)
+        // {
+		// 	var parsedProject = ParseProject(new FilePath(project.Path.ToString()), configuration);
+		// 
+		// 	if (parsedProject.IsLibrary() && !project.Path.ToString().Contains(".Sandbox")&& !project.Path.ToString().Contains(".Facts") && !project.Path.ToString().Contains(".Benchmarks"))
+		// 	{				
+		// 		settings.Framework = "netstandard2.0";
+		// 
+		// 	}
+		// 	else
+		// 	{
+		// 		settings.Framework = "netcoreapp2.0";
+		// 	}
+		// 
+		// 	Context.Information("Building as " + settings.Framework + ": " +  project.Path.ToString());
+		// 
+		// 	DotNetCoreBuild(project.Path.ToString(), settings);
+		// }
 
 	}
 });
@@ -190,8 +210,10 @@ Task("Pack")
         Configuration = configuration,
         OutputDirectory = packagesDir,
         VersionSuffix = versionSuffix,
-		NoBuild = true
-    };
+		NoBuild = true,
+		// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
+		ArgumentCustomization = args=>args.Append("/p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
+    };	
     
     foreach(var packDir in packDirs)
     {
@@ -224,18 +246,13 @@ Task("RunTests")
         var settings = new DotNetCoreTestSettings
 		{
 			Configuration = configuration,
-			 ArgumentCustomization = args => args.Append("--logger:trx")
+			// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
+			 ArgumentCustomization = args=>args.Append("--logger:trx /t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
 		};
-
-		// Ignore Net452 on non-windows environments
-		if (folderName.Contains("Net452") && !IsRunningOnWindows())
-		{
-			continue;
-		}
-
+		
 		if (!IsRunningOnWindows())
         {
-			settings.Framework = "netcoreapp1.1";
+			settings.Framework = "netcoreapp2.0";
         }	 
 
 		DotNetCoreTest(project.FullPath, settings);
@@ -276,7 +293,8 @@ Task("RunTestsWithOpenCover")
 	var settings = new DotNetCoreTestSettings
     {
         Configuration = configuration,
-		 ArgumentCustomization = args => args.Append("--logger:trx")
+		// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
+		ArgumentCustomization = args=>args.Append("--logger:trx /t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
     };
 
     foreach (var project in projects)
@@ -326,8 +344,15 @@ Task("PublishTestResults")
 			{
 				Context.Information("Moving " + filePath.FullPath + " to " + testResultsDir);
 
-				MoveFiles(filePath.FullPath, testResultsDir);
-				MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
+				try
+				{
+					MoveFiles(filePath.FullPath, testResultsDir);
+					MoveFile(testResultsDir + "/" + filePath.GetFilename(), testResultsDir + "/" + folderName + ".trx");
+				}
+				catch(Exception ex)
+				{
+					Context.Information(ex.ToString());
+				}				
 			}
 		}	
 	}
@@ -347,7 +372,8 @@ Task("RunTestsWithDotCover")
 	var settings = new DotNetCoreTestSettings
     {
         Configuration = configuration,
-		 ArgumentCustomization = args => args.Append("--logger:trx")
+		// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
+		ArgumentCustomization = args=>args.Append("--logger:trx /t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
     };
 
     foreach (var project in projects)
@@ -359,7 +385,8 @@ Task("RunTestsWithDotCover")
 		var dotCoverSettings = new DotCoverCoverSettings 
 		{
 			ArgumentCustomization = args => args.Append(@"/HideAutoProperties")
-				.Append(@"/AttributeFilters=" + excludeFromCoverage)
+				.Append(@"/AttributeFilters=System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute")
+				.Append(@"/Filters=+:module=App.Metrics*;-:module=*.Facts*;")
 				.Append(@"/ReturnTargetExitCode")								
 		};
 					
