@@ -3,8 +3,11 @@
 // </copyright>
 
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
+using App.Metrics.Health.Logging;
 
 // ReSharper disable CheckNamespace
 namespace App.Metrics.Health
@@ -12,6 +15,7 @@ namespace App.Metrics.Health
 {
     public static class HttpHealthCheckBuilderExtensions
     {
+        private static readonly ILog Logger = LogProvider.For<IRunHealthChecks>();
         private static readonly HttpClient HttpClient = new HttpClient { DefaultRequestHeaders = { { "cache-control", "no-cache" } } };
 
         public static IHealthBuilder AddHttpGetCheck(
@@ -25,24 +29,54 @@ namespace App.Metrics.Health
                 name,
                 async cancellationToken =>
                 {
+                    var sw = new Stopwatch();
+
                     try
                     {
                         using (var tokenWithTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                         {
                             tokenWithTimeout.CancelAfter(timeout);
 
+                            sw.Start();
+
                             var response = await HttpClient.GetAsync(uri, tokenWithTimeout.Token).ConfigureAwait(false);
 
                             return response.IsSuccessStatusCode
-                                ? HealthCheckResult.Healthy($"OK. {uri}")
-                                : HealthCheckResultOnError($"FAILED. {uri} status code was {response.StatusCode}", degradedOnError);
+                                ? HealthCheckResult.Healthy($"OK. '{uri}' success. Time taken: {sw.ElapsedMilliseconds}ms.")
+                                : HealthCheckResultOnError(
+                                    $"FAILED. '{uri}' status code was {response.StatusCode}. Time taken: {sw.ElapsedMilliseconds}ms.",
+                                    degradedOnError);
                         }
+                    }
+                    catch (Exception ex) when (ex is TaskCanceledException)
+                    {
+                        Logger.ErrorException($"HTTP Health Check '{uri}' did not respond within '{timeout.TotalMilliseconds}'ms.", ex);
+
+                        return HealthCheckResultOnError($"FAILED. '{uri}' did not respond within {timeout.TotalMilliseconds}ms", degradedOnError);
+                    }
+                    catch (Exception ex) when (ex is TimeoutException)
+                    {
+                        Logger.ErrorException($"HTTP Health Check '{uri}' timed out. Time taken: {sw.ElapsedMilliseconds}ms.", ex);
+
+                        return HealthCheckResultOnError($"FAILED. '{uri}' timed out. Time taken: {sw.ElapsedMilliseconds}ms.", degradedOnError);
+                    }
+                    catch (Exception ex) when (ex is HttpRequestException)
+                    {
+                        Logger.ErrorException($"HTTP Health Check '{uri}' failed. Time taken: {sw.ElapsedMilliseconds}ms.", ex);
+
+                        return HealthCheckResultOnError($"FAILED. '{uri}' request failed with an unexpected error. Time taken: {sw.ElapsedMilliseconds}ms.", degradedOnError);
                     }
                     catch (Exception ex)
                     {
-                        return degradedOnError
-                            ? HealthCheckResult.Degraded(ex)
-                            : HealthCheckResult.Unhealthy(ex);
+                        var message = $"HTTP Health Check failed to request '{uri}'. Time taken: {sw.ElapsedMilliseconds}ms.";
+
+                        Logger.ErrorException(message, ex);
+
+                        return HealthCheckResultOnError($"FAILED. {message}", degradedOnError);
+                    }
+                    finally
+                    {
+                        sw.Stop();
                     }
                 });
 
