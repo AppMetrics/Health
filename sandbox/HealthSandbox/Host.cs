@@ -28,7 +28,7 @@ namespace HealthSandbox
             var cancellationTokenSource = new CancellationTokenSource();
 
             await RunUntilEscAsync(
-                TimeSpan.FromSeconds(10),
+                TimeSpan.FromSeconds(5),
                 cancellationTokenSource,
                 async () =>
                 {
@@ -73,7 +73,9 @@ namespace HealthSandbox
                 .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                 .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
                 .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
-                .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10))
+                .HealthChecks.AddHttpGetCheck("invalid http", new Uri("https://invalid-asdfadsf.com/"), 3, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1))
+                .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), retries: 3, delayBetweenRetries: TimeSpan.FromMilliseconds(100), timeoutPerRequest: TimeSpan.FromSeconds(5))
+                .HealthChecks.AddHttpGetCheck("google", new Uri("https://google.com/"), TimeSpan.FromSeconds(1))
                 .HealthChecks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
                 .HealthChecks.AddCheck(
                     "DiskSpace",

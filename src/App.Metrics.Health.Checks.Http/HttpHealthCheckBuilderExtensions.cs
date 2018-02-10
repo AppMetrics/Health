@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +16,8 @@ namespace App.Metrics.Health
 {
     public static class HttpHealthCheckBuilderExtensions
     {
-        private static readonly ILog Logger = LogProvider.For<IRunHealthChecks>();
         private static readonly HttpClient HttpClient = new HttpClient { DefaultRequestHeaders = { { "cache-control", "no-cache" } } };
+        private static readonly ILog Logger = LogProvider.For<IRunHealthChecks>();
 
         public static IHealthBuilder AddHttpGetCheck(
             this IHealthCheckBuilder healthCheckBuilder,
@@ -25,6 +26,11 @@ namespace App.Metrics.Health
             TimeSpan timeout,
             bool degradedOnError = false)
         {
+            if (timeout <= TimeSpan.Zero)
+            {
+                throw new InvalidOperationException($"{nameof(timeout)} must be greater than 0");
+            }
+
             healthCheckBuilder.AddCheck(
                 name,
                 async cancellationToken =>
@@ -64,7 +70,9 @@ namespace App.Metrics.Health
                     {
                         Logger.ErrorException($"HTTP Health Check '{uri}' failed. Time taken: {sw.ElapsedMilliseconds}ms.", ex);
 
-                        return HealthCheckResultOnError($"FAILED. '{uri}' request failed with an unexpected error. Time taken: {sw.ElapsedMilliseconds}ms.", degradedOnError);
+                        return HealthCheckResultOnError(
+                            $"FAILED. '{uri}' request failed with an unexpected error. Time taken: {sw.ElapsedMilliseconds}ms.",
+                            degradedOnError);
                     }
                     catch (Exception ex)
                     {
@@ -73,6 +81,162 @@ namespace App.Metrics.Health
                         Logger.ErrorException(message, ex);
 
                         return HealthCheckResultOnError($"FAILED. {message}", degradedOnError);
+                    }
+                    finally
+                    {
+                        sw.Stop();
+                    }
+                });
+
+            return healthCheckBuilder.Builder;
+        }
+
+        public static IHealthBuilder AddHttpGetCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            Uri uri,
+            int retries,
+            TimeSpan delayBetweenRetries,
+            TimeSpan timeoutPerRequest,
+            bool degradedOnError = false)
+        {
+            if (retries <= 0)
+            {
+                throw new InvalidOperationException($"{nameof(retries)} must be greater than 0");
+            }
+
+            if (delayBetweenRetries <= TimeSpan.Zero)
+            {
+                throw new InvalidOperationException($"{nameof(delayBetweenRetries)} must be greater than 0");
+            }
+
+            if (timeoutPerRequest <= TimeSpan.Zero)
+            {
+                throw new InvalidOperationException($"{nameof(timeoutPerRequest)} must be greater than 0");
+            }
+
+            healthCheckBuilder.AddCheck(
+                name,
+                async cancellationToken =>
+                {
+                    var sw = new Stopwatch();
+                    var attempts = 0;
+                    try
+                    {
+                        sw.Start();
+
+                        do
+                        {
+                                try
+                                {
+                                    attempts++;
+
+                                    using (var tokenWithTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                                    {
+                                        tokenWithTimeout.CancelAfter(timeoutPerRequest);
+
+                                        var response = await HttpClient.GetAsync(uri, tokenWithTimeout.Token);
+
+                                        if (attempts == retries || response.IsSuccessStatusCode)
+                                        {
+                                            return response.IsSuccessStatusCode
+                                                ? HealthCheckResult.Healthy(
+                                                    $"OK. '{uri}' success. Total Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.")
+                                                : HealthCheckResultOnError(
+                                                    $"FAILED. '{uri}' status code was {response.StatusCode}. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                                    degradedOnError);
+                                        }
+
+                                        if (response.StatusCode == HttpStatusCode.GatewayTimeout ||
+                                            response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                                        {
+                                            Logger.Error(
+                                                $"HTTP Health Check '{uri}' failed with status code {response.StatusCode}. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.");
+
+                                            Logger.Info(
+                                                $"Retrying HTTP Health Check '{uri}' in {delayBetweenRetries.TotalMilliseconds}ms. {attempts} / {retries} retries.");
+
+                                            await Task.Delay(delayBetweenRetries, cancellationToken);
+                                        }
+                                    }
+                                }
+                                catch (Exception ex) when (ex is TaskCanceledException)
+                                {
+                                    Logger.ErrorException(
+                                        $"HTTP Health Check '{uri}' did not respond within '{timeoutPerRequest.TotalMilliseconds}'ms. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                        ex);
+
+                                    if (attempts == retries)
+                                    {
+                                        return HealthCheckResultOnError(
+                                            $"FAILED. '{uri}' did not respond within {timeoutPerRequest.TotalMilliseconds}ms. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                            degradedOnError);
+                                    }
+
+                                    await Retry(uri, retries, delayBetweenRetries, attempts, ex, cancellationToken);
+                                }
+                                catch (Exception ex) when (ex is TimeoutException)
+                                {
+                                    Logger.ErrorException(
+                                        $"HTTP Health Check '{uri}' timed out. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                        ex);
+
+                                    if (attempts == retries)
+                                    {
+                                        return HealthCheckResultOnError(
+                                            $"FAILED. '{uri}' timed out. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                            degradedOnError);
+                                    }
+
+                                    await Retry(uri, retries, delayBetweenRetries, attempts, ex, cancellationToken);
+                                }
+                                catch (Exception ex) when (ex is HttpRequestException)
+                                {
+                                    Logger.ErrorException(
+                                        $"HTTP Health Check '{uri}' failed. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                        ex);
+
+                                    if (attempts == retries)
+                                    {
+                                        return HealthCheckResultOnError(
+                                            $"FAILED. '{uri}' request failed with an unexpected error. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                            degradedOnError);
+                                    }
+
+                                    await Retry(uri, retries, delayBetweenRetries, attempts, ex, cancellationToken);
+                                }
+                                catch (Exception ex)
+                                {
+                                    var message =
+                                        $"HTTP Health Check failed to request '{uri}'. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.";
+
+                                    if (attempts == retries)
+                                    {
+                                        Logger.ErrorException(message, ex);
+
+                                        return HealthCheckResultOnError($"FAILED. {message}. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.", degradedOnError);
+                                    }
+
+                                    await Retry(uri, retries, delayBetweenRetries, attempts, ex, cancellationToken);
+                                }
+                        }
+                        while (true);
+                    }
+                    catch (Exception ex) when (ex is TaskCanceledException)
+                    {
+                        Logger.ErrorException($"HTTP Health Check '{uri}' did not respond within '{timeoutPerRequest.TotalMilliseconds}'ms. Attempts: {attempts}.", ex);
+
+                        return HealthCheckResultOnError(
+                            $"FAILED. '{uri}' did not respond within {timeoutPerRequest.TotalMilliseconds}ms. Attempts: {attempts}.",
+                            degradedOnError);
+                    }
+                    catch (Exception ex)
+                    {
+                        var message = $"HTTP Health Check failed to request '{uri}'. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.";
+
+                        Logger.ErrorException(message, ex);
+
+                        return HealthCheckResultOnError($"FAILED. {message}. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.", degradedOnError);
                     }
                     finally
                     {
@@ -97,6 +261,21 @@ namespace App.Metrics.Health
             return degradedOnError
                 ? HealthCheckResult.Degraded(message)
                 : HealthCheckResult.Unhealthy(message);
+        }
+
+        private static async Task Retry(
+            Uri uri,
+            int retries,
+            TimeSpan delayBetweenRetries,
+            int attempts,
+            Exception ex,
+            CancellationToken cancellationToken)
+        {
+            Logger.InfoException(
+                $"Retrying HTTP Health Check '{uri}' in {delayBetweenRetries.TotalMilliseconds}ms. {attempts + 1} / {retries} retries.",
+                ex);
+
+            await Task.Delay(delayBetweenRetries, cancellationToken);
         }
     }
 }
