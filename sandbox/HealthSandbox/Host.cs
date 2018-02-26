@@ -76,6 +76,7 @@ namespace HealthSandbox
                 .HealthChecks.AddHttpGetCheck("invalid http", new Uri("https://invalid-asdfadsf.com/"), 3, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1))
                 .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), retries: 3, delayBetweenRetries: TimeSpan.FromMilliseconds(100), timeoutPerRequest: TimeSpan.FromSeconds(5))
                 .HealthChecks.AddHttpGetCheck("google", new Uri("https://google.com/"), TimeSpan.FromSeconds(1))
+                 // TODO: add SQL Health-Check for sandbox (how?)
                 .HealthChecks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
                 .HealthChecks.AddCheck(
                     "DiskSpace",
