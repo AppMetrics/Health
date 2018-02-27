@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 // ReSharper disable CheckNamespace
 namespace App.Metrics.Health.Checks.Sql
@@ -17,7 +18,7 @@ namespace App.Metrics.Health.Checks.Sql
         public static IHealthBuilder AddSqlCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
-            string connectionString,
+            Func<IDbConnection> newDbConnection,
             TimeSpan timeout,
             bool degradedOnError = false)
         {
@@ -26,7 +27,7 @@ namespace App.Metrics.Health.Checks.Sql
                 throw new InvalidOperationException($"{nameof(timeout)} must be greater than 0");
             }
 
-            healthCheckBuilder.AddCheck(name, async cancellationToken =>
+            healthCheckBuilder.AddCheck(name, cancellationToken =>
             {
                 var sw = new Stopwatch();
 
@@ -37,31 +38,45 @@ namespace App.Metrics.Health.Checks.Sql
                         tokenWithTimeout.CancelAfter(timeout);
 
                         sw.Start();
-                        using (var connection = new SqlConnection(connectionString))
+                        using (var connection = newDbConnection())
                         {
                             connection.Open();
                             using (var command = connection.CreateCommand())
                             {
                                 command.CommandType = CommandType.Text;
                                 command.CommandText = "SELECT 1";
-                                var result = (int)await command.ExecuteScalarAsync(tokenWithTimeout.Token).ConfigureAwait(false);
+                                var commandResult = (long)command.ExecuteScalar();
 
-                                return result == 1
+                                var result = commandResult == 1
                                     ? HealthCheckResult.Healthy($"OK. {name}.")
                                     : HealthCheckResultOnError($"FAILED. {name} SELECT failed. Time taken: {sw.ElapsedMilliseconds}ms.", degradedOnError);
+
+                                return new ValueTask<HealthCheckResult>(result);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    return degradedOnError
+                    var failedResult = degradedOnError
                         ? HealthCheckResult.Degraded(ex)
                         : HealthCheckResult.Unhealthy(ex);
+
+                    return new ValueTask<HealthCheckResult>(failedResult);
                 }
             });
 
             return healthCheckBuilder.Builder;
+        }
+
+        public static IHealthBuilder AddSqlCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            string connectionString,
+            TimeSpan timeout,
+            bool degradedOnError = false)
+        {
+            return healthCheckBuilder.AddSqlCheck(name, () => new SqlConnection(connectionString), timeout, degradedOnError);
         }
 
         /// <summary>
