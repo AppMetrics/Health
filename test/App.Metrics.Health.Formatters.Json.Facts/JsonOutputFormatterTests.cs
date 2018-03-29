@@ -71,7 +71,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             }
 
             // Assert
-            result.Should().Be(expected);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             }
 
             // Assert
-            result.Should().Be(expected);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             }
 
             // Assert
-            result.Should().Be(expected);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace App.Metrics.Health.Formatters.Json.Facts
             Action action = () => JToken.Parse(json);
 
             // Assert
-            action.ShouldNotThrow<Exception>();
+            action.Should().NotThrow<Exception>();
         }
     }
 }

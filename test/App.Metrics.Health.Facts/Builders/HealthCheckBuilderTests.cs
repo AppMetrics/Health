@@ -104,7 +104,7 @@ namespace App.Metrics.Health.Facts.Builders
             };
 
             // Assert
-            action.ShouldThrow<ArgumentNullException>();
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace App.Metrics.Health.Facts.Builders
             };
 
             // Assert
-            action.ShouldThrow<ArgumentException>();
+            action.Should().Throw<ArgumentException>();
         }
     }
 }

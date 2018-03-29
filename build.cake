@@ -43,6 +43,7 @@ var packDirs                    = new [] {
 											Directory("./src/App.Metrics.Health.Checks.Http"),
 											Directory("./src/App.Metrics.Health.Checks.Network"),
 											Directory("./src/App.Metrics.Health.Checks.Process"),
+											Directory("./src/App.Metrics.Health.Checks.Sql"),
 											Directory("./src/App.Metrics.Health.Core"),
 											Directory("./src/App.Metrics.Health.Formatters.Ascii"),
 											Directory("./src/App.Metrics.Health.Formatters.Json")									

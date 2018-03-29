@@ -165,7 +165,7 @@ namespace App.Metrics.Health.Checks.Process.Facts
                 result.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
             };
 
-            action.ShouldThrow<OperationCanceledException>();
+            action.Should().Throw<OperationCanceledException>();
         }
     }
 }

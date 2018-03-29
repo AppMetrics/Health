@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
+using App.Metrics.Health.Checks.Sql;
 using HealthSandbox.HealthChecks;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using static System.Console;
@@ -17,6 +19,8 @@ namespace HealthSandbox
 {
     public static class Host
     {
+        private static readonly string ConnectionString = "Data Source=DBHealthCheck;Mode=Memory;Cache=Shared";
+
         public static IConfigurationRoot Configuration { get; set; }
 
         public static IHealthRoot Health { get; set; }
@@ -28,7 +32,7 @@ namespace HealthSandbox
             var cancellationTokenSource = new CancellationTokenSource();
 
             await RunUntilEscAsync(
-                TimeSpan.FromSeconds(10),
+                TimeSpan.FromSeconds(20),
                 cancellationTokenSource,
                 async () =>
                 {
@@ -73,7 +77,9 @@ namespace HealthSandbox
                 .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                 .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
                 .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
-                .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), TimeSpan.FromSeconds(10))
+                .HealthChecks.AddHttpGetCheck("invalid http", new Uri("https://invalid-asdfadsf.com/"), 3, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1))
+                .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), retries: 3, delayBetweenRetries: TimeSpan.FromMilliseconds(100), timeoutPerRequest: TimeSpan.FromSeconds(5))
+                .HealthChecks.AddHttpGetCheck("google", new Uri("https://google.com/"), TimeSpan.FromSeconds(1))
                 .HealthChecks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
                 .HealthChecks.AddCheck(
                     "DiskSpace",
@@ -85,6 +91,7 @@ namespace HealthSandbox
                                 ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
                                 : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
                     })
+                .HealthChecks.AddSqlCheck("DB Connection", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10))
                 .Build();
 
             int GetFreeDiskSpace()

@@ -57,7 +57,7 @@ namespace App.Metrics.Health.Facts.Builders
             };
 
             // Assert
-            action.ShouldThrow<ArgumentNullException>();
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
