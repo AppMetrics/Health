@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\build\common.props" />
-
   <PropertyGroup>
     <Description>App Metrics Health abstractions and interfaces.</Description>
     <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
@@ -19,7 +17,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="LibLog" Version="$(LibLogVersion)" PrivateAssets="All"  />
+    <PackageReference Include="LibLog" Version="$(LibLogVersion)" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CSharp" Version="$(MicrosoftCSharpVersion)" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="$(CoreFxVersion)" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
