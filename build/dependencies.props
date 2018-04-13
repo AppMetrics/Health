@@ -1,15 +1,14 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>2.1.0-preview1-final</AspNetCoreVersion>
     <MicrosoftExtensionsVersion>2.1.0-preview1-final</MicrosoftExtensionsVersion>
-    <BenchmarkDotNetVersion>0.10.12</BenchmarkDotNetVersion>
-    <CoreFxVersion>4.4.0-*</CoreFxVersion>
+    <BenchmarkDotNetVersion>0.10.14</BenchmarkDotNetVersion>
+    <CoreFxVersion>4.4.0</CoreFxVersion>
     <DependencyModelVersion>2.1.0-*</DependencyModelVersion>
     <LibLogVersion>4.2.6</LibLogVersion>
     <MicrosoftCSharpVersion>4.4.1</MicrosoftCSharpVersion>
     <MoqVersion>4.8.2</MoqVersion>
-    <NewtonsoftVersion>10.0.2</NewtonsoftVersion>
-    <TestSdkVersion>15.7.0-preview-20180320-02</TestSdkVersion>
+    <NewtonsoftVersion>11.0.2</NewtonsoftVersion>
+    <TestSdkVersion>15.7.0</TestSdkVersion>
     <XunitVersion>2.4.0-beta.1.build3958</XunitVersion>
     <FluentAssertionsVersion>5.2.0</FluentAssertionsVersion>
     <FluentAssertionsJsonVersion>5.0.0</FluentAssertionsJsonVersion>

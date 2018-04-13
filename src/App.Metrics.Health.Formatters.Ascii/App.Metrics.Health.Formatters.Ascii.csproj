@@ -4,7 +4,8 @@
 
   <PropertyGroup>
     <Description>App Metrics Formatters for health check results to plain text.</Description>
-    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net452</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>appmetrics;healthchecks;ascii</PackageTags>
   </PropertyGroup>

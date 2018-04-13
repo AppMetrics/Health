@@ -3,13 +3,14 @@
 	<Import Project="..\..\build\common.props" />
 
 	<PropertyGroup>
-	  <OutputType>exe</OutputType>
-	  <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
-	  <LangVersion>latest</LangVersion>
+		<OutputType>exe</OutputType>
+		<TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+	  <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net461</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Include="appsettings.json" />
+		<Content Include="appsettings.json" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -21,13 +22,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="2.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)" />
-	  <PackageReference Include="Serilog.Sinks.Literate" Version="3.0.0" />
-	  <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
-	  <PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.9" />
+		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="2.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)" />
+		<PackageReference Include="Serilog.Sinks.Literate" Version="3.0.0" />
+		<PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.10" />
 	</ItemGroup>
-  
+	
 	<ItemGroup>
 		<Content Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

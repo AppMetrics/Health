@@ -4,7 +4,8 @@
 
   <PropertyGroup>
     <Description>App Metrics Health is an open-source .NET Standard library used to define and report results on user defined health checks.</Description>
-    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net452</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>appmetrics;healthchecks</PackageTags>
   </PropertyGroup>
