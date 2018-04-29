@@ -80,6 +80,23 @@ namespace App.Metrics.Health.Facts
         }
 
         [Fact]
+        public async Task Can_cache_results()
+        {
+            var cacheDuration = TimeSpan.FromMilliseconds(50);
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), cacheDuration);
+            var result = await check.ExecuteAsync();
+
+            result.IsFromCache.Should().BeFalse();
+
+            result = await check.ExecuteAsync();
+            result.IsFromCache.Should().BeTrue();
+
+            await Task.Delay(cacheDuration);
+            result = await check.ExecuteAsync();
+            result.IsFromCache.Should().BeFalse();
+        }
+
+        [Fact]
         public async Task Returns_correct_message()
         {
             var message = "message";

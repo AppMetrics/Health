@@ -105,7 +105,7 @@ namespace App.Metrics.Health.Formatters.Ascii
             _textWriter.Write(checkResult.Name);
             _textWriter.Write('\n');
             _textWriter.Write('\n');
-            _textWriter.Write(FormatReadable("MESSAGE", checkResult.Check.Message));
+            _textWriter.Write(FormatReadable("MESSAGE", checkResult.IsFromCache ? $"[Cached] {checkResult.Check.Message}" : checkResult.Check.Message));
             _textWriter.Write('\n');
             _textWriter.Write(FormatReadable("STATUS", HealthConstants.HealthStatusDisplay[checkResult.Check.Status]));
             _textWriter.Write("\n--------------------------------------------------------------");

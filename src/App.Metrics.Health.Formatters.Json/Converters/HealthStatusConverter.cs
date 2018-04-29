@@ -34,19 +34,19 @@ namespace App.Metrics.Health.Formatters.Json.Converters
                          };
 
             var healthy = source.Results.Where(r => r.Check.Status.IsHealthy())
-                                .Select(c => new KeyValuePair<string, string>(c.Name, c.Check.Message))
+                                .Select(c => new KeyValuePair<string, string>(c.Name, CheckMessage(c)))
                                 .ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var unhealthy = source.Results.Where(r => r.Check.Status.IsUnhealthy())
-                                  .Select(c => new KeyValuePair<string, string>(c.Name, c.Check.Message))
+                                  .Select(c => new KeyValuePair<string, string>(c.Name, CheckMessage(c)))
                                   .ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var degraded = source.Results.Where(r => r.Check.Status.IsDegraded())
-                                 .Select(c => new KeyValuePair<string, string>(c.Name, c.Check.Message))
+                                 .Select(c => new KeyValuePair<string, string>(c.Name, CheckMessage(c)))
                                  .ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var ignored = source.Results.Where(r => r.Check.Status.IsIgnored())
-                                 .Select(c => new KeyValuePair<string, string>(c.Name, c.Check.Message))
+                                 .Select(c => new KeyValuePair<string, string>(c.Name, CheckMessage(c)))
                                  .ToDictionary(pair => pair.Key, pair => pair.Value);
 
             target.Healthy = healthy.Any() ? healthy : null;
@@ -55,6 +55,11 @@ namespace App.Metrics.Health.Formatters.Json.Converters
             target.Ignored = ignored.Any() ? ignored : null;
 
             serializer.Serialize(writer, target);
+        }
+
+        private static string CheckMessage(HealthCheck.Result c)
+        {
+            return c.IsFromCache ? $"[Cached] {c.Check.Message}" : c.Check.Message;
         }
     }
 }

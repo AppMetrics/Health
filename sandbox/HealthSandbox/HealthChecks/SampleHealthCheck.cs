@@ -12,7 +12,7 @@ namespace HealthSandbox.HealthChecks
     public class SampleHealthCheck : HealthCheck
     {
         public SampleHealthCheck()
-            : base("Random Health Check")
+            : base("Random Health Check", cacheDuration: TimeSpan.FromMinutes(1))
         {
         }
 
