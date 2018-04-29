@@ -73,7 +73,7 @@ namespace App.Metrics.Health
                     return await ExecuteWithCachingAsync(cancellationToken);
                 }
 
-                if (_quiteTime.From > TimeSpan.Zero && _quiteTime.To > TimeSpan.Zero)
+                if (HasQuiteTime())
                 {
                     return await ExecuteWithQuiteTimeAsync(cancellationToken);
                 }

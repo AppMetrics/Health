@@ -65,6 +65,8 @@ namespace App.Metrics.Health
             return new Result(Name, checkResult);
         }
 
+        private bool HasQuiteTime() { return _quiteTime.From > TimeSpan.Zero && _quiteTime.To > TimeSpan.Zero; }
+
         public struct QuiteTime
         {
             public readonly TimeSpan From;
