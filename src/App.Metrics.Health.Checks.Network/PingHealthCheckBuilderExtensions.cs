@@ -4,6 +4,7 @@
 
 using System;
 using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 
 // ReSharper disable CheckNamespace
 namespace App.Metrics.Health
@@ -20,26 +21,44 @@ namespace App.Metrics.Health
         {
             healthCheckBuilder.AddCheck(
                 name,
-                async () =>
-                {
-                    try
-                    {
-                        var ping = new Ping();
-                        var result = await ping.SendPingAsync(host, (int)timeout.TotalMilliseconds).ConfigureAwait(false);
-
-                        return result.Status == IPStatus.Success
-                            ? HealthCheckResult.Healthy($"OK. {host}")
-                            : HealthCheckResultOnError($"FAILED. {host} ping result was {result.Status}", degradedOnError);
-                    }
-                    catch (Exception ex)
-                    {
-                        return degradedOnError
-                            ? HealthCheckResult.Degraded(ex)
-                            : HealthCheckResult.Unhealthy(ex);
-                    }
-                });
+                async () => await ExecutePingCheckAsync(host, timeout, degradedOnError));
 
             return healthCheckBuilder.Builder;
+        }
+
+        public static IHealthBuilder AddPingCachedCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            string host,
+            TimeSpan timeout,
+            TimeSpan cacheDuration,
+            bool degradedOnError = false)
+        {
+            healthCheckBuilder.AddCachedCheck(
+                name,
+                async () => await ExecutePingCheckAsync(host, timeout, degradedOnError),
+                cacheDuration);
+
+            return healthCheckBuilder.Builder;
+        }
+
+        private static async Task<HealthCheckResult> ExecutePingCheckAsync(string host, TimeSpan timeout, bool degradedOnError)
+        {
+            try
+            {
+                var ping = new Ping();
+                var result = await ping.SendPingAsync(host, (int)timeout.TotalMilliseconds).ConfigureAwait(false);
+
+                return result.Status == IPStatus.Success
+                    ? HealthCheckResult.Healthy($"OK. {host}")
+                    : HealthCheckResultOnError($"FAILED. {host} ping result was {result.Status}", degradedOnError);
+            }
+            catch (Exception ex)
+            {
+                return degradedOnError
+                    ? HealthCheckResult.Degraded(ex)
+                    : HealthCheckResult.Unhealthy(ex);
+            }
         }
 
         /// <summary>

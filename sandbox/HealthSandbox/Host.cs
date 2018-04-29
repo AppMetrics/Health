@@ -79,6 +79,8 @@ namespace HealthSandbox
                 .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                 .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
                 .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
+                .HealthChecks.AddPingCachedCheck("google ping cached", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
+                .HealthChecks.AddHttpGetCachedCheck("invalid http cached", new Uri("https://invalid-asdfadsf-cached.com/"), 3, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1))
                 .HealthChecks.AddHttpGetCheck("invalid http", new Uri("https://invalid-asdfadsf.com/"), 3, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1))
                 .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), retries: 3, delayBetweenRetries: TimeSpan.FromMilliseconds(100), timeoutPerRequest: TimeSpan.FromSeconds(5))
                 .HealthChecks.AddHttpGetCheck("google", new Uri("https://google.com/"), TimeSpan.FromSeconds(1))
@@ -95,6 +97,7 @@ namespace HealthSandbox
                     },
                     cacheDuration: TimeSpan.FromMinutes(1))
                 .HealthChecks.AddSqlCheck("DB Connection", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10))
+                .HealthChecks.AddSqlCachedCheck("DB Connection Cached", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
                 .Build();
 
             int GetFreeDiskSpace()

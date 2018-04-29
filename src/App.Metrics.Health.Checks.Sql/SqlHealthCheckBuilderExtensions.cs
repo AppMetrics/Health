@@ -15,6 +15,24 @@ namespace App.Metrics.Health.Checks.Sql
 {
     public static class SqlHealthCheckBuilderExtensions
     {
+        public static IHealthBuilder AddSqlCachedCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            Func<IDbConnection> newDbConnection,
+            TimeSpan timeout,
+            TimeSpan cacheDuration,
+            bool degradedOnError = false)
+        {
+            EnsureValidTimeout(timeout);
+
+            healthCheckBuilder.AddCachedCheck(
+                name,
+                cancellationToken => ExecuteSqlCheckAsync(name, newDbConnection, timeout, degradedOnError, cancellationToken),
+                cacheDuration);
+
+            return healthCheckBuilder.Builder;
+        }
+
         public static IHealthBuilder AddSqlCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
@@ -22,49 +40,11 @@ namespace App.Metrics.Health.Checks.Sql
             TimeSpan timeout,
             bool degradedOnError = false)
         {
-            if (timeout <= TimeSpan.Zero)
-            {
-                throw new InvalidOperationException($"{nameof(timeout)} must be greater than 0");
-            }
+            EnsureValidTimeout(timeout);
 
-            healthCheckBuilder.AddCheck(name, cancellationToken =>
-            {
-                var sw = new Stopwatch();
-
-                try
-                {
-                    using (var tokenWithTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-                    {
-                        tokenWithTimeout.CancelAfter(timeout);
-
-                        sw.Start();
-                        using (var connection = newDbConnection())
-                        {
-                            connection.Open();
-                            using (var command = connection.CreateCommand())
-                            {
-                                command.CommandType = CommandType.Text;
-                                command.CommandText = "SELECT 1";
-                                var commandResult = (long)command.ExecuteScalar();
-
-                                var result = commandResult == 1
-                                    ? HealthCheckResult.Healthy($"OK. {name}.")
-                                    : HealthCheckResultOnError($"FAILED. {name} SELECT failed. Time taken: {sw.ElapsedMilliseconds}ms.", degradedOnError);
-
-                                return new ValueTask<HealthCheckResult>(result);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var failedResult = degradedOnError
-                        ? HealthCheckResult.Degraded(ex)
-                        : HealthCheckResult.Unhealthy(ex);
-
-                    return new ValueTask<HealthCheckResult>(failedResult);
-                }
-            });
+            healthCheckBuilder.AddCheck(
+                name,
+                cancellationToken => ExecuteSqlCheckAsync(name, newDbConnection, timeout, degradedOnError, cancellationToken));
 
             return healthCheckBuilder.Builder;
         }
@@ -77,6 +57,58 @@ namespace App.Metrics.Health.Checks.Sql
             bool degradedOnError = false)
         {
             return healthCheckBuilder.AddSqlCheck(name, () => new SqlConnection(connectionString), timeout, degradedOnError);
+        }
+
+        private static void EnsureValidTimeout(TimeSpan timeout)
+        {
+            if (timeout <= TimeSpan.Zero)
+            {
+                throw new InvalidOperationException($"{nameof(timeout)} must be greater than 0");
+            }
+        }
+
+        private static ValueTask<HealthCheckResult> ExecuteSqlCheckAsync(
+            string name,
+            Func<IDbConnection> newDbConnection,
+            TimeSpan timeout,
+            bool degradedOnError,
+            CancellationToken cancellationToken)
+        {
+            var sw = new Stopwatch();
+
+            try
+            {
+                using (var tokenWithTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                {
+                    tokenWithTimeout.CancelAfter(timeout);
+
+                    sw.Start();
+                    using (var connection = newDbConnection())
+                    {
+                        connection.Open();
+                        using (var command = connection.CreateCommand())
+                        {
+                            command.CommandType = CommandType.Text;
+                            command.CommandText = "SELECT 1";
+                            var commandResult = (long)command.ExecuteScalar();
+
+                            var result = commandResult == 1
+                                ? HealthCheckResult.Healthy($"OK. {name}.")
+                                : HealthCheckResultOnError($"FAILED. {name} SELECT failed. Time taken: {sw.ElapsedMilliseconds}ms.", degradedOnError);
+
+                            return new ValueTask<HealthCheckResult>(result);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var failedResult = degradedOnError
+                    ? HealthCheckResult.Degraded(ex)
+                    : HealthCheckResult.Unhealthy(ex);
+
+                return new ValueTask<HealthCheckResult>(failedResult);
+            }
         }
 
         /// <summary>
