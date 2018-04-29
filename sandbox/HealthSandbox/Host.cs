@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
+using App.Metrics.Health.Builder;
 using App.Metrics.Health.Checks.Sql;
 using HealthSandbox.HealthChecks;
 using Microsoft.Data.Sqlite;
@@ -73,6 +74,7 @@ namespace HealthSandbox
 
             Health = AppMetricsHealth.CreateDefaultBuilder()
                 .HealthChecks.AddCheck(new SampleHealthCheck())
+                .HealthChecks.AddCheck(new SampleCachedHealthCheck())
                 .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
                 .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                 .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
@@ -81,7 +83,7 @@ namespace HealthSandbox
                 .HealthChecks.AddHttpGetCheck("github", new Uri("https://github.com/"), retries: 3, delayBetweenRetries: TimeSpan.FromMilliseconds(100), timeoutPerRequest: TimeSpan.FromSeconds(5))
                 .HealthChecks.AddHttpGetCheck("google", new Uri("https://google.com/"), TimeSpan.FromSeconds(1))
                 .HealthChecks.AddCheck("DatabaseConnected", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
-                .HealthChecks.AddCheck(
+                .HealthChecks.AddCachedCheck(
                     "DiskSpace",
                     () =>
                     {
@@ -90,7 +92,8 @@ namespace HealthSandbox
                             freeDiskSpace <= 512
                                 ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
                                 : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-                    })
+                    },
+                    cacheDuration: TimeSpan.FromMinutes(1))
                 .HealthChecks.AddSqlCheck("DB Connection", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10))
                 .Build();
 

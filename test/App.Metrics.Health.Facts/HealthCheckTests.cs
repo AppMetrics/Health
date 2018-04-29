@@ -97,6 +97,19 @@ namespace App.Metrics.Health.Facts
         }
 
         [Fact]
+        public void Cache_duration_when_specified_should_be_greater_than_zero()
+        {
+            var cacheDuration = TimeSpan.Zero;
+            Func<Task> sut = async () =>
+            {
+                var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), cacheDuration);
+                var result = await check.ExecuteAsync();
+            };
+
+            sut.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
         public async Task Returns_correct_message()
         {
             var message = "message";
