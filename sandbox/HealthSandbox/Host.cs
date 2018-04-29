@@ -82,8 +82,8 @@ namespace HealthSandbox
                                      .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                                      .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
                                      .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
-                                     .HealthChecks.AddPingCachedCheck("google ping cached", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
-                                     .HealthChecks.AddHttpGetCachedCheck(
+                                     .HealthChecks.AddPingCheck("google ping cached", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
+                                     .HealthChecks.AddHttpGetCheck(
                                           "invalid http cached",
                                           new Uri("https://invalid-asdfadsf-cached.com/"),
                                           3,

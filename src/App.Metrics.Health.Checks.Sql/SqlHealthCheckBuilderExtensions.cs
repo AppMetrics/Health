@@ -77,7 +77,7 @@ namespace App.Metrics.Health.Checks.Sql
             return healthCheckBuilder.AddSqlCheck(name, () => new SqlConnection(connectionString), timeout, degradedOnError);
         }
 
-        public static IHealthBuilder AddSqlCachedCheck(
+        public static IHealthBuilder AddSqlCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             string connectionString,
@@ -88,7 +88,7 @@ namespace App.Metrics.Health.Checks.Sql
             return healthCheckBuilder.AddSqlCachedCheck(name, () => new SqlConnection(connectionString), timeout, cacheDuration, degradedOnError);
         }
 
-        public static IHealthBuilder AddSqlQuiteTimeCheck(
+        public static IHealthBuilder AddSqlCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             string connectionString,

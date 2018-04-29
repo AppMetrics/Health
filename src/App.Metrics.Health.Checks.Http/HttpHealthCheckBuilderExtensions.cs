@@ -19,7 +19,7 @@ namespace App.Metrics.Health
         private static readonly HttpClient HttpClient = new HttpClient { DefaultRequestHeaders = { { "cache-control", "no-cache" } } };
         private static readonly ILog Logger = LogProvider.For<IRunHealthChecks>();
 
-        public static IHealthBuilder AddHttpGetCachedCheck(
+        public static IHealthBuilder AddHttpGetCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             Uri uri,
@@ -37,7 +37,7 @@ namespace App.Metrics.Health
             return healthCheckBuilder.Builder;
         }
 
-        public static IHealthBuilder AddHttpGetCachedCheck(
+        public static IHealthBuilder AddHttpGetCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             Uri uri,
@@ -55,7 +55,7 @@ namespace App.Metrics.Health
             return healthCheckBuilder.Builder;
         }
 
-        public static IHealthBuilder AddHttpGetCachedCheck(
+        public static IHealthBuilder AddHttpGetCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             Uri uri,
@@ -83,7 +83,7 @@ namespace App.Metrics.Health
             return healthCheckBuilder.Builder;
         }
 
-        public static IHealthBuilder AddHttpGetQuiteTimeCheck(
+        public static IHealthBuilder AddHttpGetCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             Uri uri,

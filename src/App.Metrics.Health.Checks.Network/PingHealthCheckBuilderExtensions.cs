@@ -26,7 +26,7 @@ namespace App.Metrics.Health
             return healthCheckBuilder.Builder;
         }
 
-        public static IHealthBuilder AddPingCachedCheck(
+        public static IHealthBuilder AddPingCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             string host,
@@ -42,7 +42,7 @@ namespace App.Metrics.Health
             return healthCheckBuilder.Builder;
         }
 
-        public static IHealthBuilder AddPingQuiteTimeCheck(
+        public static IHealthBuilder AddPingCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             string host,
