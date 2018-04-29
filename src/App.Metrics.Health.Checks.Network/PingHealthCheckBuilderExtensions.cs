@@ -42,6 +42,22 @@ namespace App.Metrics.Health
             return healthCheckBuilder.Builder;
         }
 
+        public static IHealthBuilder AddPingQuiteTimeCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            string host,
+            TimeSpan timeout,
+            HealthCheck.QuiteTime quiteTime,
+            bool degradedOnError = false)
+        {
+            healthCheckBuilder.AddQuiteTimeCheck(
+                name,
+                async () => await ExecutePingCheckAsync(host, timeout, degradedOnError),
+                quiteTime);
+
+            return healthCheckBuilder.Builder;
+        }
+
         private static async Task<HealthCheckResult> ExecutePingCheckAsync(string host, TimeSpan timeout, bool degradedOnError)
         {
             try

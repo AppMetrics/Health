@@ -33,6 +33,24 @@ namespace App.Metrics.Health.Checks.Sql
             return healthCheckBuilder.Builder;
         }
 
+        public static IHealthBuilder AddSqlQuiteTimeCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            Func<IDbConnection> newDbConnection,
+            TimeSpan timeout,
+            HealthCheck.QuiteTime quiteTime,
+            bool degradedOnError = false)
+        {
+            EnsureValidTimeout(timeout);
+
+            healthCheckBuilder.AddQuiteTimeCheck(
+                name,
+                cancellationToken => ExecuteSqlCheckAsync(name, newDbConnection, timeout, degradedOnError, cancellationToken),
+                quiteTime);
+
+            return healthCheckBuilder.Builder;
+        }
+
         public static IHealthBuilder AddSqlCheck(
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
@@ -57,6 +75,28 @@ namespace App.Metrics.Health.Checks.Sql
             bool degradedOnError = false)
         {
             return healthCheckBuilder.AddSqlCheck(name, () => new SqlConnection(connectionString), timeout, degradedOnError);
+        }
+
+        public static IHealthBuilder AddSqlCachedCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            string connectionString,
+            TimeSpan timeout,
+            TimeSpan cacheDuration,
+            bool degradedOnError = false)
+        {
+            return healthCheckBuilder.AddSqlCachedCheck(name, () => new SqlConnection(connectionString), timeout, cacheDuration, degradedOnError);
+        }
+
+        public static IHealthBuilder AddSqlQuiteTimeCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            string connectionString,
+            TimeSpan timeout,
+            HealthCheck.QuiteTime quiteTime,
+            bool degradedOnError = false)
+        {
+            return healthCheckBuilder.AddSqlQuiteTimeCheck(name, () => new SqlConnection(connectionString), timeout, quiteTime, degradedOnError);
         }
 
         private static void EnsureValidTimeout(TimeSpan timeout)

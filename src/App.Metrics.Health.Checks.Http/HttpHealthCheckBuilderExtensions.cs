@@ -41,6 +41,24 @@ namespace App.Metrics.Health
             this IHealthCheckBuilder healthCheckBuilder,
             string name,
             Uri uri,
+            TimeSpan timeout,
+            HealthCheck.QuiteTime quiteTime,
+            bool degradedOnError = false)
+        {
+            EnsureValidTimeout(timeout);
+
+            healthCheckBuilder.AddQuiteTimeCheck(
+                name,
+                async cancellationToken => await ExecuteHttpCheckNoRetriesAsync(uri, timeout, degradedOnError, cancellationToken),
+                quiteTime);
+
+            return healthCheckBuilder.Builder;
+        }
+
+        public static IHealthBuilder AddHttpGetCachedCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            Uri uri,
             int retries,
             TimeSpan delayBetweenRetries,
             TimeSpan timeoutPerRequest,
@@ -61,6 +79,34 @@ namespace App.Metrics.Health
                     degradedOnError,
                     cancellationToken),
                 cacheDuration);
+
+            return healthCheckBuilder.Builder;
+        }
+
+        public static IHealthBuilder AddHttpGetQuiteTimeCheck(
+            this IHealthCheckBuilder healthCheckBuilder,
+            string name,
+            Uri uri,
+            int retries,
+            TimeSpan delayBetweenRetries,
+            TimeSpan timeoutPerRequest,
+            HealthCheck.QuiteTime quiteTime,
+            bool degradedOnError = false)
+        {
+            EnsureValidRetries(retries);
+            EnsureValidDelayBetweenRequests(delayBetweenRetries);
+            EnsureValidTimeoutPerRequest(timeoutPerRequest);
+
+            healthCheckBuilder.AddQuiteTimeCheck(
+                name,
+                async cancellationToken => await ExecuteHealthCheckWithRetriesAsync(
+                    uri,
+                    retries,
+                    delayBetweenRetries,
+                    timeoutPerRequest,
+                    degradedOnError,
+                    cancellationToken),
+                quiteTime);
 
             return healthCheckBuilder.Builder;
         }
