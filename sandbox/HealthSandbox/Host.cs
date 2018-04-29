@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Metrics.Health;
-using App.Metrics.Health.Builder;
 using App.Metrics.Health.Checks.Sql;
 using HealthSandbox.HealthChecks;
 using Microsoft.Data.Sqlite;
@@ -75,6 +74,7 @@ namespace HealthSandbox
             Health = AppMetricsHealth.CreateDefaultBuilder()
                 .HealthChecks.AddCheck(new SampleHealthCheck())
                 .HealthChecks.AddCheck(new SampleCachedHealthCheck())
+                .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())
                 .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
                 .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                 .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)

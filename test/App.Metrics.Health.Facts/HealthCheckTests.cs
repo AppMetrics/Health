@@ -97,6 +97,30 @@ namespace App.Metrics.Health.Facts
         }
 
         [Fact]
+        public async Task During_quite_time_health_check_should_be_ignored()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var oneHourFromNow = DateTime.UtcNow.Add(TimeSpan.FromHours(1));
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, shouldCheck: false);
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Ignored);
+        }
+
+        [Fact]
+        public async Task When_outside_quite_time_health_check_should_not_be_ignored()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var halfAnHourAgo = DateTime.UtcNow.Add(TimeSpan.FromMinutes(-30));
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, halfAnHourAgo.TimeOfDay, shouldCheck: false);
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+        }
+
+        [Fact]
         public void Cache_duration_when_specified_should_be_greater_than_zero()
         {
             var cacheDuration = TimeSpan.Zero;

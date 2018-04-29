@@ -5,16 +5,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using App.Metrics.Concurrency;
 
 namespace App.Metrics.Health
 {
-    public class HealthCheck
+    /// <summary>
+    /// Resprents a system health check which
+    /// </summary>
+    public partial class HealthCheck
     {
-        private readonly TimeSpan _cacheDuration = TimeSpan.Zero;
         private readonly Func<CancellationToken, ValueTask<HealthCheckResult>> _check;
-        private Result _cachedResult;
-        private AtomicLong _reCheckAt = new AtomicLong(0);
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="HealthCheck" /> class.
@@ -35,27 +34,6 @@ namespace App.Metrics.Health
         /// </summary>
         /// <param name="name">A descriptive name for the health check.</param>
         /// <param name="check">A function returning either a healthy or un-healthy result.</param>
-        /// <param name="cacheDuration">The duration of which to cache the health check result.</param>
-        public HealthCheck(
-            string name,
-            Func<ValueTask<HealthCheckResult>> check,
-            TimeSpan cacheDuration)
-        {
-            EnsureValidCacheDuration(cacheDuration);
-
-            Name = name;
-
-            ValueTask<HealthCheckResult> CheckWithToken(CancellationToken token) => check();
-
-            _check = CheckWithToken;
-            _cacheDuration = cacheDuration;
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="HealthCheck" /> class.
-        /// </summary>
-        /// <param name="name">A descriptive name for the health check.</param>
-        /// <param name="check">A function returning either a healthy or un-healthy result.</param>
         public HealthCheck(string name, Func<CancellationToken, ValueTask<HealthCheckResult>> check)
         {
             Name = name;
@@ -65,39 +43,9 @@ namespace App.Metrics.Health
             _check = CheckWithToken;
         }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="HealthCheck" /> class.
-        /// </summary>
-        /// <param name="name">A descriptive name for the health check.</param>
-        /// <param name="check">A function returning either a healthy or un-healthy result.</param>
-        /// <param name="cacheDuration">The duration of which to cache the health check result.</param>
-        public HealthCheck(
-            string name,
-            Func<CancellationToken, ValueTask<HealthCheckResult>> check,
-            TimeSpan cacheDuration)
-        {
-            EnsureValidCacheDuration(cacheDuration);
-
-            Name = name;
-
-            ValueTask<HealthCheckResult> CheckWithToken(CancellationToken token) => check(token);
-
-            _check = CheckWithToken;
-            _cacheDuration = cacheDuration;
-        }
-
         protected HealthCheck(string name)
         {
             Name = name;
-            _check = token => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy());
-        }
-
-        protected HealthCheck(string name, TimeSpan cacheDuration)
-        {
-            EnsureValidCacheDuration(cacheDuration);
-
-            Name = name;
-            _cacheDuration = cacheDuration;
             _check = token => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy());
         }
 
@@ -125,6 +73,11 @@ namespace App.Metrics.Health
                     return await ExecuteWithCachingAsync(cancellationToken);
                 }
 
+                if (_quiteTime.From > TimeSpan.Zero && _quiteTime.To > TimeSpan.Zero)
+                {
+                    return await ExecuteWithQuiteTimeAsync(cancellationToken);
+                }
+
                 var checkResult = await CheckAsync(cancellationToken);
                 return new Result(Name, checkResult);
             }
@@ -135,31 +88,6 @@ namespace App.Metrics.Health
         }
 
         protected virtual ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default) { return _check(cancellationToken); }
-
-        private static void EnsureValidCacheDuration(TimeSpan cacheDuration)
-        {
-            if (cacheDuration <= TimeSpan.Zero)
-            {
-                throw new ArgumentException("Must be greater than zero", nameof(cacheDuration));
-            }
-        }
-
-        private async Task<Result> ExecuteWithCachingAsync(CancellationToken cancellationToken)
-        {
-            if (_reCheckAt.GetValue() >= DateTime.UtcNow.Ticks)
-            {
-                return _cachedResult;
-            }
-
-            var checkResult = await CheckAsync(cancellationToken);
-            _cachedResult = new Result(Name, checkResult, true);
-
-            _reCheckAt.SetValue(DateTime.UtcNow.Ticks + _cacheDuration.Ticks);
-
-            return new Result(Name, checkResult);
-        }
-
-        private bool HasCacheDuration() { return _cacheDuration > TimeSpan.Zero; }
 
         /// <summary>
         ///     Represents the result of running a <see cref="HealthCheck" />
