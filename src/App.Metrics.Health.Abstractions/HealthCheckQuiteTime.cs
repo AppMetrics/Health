@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,6 +73,7 @@ namespace App.Metrics.Health
             public readonly TimeSpan From;
             public readonly bool ShouldCheck;
             public readonly TimeSpan To;
+            public readonly DayOfWeek[] ExcludeDays;
 
             /// <summary>
             ///     Initializes a new instance of the <see cref="QuiteTime" /> struct.
@@ -91,6 +93,33 @@ namespace App.Metrics.Health
                 From = from;
                 To = to;
                 ShouldCheck = true;
+#if !NETSTANDARD1_6
+                ExcludeDays = new DayOfWeek[0];
+#else
+                ExcludeDays = Array.Empty<DayOfWeek>();
+#endif
+            }
+
+            /// <summary>
+            ///     Initializes a new instance of the <see cref="QuiteTime" /> struct.
+            /// </summary>
+            /// <param name="from">
+            ///     A <see cref="TimeSpan" /> representing the (UTC) from hours and minutes of the day to ignore health
+            ///     checks.
+            /// </param>
+            /// <param name="to">
+            ///     A <see cref="TimeSpan" /> representing the (UTC) to hours and minutes of the day to ignore health
+            ///     checks.
+            /// </param>
+            /// <param name="excludeDays">Days to exclude the quite time.</param>
+            public QuiteTime(TimeSpan from, TimeSpan to, DayOfWeek[] excludeDays)
+            {
+                EnsureValid(from, to);
+
+                From = from;
+                To = to;
+                ShouldCheck = true;
+                ExcludeDays = excludeDays;
             }
 
             /// <summary>
@@ -115,10 +144,46 @@ namespace App.Metrics.Health
                 From = from;
                 To = to;
                 ShouldCheck = shouldCheck;
+#if !NETSTANDARD1_6
+                ExcludeDays = new DayOfWeek[0];
+#else
+                ExcludeDays = Array.Empty<DayOfWeek>();
+#endif
+            }
+
+            /// <summary>
+            ///     Initializes a new instance of the <see cref="QuiteTime" /> struct.
+            /// </summary>
+            /// <param name="from">
+            ///     A <see cref="TimeSpan" /> representing the (UTC) from hours and minutes of the day to ignore health
+            ///     checks.
+            /// </param>
+            /// <param name="to">
+            ///     A <see cref="TimeSpan" /> representing the (UTC) to hours and minutes of the day to ignore health
+            ///     checks.
+            /// </param>
+            /// <param name="shouldCheck">If
+            ///     <value>True</value>
+            ///     , the health check will be executed but ignored when not healthy, otherwise the health check will not be executed.
+            /// </param>
+            /// <param name="excludeDays">Days to exclude the quite time.</param>
+            public QuiteTime(TimeSpan from, TimeSpan to, bool shouldCheck, DayOfWeek[] excludeDays)
+            {
+                EnsureValid(from, to);
+
+                From = from;
+                To = to;
+                ShouldCheck = shouldCheck;
+                ExcludeDays = excludeDays;
             }
 
             public bool UtcNowIsQuiteTime()
             {
+                if (ExcludeDays.Contains(DateTime.UtcNow.DayOfWeek))
+                {
+                    return false;
+                }
+
                 var now = DateTime.UtcNow.TimeOfDay;
                 return now >= From && now <= To;
             }

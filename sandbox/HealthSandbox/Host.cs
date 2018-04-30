@@ -74,10 +74,11 @@ namespace HealthSandbox
             var oneHourAgo = DateTime.UtcNow.AddHours(-1);
             var oneHourFromNow = DateTime.UtcNow.AddHours(1);
 
-            var quiteAt = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, false);
+            var quiteAt = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, false, new[] { DayOfWeek.Monday });
 
             Health = AppMetricsHealth.CreateDefaultBuilder().HealthChecks.AddCheck(new SampleHealthCheck())
-                                     .HealthChecks.AddCheck(new SampleCachedHealthCheck()).HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())
+                                     .HealthChecks.AddCheck(new SampleCachedHealthCheck())
+                                     .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())
                                      .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
                                      .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
                                      .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)

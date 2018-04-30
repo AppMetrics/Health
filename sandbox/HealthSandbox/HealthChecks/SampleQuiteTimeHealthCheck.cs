@@ -11,7 +11,7 @@ namespace HealthSandbox.HealthChecks
 {
     public class SampleQuiteTimeHealthCheck : HealthCheck
     {
-        private static readonly QuiteTime QuiteAt = new QuiteTime(new TimeSpan(12, 0, 0), new TimeSpan(13, 0, 0), false);
+        private static readonly QuiteTime QuiteAt = new QuiteTime(new TimeSpan(11, 0, 0), new TimeSpan(13, 0, 0), new[] { DayOfWeek.Monday });
 
         public SampleQuiteTimeHealthCheck()
             : base("Random Health Check - Quite Time", quiteTime: QuiteAt)

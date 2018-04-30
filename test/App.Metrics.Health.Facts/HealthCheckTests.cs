@@ -109,6 +109,32 @@ namespace App.Metrics.Health.Facts
         }
 
         [Fact]
+        public async Task During_quite_time_health_check_when_day_excluded_should_run_check()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var oneHourFromNow = DateTime.UtcNow.Add(TimeSpan.FromHours(1));
+            var today = DateTime.UtcNow.DayOfWeek;
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, shouldCheck: false, excludeDays: new[] { today });
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
+        }
+
+        [Fact]
+        public async Task During_quite_time_health_check_when_day_not_excluded_should_ignore_check()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var oneHourFromNow = DateTime.UtcNow.Add(TimeSpan.FromHours(1));
+            var today = DateTime.UtcNow.AddDays(-1).DayOfWeek;
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, shouldCheck: false, excludeDays: new[] { today });
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Ignored);
+        }
+
+        [Fact]
         public async Task When_outside_quite_time_health_check_should_not_be_ignored()
         {
             var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
