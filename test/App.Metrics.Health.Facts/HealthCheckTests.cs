@@ -153,7 +153,7 @@ namespace App.Metrics.Health.Facts
             Func<Task> sut = async () =>
             {
                 var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), cacheDuration);
-                var result = await check.ExecuteAsync();
+                var unused = await check.ExecuteAsync();
             };
 
             sut.Should().Throw<ArgumentException>();
