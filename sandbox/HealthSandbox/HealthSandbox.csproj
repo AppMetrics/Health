@@ -26,7 +26,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)" />
 		<PackageReference Include="Serilog.Sinks.Literate" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
-		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.10" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="1.1.11" />
 	</ItemGroup>
 	
 	<ItemGroup>
