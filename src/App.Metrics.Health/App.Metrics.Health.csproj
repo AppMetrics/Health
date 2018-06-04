@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\build\common.props" />
-
   <PropertyGroup>
     <Description>App Metrics Health is an open-source .NET Standard library used to define and report results on user defined health checks.</Description>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
