@@ -130,7 +130,7 @@ namespace App.Metrics.Health.Checks.Sql
                         {
                             command.CommandType = CommandType.Text;
                             command.CommandText = "SELECT 1";
-                            var commandResult = (long)command.ExecuteScalar();
+                            var commandResult = Convert.ToInt64(command.ExecuteScalar());
 
                             var result = commandResult == 1
                                 ? HealthCheckResult.Healthy($"OK. {name}.")
