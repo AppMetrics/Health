@@ -18,6 +18,7 @@ namespace App.Metrics.Health.Builder
         private static readonly ILog Logger = LogProvider.For<HealthBuilder>();
         private readonly Dictionary<string, HealthCheck> _checks = new Dictionary<string, HealthCheck>(StringComparer.OrdinalIgnoreCase);
         private readonly HealthFormatterCollection _healthFormatterCollection = new HealthFormatterCollection();
+        private readonly HealthReporterCollection _healthStatusReporters = new HealthReporterCollection();
         private IHealthOutputFormatter _defaultMetricsHealthFormatter;
         private HealthOptions _options;
 
@@ -77,6 +78,11 @@ namespace App.Metrics.Health.Builder
                 }
             });
 
+        /// <inheritdoc />
+        public IHealthReportingBuilder Report => new HealthReportingBuilder(
+            this,
+            reporter => { _healthStatusReporters.TryAdd(reporter); });
+
         public IHealthRoot Build()
         {
             if (_options == null)
@@ -96,7 +102,7 @@ namespace App.Metrics.Health.Builder
 
             if (_options.Enabled && health.Checks.Any())
             {
-                healthCheckRunner = new DefaultHealthCheckRunner(health.Checks);
+                healthCheckRunner = new DefaultHealthCheckRunner(health.Checks, _healthStatusReporters);
             }
             else
             {
@@ -108,7 +114,8 @@ namespace App.Metrics.Health.Builder
                 _options,
                 _healthFormatterCollection,
                 defaultMetricsOutputFormatter,
-                healthCheckRunner);
+                healthCheckRunner,
+                _healthStatusReporters);
         }
     }
 }

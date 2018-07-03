@@ -27,6 +27,11 @@ namespace App.Metrics.Health
         IHealthOutputFormattingBuilder OutputHealth { get; }
 
         /// <summary>
+        ///  Builder for configuring health status reporters.
+        /// </summary>
+        IHealthReportingBuilder Report { get; }
+
+        /// <summary>
         ///     Builds an <see cref="IHealth" /> with the services configured via an <see cref="IHealthBuilder" />.
         /// </summary>
         /// <returns>An <see cref="IHealthRoot" /> with services configured via an <see cref="IHealthBuilder" />.</returns>

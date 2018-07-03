@@ -10,6 +10,18 @@ namespace App.Metrics.Health
     public interface IHealthRoot : IHealth
     {
         /// <summary>
+        ///     Gets the default <see cref="IHealthOutputFormatter" /> to use when health checks are attempted to be formatted.
+        /// </summary>
+        /// <value>
+        ///     The default <see cref="IHealthOutputFormatter" />s that is used by this application.
+        /// </value>
+        IHealthOutputFormatter DefaultOutputHealthFormatter { get; }
+
+        IRunHealthChecks HealthCheckRunner { get; }
+
+        HealthOptions Options { get; }
+
+        /// <summary>
         ///     Gets a list of <see cref="IHealthOutputFormatter" />s that are used by this application to format health
         ///     results.
         /// </summary>
@@ -19,15 +31,9 @@ namespace App.Metrics.Health
         IReadOnlyCollection<IHealthOutputFormatter> OutputHealthFormatters { get; }
 
         /// <summary>
-        ///     Gets the default <see cref="IHealthOutputFormatter" /> to use when health checks are attempted to be formatted.
+        ///     Gets a readonly collection of <see cref="IReportHealthStatus" />s which provide the ability to report on health
+        ///     check results.
         /// </summary>
-        /// <value>
-        ///     The default <see cref="IHealthOutputFormatter" />s that is used by this application.
-        /// </value>
-        IHealthOutputFormatter DefaultOutputHealthFormatter { get; }
-
-        HealthOptions Options { get; }
-
-        IRunHealthChecks HealthCheckRunner { get; }
+        IReadOnlyCollection<IReportHealthStatus> Reporters { get; }
     }
 }

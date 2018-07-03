@@ -36,7 +36,7 @@ namespace App.Metrics.Health.Logging
             {
                 if (healthStatus.Status.IsHealthy())
                 {
-                    logger.Info(
+                    logger.Debug(
                         "Executed HealthStatus, in {ElapsedMilliseconds}ms, IsHealthy: True. {ChecksPassed} health check results passed.",
                         elapsed.TotalMilliseconds,
                         healthStatus.Results.Count());
@@ -49,7 +49,7 @@ namespace App.Metrics.Health.Logging
                 var failedChecks = healthStatus.Results.Where(h => h.Check.Status.IsUnhealthy()).Select(h => h.Name);
                 var degradedChecks = healthStatus.Results.Where(h => h.Check.Status.IsDegraded()).Select(h => h.Name);
 
-                logger.Info(
+                logger.Debug(
                     "Executed HealthStatus, in {ElapsedMilliseconds}ms, IsHealthy: False. {ChecksPassed} health check results passed. {ChecksFailed} health check results failed. Failed Checks: {FailedChecks}. {ChecksDegraded} health check results degredated. Degraded Checks: {DegredatedChecks}",
                     elapsed.TotalMilliseconds,
                     checksFailed,
@@ -61,12 +61,22 @@ namespace App.Metrics.Health.Logging
                 return;
             }
 
-            logger.Info("Executed HealthStatus, 0 health check results.");
+            logger.Debug("Executed HealthStatus, 0 health check results.");
         }
 
         internal static void HealthCheckGetStatusExecuting(this ILog logger)
         {
             logger.Trace("Executing HealthCheck Get Status");
+        }
+
+        internal static void HealthCheckResultsReportActionExecuting(this ILog logger)
+        {
+            logger.Trace("Executing HealthCheck Reporters");
+        }
+
+        internal static void HealthCheckResultsReportActionExecuted(this ILog logger)
+        {
+            logger.Trace("Executed HealthCheck Reporters");
         }
 
         private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;

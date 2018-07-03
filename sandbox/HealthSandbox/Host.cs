@@ -76,7 +76,8 @@ namespace HealthSandbox
 
             var quiteAt = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, false, new[] { DayOfWeek.Monday });
 
-            Health = AppMetricsHealth.CreateDefaultBuilder().HealthChecks.AddCheck(new SampleHealthCheck())
+            Health = AppMetricsHealth.CreateDefaultBuilder()
+                                     .HealthChecks.AddCheck(new SampleHealthCheck())
                                      .HealthChecks.AddCheck(new SampleCachedHealthCheck())
                                      .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())
                                      .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
@@ -130,11 +131,9 @@ namespace HealthSandbox
                                           },
                                           quiteTime: quiteAt)
                                       .HealthChecks.AddSqlCheck("DB Connection", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10))
-                                      .HealthChecks.AddSqlCachedCheck(
-                                          "DB Connection Cached",
-                                          () => new SqliteConnection(ConnectionString),
-                                          TimeSpan.FromSeconds(10),
-                                          TimeSpan.FromMinutes(1)).Build();
+                                      .HealthChecks.AddSqlCachedCheck("DB Connection Cached", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
+                                      .Report.Using<SampleHealthStatusReporter>()
+                                      .Build();
 
             int GetFreeDiskSpace()
             {

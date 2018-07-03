@@ -21,13 +21,15 @@ namespace App.Metrics.Health
         /// <returns>The initialized <see cref="IHealthBuilder" />.</returns>
         public static IHealthBuilder CreateDefaultBuilder()
         {
-            var builder = new HealthBuilder().Configuration.Configure(
-                options =>
-                {
-                    options.Enabled = true;
-                })
-                .OutputHealth.AsJson()
-                .OutputHealth.AsPlainText();
+            var builder = new HealthBuilder()
+                          .Configuration
+                          .Configure(
+                                options =>
+                                {
+                                    options.Enabled = true;
+                                })
+                           .OutputHealth.AsJson()
+                           .OutputHealth.AsPlainText();
 
             return builder;
         }
