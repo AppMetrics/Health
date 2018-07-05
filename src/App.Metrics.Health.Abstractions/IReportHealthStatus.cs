@@ -9,6 +9,6 @@ namespace App.Metrics.Health
 {
     public interface IReportHealthStatus
     {
-        Task ReportAsync(HealthStatus status, CancellationToken cancellationToken = default);
+        Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default);
     }
 }

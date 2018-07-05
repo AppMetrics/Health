@@ -9,10 +9,9 @@ namespace App.Metrics.Health
     /// </summary>
     public class HealthOptions
     {
-        public HealthOptions()
-        {
-            Enabled = true;
-        }
+        public HealthOptions() { Enabled = true; }
+
+        public string ApplicationName { get; set; }
 
         public bool Enabled { get; set; }
     }

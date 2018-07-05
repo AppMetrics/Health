@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using App.Metrics.Health.Formatters;
 using App.Metrics.Health.Formatters.Ascii;
 using App.Metrics.Health.Internal;
@@ -102,11 +103,18 @@ namespace App.Metrics.Health.Builder
 
             if (_options.Enabled && health.Checks.Any())
             {
-                healthCheckRunner = new DefaultHealthCheckRunner(health.Checks, _healthStatusReporters);
+                healthCheckRunner = new DefaultHealthCheckRunner(_options, health.Checks, _healthStatusReporters);
             }
             else
             {
                 healthCheckRunner = new NoOpHealthCheckRunner();
+            }
+
+            if (string.IsNullOrWhiteSpace(_options.ApplicationName))
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+
+                _options.ApplicationName = entryAssembly?.GetName()?.Name?.Trim();
             }
 
             return new HealthRoot(

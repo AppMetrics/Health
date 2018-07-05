@@ -12,9 +12,9 @@ namespace HealthSandbox
     public class SampleHealthStatusReporter : IReportHealthStatus
     {
         /// <inheritdoc />
-        public Task ReportAsync(HealthStatus status, CancellationToken cancellationToken = default)
+        public Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default)
         {
-            Console.WriteLine($"Overall status: {status.Status}");
+            Console.WriteLine($"{options.ApplicationName} - Overall status: {status.Status}");
 
             return Task.CompletedTask;
         }

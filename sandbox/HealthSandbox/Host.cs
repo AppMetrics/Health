@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,7 +77,10 @@ namespace HealthSandbox
 
             var quiteAt = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, false, new[] { DayOfWeek.Monday });
 
+            var healthOptionsDictionary = Configuration.GetSection(nameof(HealthOptions)).GetChildren().ToDictionary(x => $"{nameof(HealthOptions)}:{x.Key}", x => x.Value);
+
             Health = AppMetricsHealth.CreateDefaultBuilder()
+                                     .Configuration.Configure(healthOptionsDictionary)
                                      .HealthChecks.AddCheck(new SampleHealthCheck())
                                      .HealthChecks.AddCheck(new SampleCachedHealthCheck())
                                      .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())

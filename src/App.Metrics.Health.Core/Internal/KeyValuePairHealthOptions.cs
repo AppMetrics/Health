@@ -11,6 +11,8 @@ namespace App.Metrics.Health.Internal
     internal class KeyValuePairHealthOptions
     {
         internal static readonly string EnabledDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.Enabled)}";
+        internal static readonly string ApplicationNameDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.ApplicationName)}";
+
         private readonly HealthOptions _options;
 
         private readonly Dictionary<string, string> _optionValues;
@@ -50,6 +52,11 @@ namespace App.Metrics.Health.Internal
                     }
 
                     options.Enabled = metricsEnabled;
+                }
+
+                if (string.Compare(key, ApplicationNameDirective, StringComparison.CurrentCultureIgnoreCase) == 0)
+                {
+                    options.ApplicationName = _optionValues[key];
                 }
             }
 
