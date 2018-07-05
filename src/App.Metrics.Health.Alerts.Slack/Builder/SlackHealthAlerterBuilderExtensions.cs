@@ -23,5 +23,14 @@ namespace App.Metrics.Health
 
             return healthReportingBuilder.Builder;
         }
+
+        public static IHealthBuilder AddSlackAlerts(
+            this IHealthReportingBuilder healthReportingBuilder,
+            SlackHealthAlertOptions options)
+        {
+            healthReportingBuilder.Using(new SlackIncomingWebHookHealthAlerter(options));
+
+            return healthReportingBuilder.Builder;
+        }
     }
 }

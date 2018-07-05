@@ -50,11 +50,14 @@ namespace App.Metrics.Health.Alerts.Slack
                 AddHealthAttachments(status, options.ApplicationName, HealthCheckStatus.Unhealthy, unhealthyCheck, slackMessage);
             }
 
-            var degradedChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Degraded).ToList();
-
-            if (degradedChecks.Any())
+            if (_slackOptions.AlertOnDegradedChecks)
             {
-                AddHealthAttachments(status, options.ApplicationName, HealthCheckStatus.Degraded, degradedChecks, slackMessage);
+                var degradedChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Degraded).ToList();
+
+                if (degradedChecks.Any())
+                {
+                    AddHealthAttachments(status, options.ApplicationName, HealthCheckStatus.Degraded, degradedChecks, slackMessage);
+                }
             }
 
             if (slackMessage.Attachments.Any())
