@@ -81,6 +81,12 @@ namespace HealthSandbox
 
             Health = AppMetricsHealth.CreateDefaultBuilder()
                                      .Configuration.Configure(healthOptionsDictionary)
+                                     .Report.AddSlackAlerts(
+                                         options =>
+                                         {
+                                             options.Channel = "#general";
+                                             options.WebhookUrl = "https://hooks.slack.com/services/todo";
+                                         })
                                      .HealthChecks.AddCheck(new SampleHealthCheck())
                                      .HealthChecks.AddCheck(new SampleCachedHealthCheck())
                                      .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())

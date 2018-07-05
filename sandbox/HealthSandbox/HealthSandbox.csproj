@@ -14,6 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\src\App.Metrics.Health.Alerts.Slack\App.Metrics.Health.Alerts.Slack.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Checks.Http\App.Metrics.Health.Checks.Http.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Checks.Network\App.Metrics.Health.Checks.Network.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Checks.Process\App.Metrics.Health.Checks.Process.csproj" />

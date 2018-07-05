@@ -14,25 +14,25 @@
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 var packageRelease				= HasArgument("packageRelease") ? Argument<bool>("packageRelease") :
-                                  EnvironmentVariable("packageRelease") != null ? bool.Parse(EnvironmentVariable("packageRelease")) : false;
+								  EnvironmentVariable("packageRelease") != null ? bool.Parse(EnvironmentVariable("packageRelease")) : false;
 var target                      = Argument("target", "Default");
 var configuration               = HasArgument("BuildConfiguration") ? Argument<string>("BuildConfiguration") :
-                                  EnvironmentVariable("BuildConfiguration") != null ? EnvironmentVariable("BuildConfiguration") : "Release";
+								  EnvironmentVariable("BuildConfiguration") != null ? EnvironmentVariable("BuildConfiguration") : "Release";
 var coverWith					= HasArgument("CoverWith") ? Argument<string>("CoverWith") :
-                                  EnvironmentVariable("CoverWith") != null ? EnvironmentVariable("CoverWith") : "DotCover"; // None, DotCover, OpenCover
+								  EnvironmentVariable("CoverWith") != null ? EnvironmentVariable("CoverWith") : "DotCover"; // None, DotCover, OpenCover
 var skipReSharperCodeInspect    = HasArgument("SkipCodeInspect") ? Argument<bool>("SkipCodeInspect", false) || !IsRunningOnWindows(): true;
 var preReleaseSuffix            = HasArgument("PreReleaseSuffix") ? Argument<string>("PreReleaseSuffix") :
-	                              (AppVeyor.IsRunningOnAppVeyor && EnvironmentVariable("PreReleaseSuffix") == null) || (AppVeyor.IsRunningOnAppVeyor && AppVeyor.Environment.Repository.Tag.IsTag && !packageRelease) 
+								  (AppVeyor.IsRunningOnAppVeyor && EnvironmentVariable("PreReleaseSuffix") == null) || (AppVeyor.IsRunningOnAppVeyor && AppVeyor.Environment.Repository.Tag.IsTag && !packageRelease) 
 								  ? null : EnvironmentVariable("PreReleaseSuffix") != null ? EnvironmentVariable("PreReleaseSuffix") : "ci";
 var buildNumber                 = HasArgument("BuildNumber") ? Argument<int>("BuildNumber") :
-                                  AppVeyor.IsRunningOnAppVeyor ? AppVeyor.Environment.Build.Number :
-                                  TravisCI.IsRunningOnTravisCI ? TravisCI.Environment.Build.BuildNumber :
-                                  EnvironmentVariable("BuildNumber") != null ? int.Parse(EnvironmentVariable("BuildNumber")) : 0;
+								  AppVeyor.IsRunningOnAppVeyor ? AppVeyor.Environment.Build.Number :
+								  TravisCI.IsRunningOnTravisCI ? TravisCI.Environment.Build.BuildNumber :
+								  EnvironmentVariable("BuildNumber") != null ? int.Parse(EnvironmentVariable("BuildNumber")) : 0;
 var gitUser						= HasArgument("GitUser") ? Argument<string>("GitUser") : EnvironmentVariable("GitUser");
 var gitPassword					= HasArgument("GitPassword") ? Argument<string>("GitPassword") : EnvironmentVariable("GitPassword");
 var skipHtmlCoverageReport		= HasArgument("SkipHtmlCoverageReport") ? Argument<bool>("SkipHtmlCoverageReport", true) || !IsRunningOnWindows() : true;
 var linkSources					= HasArgument("LinkSources") ? Argument<bool>("LinkSources") :
-                                  EnvironmentVariable("LinkSources") != null ? bool.Parse(EnvironmentVariable("LinkSources")) : true;
+								  EnvironmentVariable("LinkSources") != null ? bool.Parse(EnvironmentVariable("LinkSources")) : true;
 
 //////////////////////////////////////////////////////////////////////
 // DEFINE FILES & DIRECTORIES
@@ -46,7 +46,8 @@ var packDirs                    = new [] {
 											Directory("./src/App.Metrics.Health.Checks.Sql"),
 											Directory("./src/App.Metrics.Health.Core"),
 											Directory("./src/App.Metrics.Health.Formatters.Ascii"),
-											Directory("./src/App.Metrics.Health.Formatters.Json")									
+											Directory("./src/App.Metrics.Health.Formatters.Json"),
+											Directory("./src/App.Metrics.Health.Alerts.Slack")
 										};
 var artifactsDir                = (DirectoryPath) Directory("./artifacts");
 var testResultsDir              = (DirectoryPath) artifactsDir.Combine("test-results");
@@ -109,21 +110,21 @@ else
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
-    .Does(() =>
+	.Does(() =>
 {
 	Context.Information("Cleaning files *.trx");
 	var rootDir = new System.IO.DirectoryInfo("./");
 	rootDir.GetFiles("*.trx", SearchOption.AllDirectories).ToList().ForEach(file=>file.Delete());
 
-    CleanDirectory(artifactsDir); 
+	CleanDirectory(artifactsDir); 
 	CleanDirectory(coverageResultsDir);
 	CleanDirectory(testResultsDir);
 });
 
 Task("ReleaseNotes")
-    .IsDependentOn("Clean")    
+	.IsDependentOn("Clean")    
 	.WithCriteria(() => AppVeyor.IsRunningOnAppVeyor && AppVeyor.Environment.Repository.Tag.IsTag)
-    .Does(() =>
+	.Does(() =>
 {	
 	var preRelease = preReleaseSuffix != null;
 	var milestone = AppVeyor.Environment.Repository.Tag.Name;
@@ -145,20 +146,20 @@ Task("ReleaseNotes")
 });
 
 Task("Restore")
-    .IsDependentOn("Clean")    
-    .Does(() =>
+	.IsDependentOn("Clean")    
+	.Does(() =>
 {	
 	var settings = new DotNetCoreRestoreSettings
-    {        
-        Sources = new [] { "https://api.nuget.org/v3/index.json", "https://www.myget.org/F/appmetrics/api/v3/index.json" }
-    };
+	{        
+		Sources = new [] { "https://api.nuget.org/v3/index.json", "https://www.myget.org/F/appmetrics/api/v3/index.json" }
+	};
 
 	DotNetCoreRestore(solutionFile, settings);
 });
 
 Task("Build")    
-    .IsDependentOn("Restore")
-    .Does(() =>
+	.IsDependentOn("Restore")
+	.Does(() =>
 {	
 	var settings = new DotNetCoreBuildSettings  { Configuration = configuration, VersionSuffix = versionSuffix };
 
@@ -184,7 +185,7 @@ Task("Build")
 		// var projects = solution.GetProjects();
 		// 
 		// foreach(var project in projects)
-        // {
+		// {
 		// 	var parsedProject = ParseProject(new FilePath(project.Path.ToString()), configuration);
 		// 
 		// 	if (parsedProject.IsLibrary() && !project.Path.ToString().Contains(".Sandbox")&& !project.Path.ToString().Contains(".Facts") && !project.Path.ToString().Contains(".Benchmarks"))
@@ -206,9 +207,9 @@ Task("Build")
 });
 
 Task("Pack")
-    .IsDependentOn("Restore")    
-    .IsDependentOn("Clean")
-    .Does(() =>
+	.IsDependentOn("Restore")    
+	.IsDependentOn("Clean")
+	.Does(() =>
 {
 	if (!IsRunningOnWindows())
 	{
@@ -219,45 +220,45 @@ Task("Pack")
 	Context.Information("Packing using preReleaseSuffix: " + preReleaseSuffix);
 	Context.Information("Packing using versionSuffix: " + versionSuffix);
 
-    var settings = new DotNetCorePackSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = packagesDir,
-        VersionSuffix = versionSuffix,
+	var settings = new DotNetCorePackSettings
+	{
+		Configuration = configuration,
+		OutputDirectory = packagesDir,
+		VersionSuffix = versionSuffix,
 		NoBuild = true,
 		// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
 		ArgumentCustomization = args=>args.Append("/p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
-    };	
-    
-    foreach(var packDir in packDirs)
-    {
-        DotNetCorePack(packDir, settings);
-    }    
+	};	
+	
+	foreach(var packDir in packDirs)
+	{
+		DotNetCorePack(packDir, settings);
+	}    
 });
 
 Task("RunInspectCode")
 	.WithCriteria(() => !skipReSharperCodeInspect)
-    .Does(() =>
+	.Does(() =>
 {
 	InspectCode(solutionFile, new InspectCodeSettings { SolutionWideAnalysis = true, Profile = resharperSettings, OutputFile = inspectCodeXml });
-    ReSharperReports(inspectCodeXml, inspectCodeHtml);
+	ReSharperReports(inspectCodeXml, inspectCodeHtml);
 });
 
 Task("RunTests")
 	.WithCriteria(() => coverWith == "None" || !IsRunningOnWindows())
-    .IsDependentOn("Build")	
-    .Does(() =>
+	.IsDependentOn("Build")	
+	.Does(() =>
 {
-    var projects = GetFiles("./test/**/*.csproj");
+	var projects = GetFiles("./test/**/*.csproj");
 
-    CreateDirectory(coverageResultsDir);
+	CreateDirectory(coverageResultsDir);
 
-    Context.Information("Found " + projects.Count() + " projects");
+	Context.Information("Found " + projects.Count() + " projects");
 
-    foreach (var project in projects)
-    {		
+	foreach (var project in projects)
+	{		
 		var folderName = new System.IO.DirectoryInfo(System.IO.Path.GetDirectoryName(project.ToString())).Name;				
-        var settings = new DotNetCoreTestSettings
+		var settings = new DotNetCoreTestSettings
 		{
 			Configuration = configuration,
 			// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
@@ -265,20 +266,20 @@ Task("RunTests")
 		};
 		
 		if (!IsRunningOnWindows())
-        {
+		{
 			settings.Framework = "netcoreapp2.0";
-        }	 
+		}	 
 
 		DotNetCoreTest(project.FullPath, settings);
-    }
+	}
 });
 
 Task("HtmlCoverageReport")    
-    .WithCriteria(() => IsRunningOnWindows() && FileExists(testOCoverageOutputFilePath) && coverWith != "None" && !skipHtmlCoverageReport)    
-    .IsDependentOn("RunTests")
-    .Does(() => 
+	.WithCriteria(() => IsRunningOnWindows() && FileExists(testOCoverageOutputFilePath) && coverWith != "None" && !skipHtmlCoverageReport)    
+	.IsDependentOn("RunTests")
+	.Does(() => 
 {
-    if (coverWith == "DotCover")
+	if (coverWith == "DotCover")
 	{
 		DotCoverReport(
 				mergedCoverageSnapshots,
@@ -295,26 +296,26 @@ Task("HtmlCoverageReport")
 
 Task("RunTestsWithOpenCover")
 	.WithCriteria(() => coverWith == "OpenCover" && IsRunningOnWindows())
-    .IsDependentOn("Build")	
-    .Does(() =>
+	.IsDependentOn("Build")	
+	.Does(() =>
 {
 	var projects = GetFiles("./test/**/*.csproj");
 
-    CreateDirectory(coverageResultsDir);
+	CreateDirectory(coverageResultsDir);
 
-    Context.Information("Found " + projects.Count() + " projects");
+	Context.Information("Found " + projects.Count() + " projects");
 
 	var settings = new DotNetCoreTestSettings
-    {
-        Configuration = configuration,
+	{
+		Configuration = configuration,
 		// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
 		ArgumentCustomization = args=>args.Append("--logger:trx /t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
-    };
+	};
 
-    foreach (var project in projects)
-    {		
+	foreach (var project in projects)
+	{		
 		var folderName = new System.IO.DirectoryInfo(System.IO.Path.GetDirectoryName(project.ToString())).Name;				
-        
+		
 		Action<ICakeContext> testAction = tool => { tool.DotNetCoreTest(project.ToString(), settings); };
 
 		var openCoverSettings = new OpenCoverSettings { 
@@ -331,14 +332,14 @@ Task("RunTestsWithOpenCover")
 		openCoverSettings.ExcludeByFile(openCoverExcludeFile);
 
 		OpenCover(testAction, testOCoverageOutputFilePath, openCoverSettings);			
-    }
+	}
 });
 
 Task("PublishTestResults")
 	.IsDependentOn("RunTestsWithDotCover")
 	.IsDependentOn("RunTestsWithOpenCover")
 	.IsDependentOn("RunTests")
-    .Does(() =>
+	.Does(() =>
 {
 	if (IsRunningOnWindows())
 	{		
@@ -374,26 +375,26 @@ Task("PublishTestResults")
 
 Task("RunTestsWithDotCover")
 	.WithCriteria(() => coverWith == "DotCover" && IsRunningOnWindows())
-    .IsDependentOn("Build")	
-    .Does(() =>
+	.IsDependentOn("Build")	
+	.Does(() =>
 {
 	var projects = GetFiles("./test/**/*.csproj");
-    
-    CreateDirectory(coverageResultsDir);
+	
+	CreateDirectory(coverageResultsDir);
 
-    Context.Information("Found " + projects.Count() + " projects");
+	Context.Information("Found " + projects.Count() + " projects");
 
 	var settings = new DotNetCoreTestSettings
-    {
-        Configuration = configuration,
+	{
+		Configuration = configuration,
 		// Workaround to fixing pre-release version package references - https://github.com/NuGet/Home/issues/4337
 		ArgumentCustomization = args=>args.Append("--logger:trx /t:Restore /p:RestoreSources=https://api.nuget.org/v3/index.json;https://www.myget.org/F/appmetrics/api/v3/index.json;")
-    };
+	};
 
-    foreach (var project in projects)
-    {		
+	foreach (var project in projects)
+	{		
 		var folderName = new System.IO.DirectoryInfo(System.IO.Path.GetDirectoryName(project.ToString())).Name;				
-        
+		
 		Action<ICakeContext> testAction = tool => { tool.DotNetCoreTest(project.ToString(), settings); };
 
 		var dotCoverSettings = new DotCoverCoverSettings 
@@ -411,7 +412,7 @@ Task("RunTestsWithDotCover")
 		DotCoverCover(testAction, new FilePath(coverageFile), dotCoverSettings);	
 
 		MoveFiles(coverageFile, coverageResultsDir);				
-    }    
+	}    
 
 	var snapshots = GetFiles(coverageResultsDir.FullPath + "/*.dcvr");		
 
@@ -429,17 +430,17 @@ Task("RunTestsWithDotCover")
 
 
 Task("PublishCoverage")    
-    .WithCriteria(() => FileExists(testOCoverageOutputFilePath))
-    .WithCriteria(() => !BuildSystem.IsLocalBuild)
+	.WithCriteria(() => FileExists(testOCoverageOutputFilePath))
+	.WithCriteria(() => !BuildSystem.IsLocalBuild)
 	.WithCriteria(() => coverWith == "OpenCover")
-    .WithCriteria(() => !string.IsNullOrEmpty(coverallsToken))
-    .IsDependentOn("RunTests")
-    .Does(() => 
+	.WithCriteria(() => !string.IsNullOrEmpty(coverallsToken))
+	.IsDependentOn("RunTests")
+	.Does(() => 
 {
-    CoverallsIo(testOCoverageOutputFilePath, new CoverallsIoSettings()
-    {
-        RepoToken = coverallsToken
-    });
+	CoverallsIo(testOCoverageOutputFilePath, new CoverallsIoSettings()
+	{
+		RepoToken = coverallsToken
+	});
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -447,19 +448,19 @@ Task("PublishCoverage")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")		
-    .IsDependentOn("Build")
+	.IsDependentOn("Build")
 	.IsDependentOn("PublishTestResults")	
-    .IsDependentOn("Pack")
+	.IsDependentOn("Pack")
 	.IsDependentOn("HtmlCoverageReport")
 	.IsDependentOn("RunInspectCode");	
 
 Task("AppVeyor")		
-    .IsDependentOn("Build")
+	.IsDependentOn("Build")
 	.IsDependentOn("PublishTestResults")	
-    .IsDependentOn("Pack")
+	.IsDependentOn("Pack")
 	.IsDependentOn("HtmlCoverageReport")
 	.IsDependentOn("RunInspectCode")	
-    .IsDependentOn("PublishCoverage")
+	.IsDependentOn("PublishCoverage")
 	.IsDependentOn("ReleaseNotes");
 
 //////////////////////////////////////////////////////////////////////
