@@ -14,10 +14,15 @@ namespace App.Metrics.Health.Alerts.Slack
 {
     public class SlackIncomingWebHookHealthAlerter : IReportHealthStatus
     {
+        private const string DefaultEmojiIcon = ":broken_heart:";
         private const string DegradingColor = "#FFCC00";
         private const string FailingColor = "#F35A00";
-        private readonly SlackHealthAlertOptions _slackOptions;
+        private const string RecoveredEmojiIcon = ":green_heart:";
+        private const string SuccessColor = "#5CB85C";
+        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly HashSet<string> LastFailedCheckCache = new HashSet<string>();
         private readonly HttpClient _httpClient;
+        private readonly SlackHealthAlertOptions _slackOptions;
 
         public SlackIncomingWebHookHealthAlerter(SlackHealthAlertOptions slackOptions)
         {
@@ -37,17 +42,17 @@ namespace App.Metrics.Health.Alerts.Slack
 
             var slackMessage = new SlackPayload
                                {
-                                   Text = $"*{applicationName} Health Alert*",
+                                   Text = $"*{applicationName} Unhealthy*",
                                    Channel = _slackOptions.Channel,
                                    UserName = _slackOptions.Username,
-                                   IconEmoji = string.IsNullOrWhiteSpace(_slackOptions.EmojiIcon) ? ":broken_heart:" : _slackOptions.EmojiIcon
+                                   IconEmoji = string.IsNullOrWhiteSpace(_slackOptions.EmojiIcon) ? DefaultEmojiIcon : _slackOptions.EmojiIcon
                                };
 
             var unhealthyCheck = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Unhealthy).ToList();
 
             if (unhealthyCheck.Any())
             {
-                AddHealthAttachments(status, options.ApplicationName, HealthCheckStatus.Unhealthy, unhealthyCheck, slackMessage);
+                AddHealthAttachments(HealthCheckStatus.Unhealthy, unhealthyCheck, slackMessage);
             }
 
             if (_slackOptions.AlertOnDegradedChecks)
@@ -56,7 +61,7 @@ namespace App.Metrics.Health.Alerts.Slack
 
                 if (degradedChecks.Any())
                 {
-                    AddHealthAttachments(status, options.ApplicationName, HealthCheckStatus.Degraded, degradedChecks, slackMessage);
+                    AddHealthAttachments(HealthCheckStatus.Degraded, degradedChecks, slackMessage);
                 }
             }
 
@@ -64,11 +69,11 @@ namespace App.Metrics.Health.Alerts.Slack
             {
                 await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
             }
+
+            await AlertRecoveredChecks(status, applicationName, cancellationToken);
         }
 
-        private static void AddHealthAttachments(
-            HealthStatus status,
-            string applicationName,
+        private void AddHealthAttachments(
             HealthCheckStatus checkStatus,
             IReadOnlyCollection<HealthCheck.Result> checks,
             SlackPayload slackMessage)
@@ -89,14 +94,26 @@ namespace App.Metrics.Health.Alerts.Slack
                 color = DegradingColor;
             }
 
+            if (checkStatus == HealthCheckStatus.Healthy)
+            {
+                textEnd = "recovered";
+                color = SuccessColor;
+            }
+
             var attachment = new SlackAttachment
                              {
-                                 Text = $"*_{checks.Count} / {status.Results.Count()} {checkOrChecks} {textEnd}_*",
-                                 Color = color
-            };
+                                 Text = $"*_{checks.Count} {checkOrChecks} {textEnd}_*",
+                                 Color = color,
+                                 Ts = (DateTime.UtcNow - Epoch).TotalSeconds
+                             };
 
             foreach (var result in checks)
             {
+                if (result.Check.Status != HealthCheckStatus.Healthy)
+                {
+                    LastFailedCheckCache.Add(result.Name);
+                }
+
                 attachment.Fields.Add(
                     new SlackAttachmentFields
                     {
@@ -107,6 +124,45 @@ namespace App.Metrics.Health.Alerts.Slack
             }
 
             slackMessage.Attachments.Add(attachment);
+        }
+
+        private async Task AlertRecoveredChecks(HealthStatus status, string applicationName, CancellationToken cancellationToken)
+        {
+            var healthyChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Healthy).ToList();
+
+            if (!healthyChecks.Any())
+            {
+                return;
+            }
+
+            var recoveredChecks = new List<HealthCheck.Result>();
+
+            foreach (var check in healthyChecks)
+            {
+                if (LastFailedCheckCache.Contains(check.Name))
+                {
+                    recoveredChecks.Add(check);
+                    LastFailedCheckCache.Remove(check.Name);
+                }
+            }
+
+            if (recoveredChecks.Any())
+            {
+                var slackMessage = new SlackPayload
+                                   {
+                                       Text = $"*{applicationName} Health Recovered*",
+                                       Channel = _slackOptions.Channel,
+                                       UserName = _slackOptions.Username,
+                                       IconEmoji = string.IsNullOrWhiteSpace(_slackOptions.EmojiIcon) ? RecoveredEmojiIcon : _slackOptions.EmojiIcon
+                                   };
+
+                AddHealthAttachments(HealthCheckStatus.Healthy, recoveredChecks, slackMessage);
+
+                if (slackMessage.Attachments.Any())
+                {
+                    await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
+                }
+            }
         }
     }
 }

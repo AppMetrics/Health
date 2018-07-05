@@ -31,6 +31,8 @@ namespace App.Metrics.Health.Alerts.Slack.Internal
 
         public string Text { get; set; }
 
+        public double Ts { get; set; }
+
         public List<SlackAttachmentFields> Fields { get; set; }
     }
 }
