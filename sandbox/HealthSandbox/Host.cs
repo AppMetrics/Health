@@ -22,7 +22,7 @@ namespace HealthSandbox
     public static class Host
     {
         private static readonly string ConnectionString = "Data Source=DBHealthCheck;Mode=Memory;Cache=Shared";
-        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/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";
+        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/todo";
         private static readonly string SlackChannel = "#general";
 
         public static IConfigurationRoot Configuration { get; set; }
