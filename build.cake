@@ -47,8 +47,8 @@ var packDirs                    = new [] {
 											Directory("./src/App.Metrics.Health.Core"),
 											Directory("./src/App.Metrics.Health.Formatters.Ascii"),
 											Directory("./src/App.Metrics.Health.Formatters.Json"),
-											Directory("./src/App.Metrics.Health.Reporters.Slack"),
-											Directory("./src/App.Metrics.Health.Reporters.Metrics")
+											Directory("./src/App.Metrics.Health.Reporting.Slack"),
+											Directory("./src/App.Metrics.Health.Reporting.Metrics")
 										};
 var artifactsDir                = (DirectoryPath) Directory("./artifacts");
 var testResultsDir              = (DirectoryPath) artifactsDir.Combine("test-results");
