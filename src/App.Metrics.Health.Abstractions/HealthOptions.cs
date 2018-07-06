@@ -11,8 +11,26 @@ namespace App.Metrics.Health
     {
         public HealthOptions() { Enabled = true; }
 
+        /// <summary>
+        ///     Gets or sets the application name used when reporting health status for example.
+        /// </summary>
         public string ApplicationName { get; set; }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether [health checks enabled]. This will also avoid registering all health
+        ///     middleware if using App.Metrics.Health.Middleware.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [health enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool Enabled { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether [reporting enabled].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [reporting enabled]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ReportingEnabled { get; set; } = true;
     }
 }

@@ -21,6 +21,8 @@ namespace HealthSandbox
     public static class Host
     {
         private static readonly string ConnectionString = "Data Source=DBHealthCheck;Mode=Memory;Cache=Shared";
+        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/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";
+        private static readonly string SlackChannel = "#general";
 
         public static IConfigurationRoot Configuration { get; set; }
 
@@ -55,6 +57,14 @@ namespace HealthSandbox
                             WriteLine(result);
                         }
                     }
+
+                    foreach (var reporter in Health.Reporters)
+                    {
+                        WriteLine($"Reporter: {reporter.GetType().FullName}");
+                        WriteLine("-------------------------------------------");
+
+                        await reporter.ReportAsync(Health.Options, healthStatus, cancellationTokenSource.Token);
+                    }
                 });
         }
 
@@ -81,11 +91,11 @@ namespace HealthSandbox
 
             Health = AppMetricsHealth.CreateDefaultBuilder()
                                      .Configuration.Configure(healthOptionsDictionary)
-                                     .Report.AddSlackAlerts(
+                                     .Report.ToSlack(
                                          options =>
                                          {
-                                             options.Channel = "#general";
-                                             options.WebhookUrl = "https://hooks.slack.com/services/todo";
+                                             options.Channel = SlackChannel;
+                                             options.WebhookUrl = SlackWebhookUrl;
                                          })
                                      .HealthChecks.AddCheck(new SampleHealthCheck())
                                      .HealthChecks.AddCheck(new SampleCachedHealthCheck())

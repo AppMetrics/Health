@@ -11,7 +11,7 @@ namespace App.Metrics.Health
 {
     public static class SlackHealthAlerterBuilderExtensions
     {
-        public static IHealthBuilder AddSlackAlerts(
+        public static IHealthBuilder ToSlack(
             this IHealthReportingBuilder healthReportingBuilder,
             Action<SlackHealthAlertOptions> optionsSetup)
         {
@@ -24,7 +24,7 @@ namespace App.Metrics.Health
             return healthReportingBuilder.Builder;
         }
 
-        public static IHealthBuilder AddSlackAlerts(
+        public static IHealthBuilder ToSlack(
             this IHealthReportingBuilder healthReportingBuilder,
             SlackHealthAlertOptions options)
         {

@@ -12,8 +12,6 @@ namespace App.Metrics.Health.Facts
 {
     public class HealthCheckRunnerTests
     {
-        private static readonly HealthOptions Options = new HealthOptions();
-
         [Fact]
         public async Task Status_is_degraded_if_one_check_is_degraded()
         {
@@ -23,7 +21,7 @@ namespace App.Metrics.Health.Facts
                             new HealthCheck("ok", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy())),
                             new HealthCheck("degraded", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded()))
                          };
-            var runner = new DefaultHealthCheckRunner(Options, checks, new HealthReporterCollection());
+            var runner = new DefaultHealthCheckRunner(checks);
 
             // Act
             var status = await runner.ReadAsync();
@@ -42,7 +40,7 @@ namespace App.Metrics.Health.Facts
                              new HealthCheck("ok", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy())),
                              new HealthCheck("bad", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()))
                          };
-            var runner = new DefaultHealthCheckRunner(Options, checks, new HealthReporterCollection());
+            var runner = new DefaultHealthCheckRunner(checks);
 
             // Act
             var status = await runner.ReadAsync();
@@ -61,7 +59,7 @@ namespace App.Metrics.Health.Facts
                              new HealthCheck("ok", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy())),
                              new HealthCheck("another", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()))
                          };
-            var runner = new DefaultHealthCheckRunner(Options, checks, new HealthReporterCollection());
+            var runner = new DefaultHealthCheckRunner(checks);
 
             // Act
             var status = await runner.ReadAsync();
@@ -81,7 +79,7 @@ namespace App.Metrics.Health.Facts
                              new HealthCheck("bad", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy())),
                              new HealthCheck("degraded", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded()))
                          };
-            var runner = new DefaultHealthCheckRunner(Options, checks, new HealthReporterCollection());
+            var runner = new DefaultHealthCheckRunner(checks);
 
             // Act
             var status = await runner.ReadAsync();

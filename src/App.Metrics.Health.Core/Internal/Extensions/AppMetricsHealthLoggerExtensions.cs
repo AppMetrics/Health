@@ -69,16 +69,6 @@ namespace App.Metrics.Health.Logging
             logger.Trace("Executing HealthCheck Get Status");
         }
 
-        internal static void HealthCheckResultsReportActionExecuting(this ILog logger)
-        {
-            logger.Trace("Executing HealthCheck Reporters");
-        }
-
-        internal static void HealthCheckResultsReportActionExecuted(this ILog logger)
-        {
-            logger.Trace("Executed HealthCheck Reporters");
-        }
-
         private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
     }
 }

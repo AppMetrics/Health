@@ -12,6 +12,7 @@ namespace App.Metrics.Health.Internal
     {
         internal static readonly string EnabledDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.Enabled)}";
         internal static readonly string ApplicationNameDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.ApplicationName)}";
+        internal static readonly string ReportingEnabledDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.ReportingEnabled)}";
 
         private readonly HealthOptions _options;
 
@@ -53,10 +54,18 @@ namespace App.Metrics.Health.Internal
 
                     options.Enabled = metricsEnabled;
                 }
-
-                if (string.Compare(key, ApplicationNameDirective, StringComparison.CurrentCultureIgnoreCase) == 0)
+                else if (string.Compare(key, ApplicationNameDirective, StringComparison.CurrentCultureIgnoreCase) == 0)
                 {
                     options.ApplicationName = _optionValues[key];
+                }
+                else if (string.Compare(key, ReportingEnabledDirective, StringComparison.CurrentCultureIgnoreCase) == 0)
+                {
+                    if (!bool.TryParse(_optionValues[key], out var reportingEnabled))
+                    {
+                        throw new InvalidCastException($"Attempted to bind {key} to {ReportingEnabledDirective} but it's not a boolean");
+                    }
+
+                    options.ReportingEnabled = reportingEnabled;
                 }
             }
 

@@ -103,7 +103,7 @@ namespace App.Metrics.Health.Builder
 
             if (_options.Enabled && health.Checks.Any())
             {
-                healthCheckRunner = new DefaultHealthCheckRunner(_options, health.Checks, _healthStatusReporters);
+                healthCheckRunner = new DefaultHealthCheckRunner(health.Checks);
             }
             else
             {
