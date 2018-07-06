@@ -24,6 +24,9 @@ namespace App.Metrics.Health.Builder
         private HealthOptions _options;
 
         /// <inheritdoc />
+        public bool CanReport() { return _options.Enabled && _options.ReportingEnabled && _healthStatusReporters.Any(); }
+
+        /// <inheritdoc />
         public IHealthConfigurationBuilder Configuration
         {
             get

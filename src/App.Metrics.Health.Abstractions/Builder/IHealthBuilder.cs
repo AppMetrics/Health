@@ -8,6 +8,8 @@ namespace App.Metrics.Health
 {
     public interface IHealthBuilder
     {
+        bool CanReport();
+
         /// <summary>
         ///     Builder for configuring core App Metrics Health options.
         /// </summary>
