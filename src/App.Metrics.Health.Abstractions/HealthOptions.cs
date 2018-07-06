@@ -9,7 +9,11 @@ namespace App.Metrics.Health
     /// </summary>
     public class HealthOptions
     {
-        public HealthOptions() { Enabled = true; }
+        public HealthOptions()
+        {
+            Enabled = true;
+            ReportingEnabled = true;
+        }
 
         /// <summary>
         ///     Gets or sets the application name used when reporting health status for example.
