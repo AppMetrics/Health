@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using App.Metrics;
 using App.Metrics.Health;
 using App.Metrics.Health.Checks.Sql;
 using HealthSandbox.HealthChecks;
@@ -27,6 +28,8 @@ namespace HealthSandbox
         public static IConfigurationRoot Configuration { get; set; }
 
         public static IHealthRoot Health { get; set; }
+
+        public static IMetricsRoot Metrics { get; set; }
 
         public static async Task Main()
         {
@@ -89,6 +92,8 @@ namespace HealthSandbox
 
             var healthOptionsDictionary = Configuration.GetSection(nameof(HealthOptions)).GetChildren().ToDictionary(x => $"{nameof(HealthOptions)}:{x.Key}", x => x.Value);
 
+            Metrics = AppMetrics.CreateDefaultBuilder().Build();
+
             Health = AppMetricsHealth.CreateDefaultBuilder()
                                      .Configuration.Configure(healthOptionsDictionary)
                                      .Report.ToSlack(
@@ -97,6 +102,7 @@ namespace HealthSandbox
                                              options.Channel = SlackChannel;
                                              options.WebhookUrl = SlackWebhookUrl;
                                          })
+                                     .Report.ToMetrics(Metrics)
                                      .HealthChecks.AddCheck(new SampleHealthCheck())
                                      .HealthChecks.AddCheck(new SampleCachedHealthCheck())
                                      .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())

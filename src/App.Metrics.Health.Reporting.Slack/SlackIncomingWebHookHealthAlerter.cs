@@ -8,9 +8,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using App.Metrics.Health.Alerts.Slack.Internal;
+using App.Metrics.Health.Reporting.Slack.Internal;
 
-namespace App.Metrics.Health.Alerts.Slack
+namespace App.Metrics.Health.Reporting.Slack
 {
     public class SlackIncomingWebHookHealthAlerter : IReportHealthStatus
     {

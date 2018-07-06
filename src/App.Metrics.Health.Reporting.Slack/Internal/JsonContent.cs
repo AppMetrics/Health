@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace App.Metrics.Health.Alerts.Slack.Internal
+namespace App.Metrics.Health.Reporting.Slack.Internal
 {
     /// <summary>
     ///     Provides HTTP content based on a json string.

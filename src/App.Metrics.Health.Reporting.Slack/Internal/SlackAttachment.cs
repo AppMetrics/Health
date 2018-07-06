@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace App.Metrics.Health.Alerts.Slack.Internal
+namespace App.Metrics.Health.Reporting.Slack.Internal
 {
     internal class SlackAttachment
     {

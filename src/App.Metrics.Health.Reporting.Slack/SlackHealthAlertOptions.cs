@@ -2,7 +2,7 @@
 // Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
-namespace App.Metrics.Health.Alerts.Slack
+namespace App.Metrics.Health.Reporting.Slack
 {
     public class SlackHealthAlertOptions
     {

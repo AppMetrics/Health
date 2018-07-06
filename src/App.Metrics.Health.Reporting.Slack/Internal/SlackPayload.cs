@@ -3,9 +3,8 @@
 // </copyright>
 
 using System.Collections.Generic;
-using App.Metrics.Health.Alerts.Slack.Internal;
 
-namespace App.Metrics.Health.Alerts.Slack
+namespace App.Metrics.Health.Reporting.Slack.Internal
 {
     internal class SlackPayload
     {

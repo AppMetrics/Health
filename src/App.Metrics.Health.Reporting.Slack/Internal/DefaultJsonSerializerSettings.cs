@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace App.Metrics.Health.Alerts.Slack
+namespace App.Metrics.Health.Reporting.Slack.Internal
 {
     internal static class DefaultJsonSerializerSettings
     {

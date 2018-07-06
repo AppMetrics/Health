@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
+    <AppMetricsCoreVersion>3.0.0-*</AppMetricsCoreVersion>
     <MicrosoftExtensionsVersion>2.1.0</MicrosoftExtensionsVersion>
     <BenchmarkDotNetVersion>0.10.14</BenchmarkDotNetVersion>
     <CoreFxVersion>4.5.0</CoreFxVersion>

@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		AppMetrics.ruleset = AppMetrics.ruleset
 		appveyor.yml = appveyor.yml
 		global.json = global.json
+		README.md = README.md
 		stylecop.json = stylecop.json
 		version.props = version.props
 	EndProjectSection
@@ -87,7 +88,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Checks.Sql", "src\App.Metrics.Health.Checks.Sql\App.Metrics.Health.Checks.Sql.csproj", "{ABF2C6E2-815B-495E-9E50-12FEFEA3E383}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Alerts.Slack", "src\App.Metrics.Health.Alerts.Slack\App.Metrics.Health.Alerts.Slack.csproj", "{A0012FFB-4EA0-44C5-8F44-FF0B899239F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Reporting.Slack", "src\App.Metrics.Health.Reporting.Slack\App.Metrics.Health.Reporting.Slack.csproj", "{C3B21944-33F3-40D7-BEB0-8681A40F7DB2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Metrics.Health.Reporting.Metrics", "src\App.Metrics.Health.Reporting.Metrics\App.Metrics.Health.Reporting.Metrics.csproj", "{6F39E4F0-BCA1-4CE2-AD65-C338B8B0EF2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,10 +162,14 @@ Global
 		{ABF2C6E2-815B-495E-9E50-12FEFEA3E383}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABF2C6E2-815B-495E-9E50-12FEFEA3E383}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABF2C6E2-815B-495E-9E50-12FEFEA3E383}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A0012FFB-4EA0-44C5-8F44-FF0B899239F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0012FFB-4EA0-44C5-8F44-FF0B899239F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0012FFB-4EA0-44C5-8F44-FF0B899239F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0012FFB-4EA0-44C5-8F44-FF0B899239F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3B21944-33F3-40D7-BEB0-8681A40F7DB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3B21944-33F3-40D7-BEB0-8681A40F7DB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3B21944-33F3-40D7-BEB0-8681A40F7DB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3B21944-33F3-40D7-BEB0-8681A40F7DB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F39E4F0-BCA1-4CE2-AD65-C338B8B0EF2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F39E4F0-BCA1-4CE2-AD65-C338B8B0EF2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F39E4F0-BCA1-4CE2-AD65-C338B8B0EF2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F39E4F0-BCA1-4CE2-AD65-C338B8B0EF2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,7 +195,8 @@ Global
 		{ED057808-8377-46BB-95EA-2F03865B0116} = {DD2E4647-7125-4CE3-9BA5-B45A26113A31}
 		{6F6F9F53-4A1B-4F2B-96E3-A75BA47BCA1D} = {2D805782-756E-4C98-B22E-F502BEE95318}
 		{ABF2C6E2-815B-495E-9E50-12FEFEA3E383} = {2D805782-756E-4C98-B22E-F502BEE95318}
-		{A0012FFB-4EA0-44C5-8F44-FF0B899239F4} = {2D805782-756E-4C98-B22E-F502BEE95318}
+		{C3B21944-33F3-40D7-BEB0-8681A40F7DB2} = {2D805782-756E-4C98-B22E-F502BEE95318}
+		{6F39E4F0-BCA1-4CE2-AD65-C338B8B0EF2A} = {2D805782-756E-4C98-B22E-F502BEE95318}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A8699A1D-0BA1-403C-86E9-C789CD2645EB}

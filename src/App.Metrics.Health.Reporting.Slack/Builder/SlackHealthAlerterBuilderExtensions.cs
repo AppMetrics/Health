@@ -3,7 +3,7 @@
 // </copyright>
 
 using System;
-using App.Metrics.Health.Alerts.Slack;
+using App.Metrics.Health.Reporting.Slack;
 
 // ReSharper disable CheckNamespace
 namespace App.Metrics.Health
