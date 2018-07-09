@@ -33,6 +33,11 @@ namespace App.Metrics.Health.Reporting.Slack
         /// <inheritdoc />
         public async Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default)
         {
+            if (!_slackOptions.Enabled)
+            {
+                return;
+            }
+
             var applicationName = options.ApplicationName;
 
             if (Uri.TryCreate(applicationName, UriKind.Absolute, out var appUri))

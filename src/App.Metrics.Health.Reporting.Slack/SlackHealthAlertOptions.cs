@@ -15,5 +15,7 @@ namespace App.Metrics.Health.Reporting.Slack
         public string EmojiIcon { get; set; }
 
         public bool AlertOnDegradedChecks { get; set; } = true;
+
+        public bool Enabled { get; set; } = true;
     }
 }
