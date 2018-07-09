@@ -20,7 +20,8 @@ namespace App.Metrics.Health.Reporting.Slack
         private const string RecoveredEmojiIcon = ":green_heart:";
         private const string SuccessColor = "#5CB85C";
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        private static readonly HashSet<string> LastFailedCheckCache = new HashSet<string>();
+        private static readonly HashSet<string> LastUnhealthyCheckCache = new HashSet<string>();
+        private static readonly HashSet<string> LastDegradedCheckCache = new HashSet<string>();
         private readonly HttpClient _httpClient;
         private readonly SlackHealthAlertOptions _slackOptions;
 
@@ -53,16 +54,16 @@ namespace App.Metrics.Health.Reporting.Slack
                                    IconEmoji = string.IsNullOrWhiteSpace(_slackOptions.EmojiIcon) ? DefaultEmojiIcon : _slackOptions.EmojiIcon
                                };
 
-            var unhealthyCheck = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Unhealthy).ToList();
+            var newUnhealthyChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Unhealthy && !LastUnhealthyCheckCache.Contains(r.Name)).ToList();
 
-            if (unhealthyCheck.Any())
+            if (newUnhealthyChecks.Any())
             {
-                AddHealthAttachments(HealthCheckStatus.Unhealthy, unhealthyCheck, slackMessage);
+                AddHealthAttachments(HealthCheckStatus.Unhealthy, newUnhealthyChecks, slackMessage);
             }
 
             if (_slackOptions.AlertOnDegradedChecks)
             {
-                var degradedChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Degraded).ToList();
+                var degradedChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Degraded && !LastDegradedCheckCache.Contains(r.Name)).ToList();
 
                 if (degradedChecks.Any())
                 {
@@ -75,7 +76,7 @@ namespace App.Metrics.Health.Reporting.Slack
                 await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
             }
 
-            await AlertRecoveredChecks(status, applicationName, cancellationToken);
+            await AlertStatusChangeChecks(status, applicationName, cancellationToken);
         }
 
         private void AddHealthAttachments(
@@ -114,9 +115,15 @@ namespace App.Metrics.Health.Reporting.Slack
 
             foreach (var result in checks)
             {
-                if (result.Check.Status != HealthCheckStatus.Healthy)
+                if (result.Check.Status == HealthCheckStatus.Unhealthy)
                 {
-                    LastFailedCheckCache.Add(result.Name);
+                    LastDegradedCheckCache.Remove(result.Name);
+                    LastUnhealthyCheckCache.Add(result.Name);
+                }
+                else if (result.Check.Status == HealthCheckStatus.Degraded)
+                {
+                    LastUnhealthyCheckCache.Remove(result.Name);
+                    LastDegradedCheckCache.Add(result.Name);
                 }
 
                 attachment.Fields.Add(
@@ -131,7 +138,7 @@ namespace App.Metrics.Health.Reporting.Slack
             slackMessage.Attachments.Add(attachment);
         }
 
-        private async Task AlertRecoveredChecks(HealthStatus status, string applicationName, CancellationToken cancellationToken)
+        private async Task AlertStatusChangeChecks(HealthStatus status, string applicationName, CancellationToken cancellationToken)
         {
             var healthyChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Healthy).ToList();
 
@@ -144,10 +151,17 @@ namespace App.Metrics.Health.Reporting.Slack
 
             foreach (var check in healthyChecks)
             {
-                if (LastFailedCheckCache.Contains(check.Name))
+                if (LastUnhealthyCheckCache.Contains(check.Name))
                 {
                     recoveredChecks.Add(check);
-                    LastFailedCheckCache.Remove(check.Name);
+                    LastUnhealthyCheckCache.Remove(check.Name);
+                    LastDegradedCheckCache.Remove(check.Name);
+                }
+                else if (LastDegradedCheckCache.Contains(check.Name))
+                {
+                    recoveredChecks.Add(check);
+                    LastDegradedCheckCache.Remove(check.Name);
+                    LastUnhealthyCheckCache.Remove(check.Name);
                 }
             }
 
