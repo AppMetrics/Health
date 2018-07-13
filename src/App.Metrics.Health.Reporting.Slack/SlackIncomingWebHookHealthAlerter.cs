@@ -129,8 +129,8 @@ namespace App.Metrics.Health.Reporting.Slack
                 attachment.Fields.Add(
                     new SlackAttachmentFields
                     {
-                        Title = $">{result.Name}",
-                        Value = $">_{result.Check.Message}_",
+                        Title = $"{result.Name}",
+                        Value = $"```{result.Check.Message}```",
                         Short = true
                     });
             }
