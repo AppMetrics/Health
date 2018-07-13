@@ -24,6 +24,7 @@ namespace App.Metrics.Health.Reporting.Slack
         private static readonly HashSet<string> LastUnhealthyCheckCache = new HashSet<string>();
         private static readonly HashSet<string> LastDegradedCheckCache = new HashSet<string>();
         private static readonly ILog Logger = LogProvider.For<SlackIncomingWebHookHealthAlerter>();
+        private static int _runs = 0;
         private readonly HttpClient _httpClient;
         private readonly SlackHealthAlertOptions _slackOptions;
 
@@ -46,6 +47,9 @@ namespace App.Metrics.Health.Reporting.Slack
         /// <inheritdoc />
         public async Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default)
         {
+            var resetRuns = false;
+            _runs++;
+
             if (!_slackOptions.Enabled || !options.Enabled)
             {
                 Logger.Trace($"Health Status Reporter `{this}` disabled, not reporting.");
@@ -77,6 +81,20 @@ namespace App.Metrics.Health.Reporting.Slack
                 AddHealthAttachments(HealthCheckStatus.Unhealthy, newUnhealthyChecks, slackMessage);
             }
 
+            if (_runs > _slackOptions.RunsBeforeReportExistingFailures)
+            {
+                resetRuns = true;
+
+                var existingUnHealthyChecks = status.Results
+                                                    .Where(r => r.Check.Status == HealthCheckStatus.Unhealthy && LastUnhealthyCheckCache.Contains(r.Name) && newUnhealthyChecks.All(c => c.Name != r.Name))
+                                                    .ToList();
+
+                if (existingUnHealthyChecks.Any())
+                {
+                    AddHealthAttachments(HealthCheckStatus.Unhealthy, existingUnHealthyChecks, slackMessage, reFailure: true);
+                }
+            }
+
             if (_slackOptions.AlertOnDegradedChecks)
             {
                 var degradedChecks = status.Results.Where(r => r.Check.Status == HealthCheckStatus.Degraded && !LastDegradedCheckCache.Contains(r.Name)).ToList();
@@ -85,6 +103,25 @@ namespace App.Metrics.Health.Reporting.Slack
                 {
                     AddHealthAttachments(HealthCheckStatus.Degraded, degradedChecks, slackMessage);
                 }
+
+                if (_runs > _slackOptions.RunsBeforeReportExistingFailures)
+                {
+                    resetRuns = true;
+
+                    var existingDegradedChecks = status.Results
+                                                       .Where(r => r.Check.Status == HealthCheckStatus.Degraded && LastDegradedCheckCache.Contains(r.Name) && degradedChecks.All(c => c.Name != r.Name))
+                                                       .ToList();
+
+                    if (existingDegradedChecks.Any())
+                    {
+                        AddHealthAttachments(HealthCheckStatus.Degraded, existingDegradedChecks, slackMessage, reFailure: true);
+                    }
+                }
+            }
+
+            if (resetRuns)
+            {
+                _runs = 0;
             }
 
             if (slackMessage.Attachments.Any())
@@ -96,8 +133,6 @@ namespace App.Metrics.Health.Reporting.Slack
                     if (response.IsSuccessStatusCode)
                     {
                         Logger.Trace($"Health Status Reporter `{this}` successfully reported health status.");
-
-                        await AlertStatusChangeChecks(status, applicationName, cancellationToken);
                     }
                     else
                     {
@@ -109,12 +144,15 @@ namespace App.Metrics.Health.Reporting.Slack
                     Logger.Error(ex, $"Health Status Reporter `{this}` failed to reported health status");
                 }
             }
+
+            await AlertStatusChangeChecks(status, applicationName, cancellationToken);
         }
 
         private void AddHealthAttachments(
             HealthCheckStatus checkStatus,
             IReadOnlyCollection<HealthCheck.Result> checks,
-            SlackPayload slackMessage)
+            SlackPayload slackMessage,
+            bool reFailure = false)
         {
             var checkOrChecks = checks.Count > 1 ? "checks" : "check";
             var textEnd = string.Empty;
@@ -122,13 +160,13 @@ namespace App.Metrics.Health.Reporting.Slack
 
             if (checkStatus == HealthCheckStatus.Unhealthy)
             {
-                textEnd = "failing";
+                textEnd = reFailure ? "still failing" : "failing";
                 color = FailingColor;
             }
 
             if (checkStatus == HealthCheckStatus.Degraded)
             {
-                textEnd = "degrading";
+                textEnd = reFailure ? "still degrading" : "degrading";
                 color = DegradingColor;
             }
 

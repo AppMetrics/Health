@@ -32,6 +32,7 @@ namespace App.Metrics.Health
         public static class Reporting
         {
             public static readonly TimeSpan DefaultReportInterval = TimeSpan.FromSeconds(10);
+            public static readonly int DefaultNumberOfRunsBeforeReAlerting = 6; // Every 60secs
         }
     }
 }

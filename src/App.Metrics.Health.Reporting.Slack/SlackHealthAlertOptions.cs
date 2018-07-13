@@ -27,6 +27,14 @@ namespace App.Metrics.Health.Reporting.Slack
         /// </value>
         public TimeSpan ReportInterval { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the number of report runs before re-alerting checks that have re-failed. If set to 0, failed checks will only be reported once until healthy again.
+        /// </summary>
+        /// <remarks>
+        ///     If not set number of runs will be set to the <see cref="HealthConstants.Reporting.DefaultNumberOfRunsBeforeReAlerting" />.
+        /// </remarks>
+        public int RunsBeforeReportExistingFailures { get; set; } = HealthConstants.Reporting.DefaultNumberOfRunsBeforeReAlerting;
+
         public string Username { get; set; }
 
         public string WebhookUrl { get; set; }
