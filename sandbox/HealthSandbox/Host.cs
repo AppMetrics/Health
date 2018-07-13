@@ -101,6 +101,7 @@ namespace HealthSandbox
                                          {
                                              options.Channel = SlackChannel;
                                              options.WebhookUrl = SlackWebhookUrl;
+                                             options.ReportInterval = TimeSpan.FromSeconds(30);
                                          })
                                      .Report.ToMetrics(Metrics)
                                      .HealthChecks.AddCheck(new SampleHealthCheck())

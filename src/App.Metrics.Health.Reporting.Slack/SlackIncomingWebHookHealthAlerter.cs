@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using App.Metrics.Health.Logging;
 using App.Metrics.Health.Reporting.Slack.Internal;
 
 namespace App.Metrics.Health.Reporting.Slack
@@ -22,22 +23,37 @@ namespace App.Metrics.Health.Reporting.Slack
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         private static readonly HashSet<string> LastUnhealthyCheckCache = new HashSet<string>();
         private static readonly HashSet<string> LastDegradedCheckCache = new HashSet<string>();
+        private static readonly ILog Logger = LogProvider.For<SlackIncomingWebHookHealthAlerter>();
         private readonly HttpClient _httpClient;
         private readonly SlackHealthAlertOptions _slackOptions;
 
         public SlackIncomingWebHookHealthAlerter(SlackHealthAlertOptions slackOptions)
         {
             _slackOptions = slackOptions ?? throw new ArgumentNullException(nameof(slackOptions));
+
+            ReportInterval = slackOptions.ReportInterval > TimeSpan.Zero
+                ? slackOptions.ReportInterval
+                : HealthConstants.Reporting.DefaultReportInterval;
+
             _httpClient = new HttpClient();
+
+            Logger.Trace($"Using Metrics Reporter {this}. WebhookUrl: {slackOptions.WebhookUrl} ReportInterval: {ReportInterval} Channel: {slackOptions.Channel}");
         }
+
+        /// <inheritdoc />
+        public TimeSpan ReportInterval { get; set; }
 
         /// <inheritdoc />
         public async Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default)
         {
-            if (!_slackOptions.Enabled)
+            if (!_slackOptions.Enabled || !options.Enabled)
             {
+                Logger.Trace($"Health Status Reporter `{this}` disabled, not reporting.");
+
                 return;
             }
+
+            Logger.Trace($"Health Status Reporter `{this}` reporting health status.");
 
             var applicationName = options.ApplicationName;
 
@@ -73,10 +89,26 @@ namespace App.Metrics.Health.Reporting.Slack
 
             if (slackMessage.Attachments.Any())
             {
-                await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
-            }
+                try
+                {
+                    var response = await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
 
-            await AlertStatusChangeChecks(status, applicationName, cancellationToken);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Logger.Trace($"Health Status Reporter `{this}` successfully reported health status.");
+
+                        await AlertStatusChangeChecks(status, applicationName, cancellationToken);
+                    }
+                    else
+                    {
+                        Logger.Error($"Health Status Reporter `{this}` failed to reported health status with status code: `{response.StatusCode}` and reason phrase: `{response.ReasonPhrase}`");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, $"Health Status Reporter `{this}` failed to reported health status");
+                }
+            }
         }
 
         private void AddHealthAttachments(
@@ -179,7 +211,25 @@ namespace App.Metrics.Health.Reporting.Slack
 
                 if (slackMessage.Attachments.Any())
                 {
-                    await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
+                    try
+                    {
+                        var response = await _httpClient.PostAsync(_slackOptions.WebhookUrl, new JsonContent(slackMessage), cancellationToken);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Logger.Trace($"Health Status Reporter `{this}` successfully reported health status changes.");
+
+                            await AlertStatusChangeChecks(status, applicationName, cancellationToken);
+                        }
+                        else
+                        {
+                            Logger.Error($"Health Status Reporter `{this}` failed to reported health status changes with status code: `{response.StatusCode}` and reason phrase: `{response.ReasonPhrase}`");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, $"Health Status Reporter `{this}` failed to reported health status changes.");
+                    }
                 }
             }
         }

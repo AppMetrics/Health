@@ -12,6 +12,9 @@ namespace HealthSandbox
     public class SampleHealthStatusReporter : IReportHealthStatus
     {
         /// <inheritdoc />
+        public TimeSpan ReportInterval { get; set; }
+
+        /// <inheritdoc />
         public Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default)
         {
             Console.WriteLine($"{options.ApplicationName} - Overall status: {status.Status}");

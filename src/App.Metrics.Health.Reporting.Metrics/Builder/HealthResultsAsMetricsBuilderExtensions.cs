@@ -18,5 +18,15 @@ namespace App.Metrics.Health
 
             return healthReportingBuilder.Builder;
         }
+
+        public static IHealthBuilder ToMetrics(
+            this IHealthReportingBuilder healthReportingBuilder,
+            IMetrics metrics,
+            HealthAsMetricsOptions options)
+        {
+            healthReportingBuilder.Using(new HealthResultsAsMetricsReporter(metrics, options));
+
+            return healthReportingBuilder.Builder;
+        }
     }
 }

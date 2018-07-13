@@ -29,6 +29,8 @@ namespace App.Metrics.Health.Builder
                 throw new ArgumentNullException(nameof(reporter));
             }
 
+            EnsureRequiredProperties(reporter);
+
             _reporters(reporter);
 
             return Builder;
@@ -41,6 +43,21 @@ namespace App.Metrics.Health.Builder
             var reporter = new TReportHealth();
 
             return Using(reporter);
+        }
+
+        public IHealthBuilder Using<TReportHealth>(TimeSpan reportInterval)
+            where TReportHealth : IReportHealthStatus, new()
+        {
+            var reporter = new TReportHealth { ReportInterval = reportInterval };
+
+            return Using(reporter);
+        }
+
+        private static void EnsureRequiredProperties(IReportHealthStatus reporter)
+        {
+            reporter.ReportInterval = reporter.ReportInterval <= TimeSpan.Zero
+                ? HealthConstants.Reporting.DefaultReportInterval
+                : reporter.ReportInterval;
         }
     }
 }

@@ -35,5 +35,18 @@ namespace App.Metrics.Health
         /// </returns>
         IHealthBuilder Using<TReportHealth>()
             where TReportHealth : IReportHealthStatus, new();
+
+        /// <summary>
+        ///     Reports metrics using the specified <see cref="IReportHealthStatus" />.
+        /// </summary>
+        /// <param name="reportInterval">The <see cref="TimeSpan" /> interval used to schedule health status reporting.</param>
+        /// <typeparam name="TReportHealth">
+        ///     An <see cref="IReportHealthStatus" /> type used to report health status.
+        /// </typeparam>
+        /// <returns>
+        ///     An <see cref="IHealthBuilder" /> that can be used to further configure App Metrics Health.
+        /// </returns>
+        IHealthBuilder Using<TReportHealth>(TimeSpan reportInterval)
+            where TReportHealth : IReportHealthStatus, new();
     }
 }

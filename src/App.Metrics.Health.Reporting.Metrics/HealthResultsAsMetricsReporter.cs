@@ -2,8 +2,10 @@
 // Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using App.Metrics.Health.Logging;
 #if !NETSTANDARD1_6
 using App.Metrics.Health.Internal;
  #endif
@@ -13,13 +15,46 @@ namespace App.Metrics.Health.Reporting.Metrics
 {
     public class HealthResultsAsMetricsReporter : IReportHealthStatus
     {
+        private static readonly ILog Logger = LogProvider.For<HealthResultsAsMetricsReporter>();
         private readonly IMetrics _metrics;
+        private readonly HealthAsMetricsOptions _healthAsMetricsOptions;
 
-        public HealthResultsAsMetricsReporter(IMetrics metrics) { _metrics = metrics; }
+        public HealthResultsAsMetricsReporter(IMetrics metrics)
+            : this(metrics, new HealthAsMetricsOptions())
+        {
+        }
+
+        public HealthResultsAsMetricsReporter(IMetrics metrics, HealthAsMetricsOptions healthAsMetricsOptions)
+        {
+            _healthAsMetricsOptions = healthAsMetricsOptions ?? throw new ArgumentNullException(nameof(healthAsMetricsOptions));
+            _metrics = metrics ?? throw new ArgumentNullException(nameof(metrics));
+
+            ReportInterval = healthAsMetricsOptions.ReportInterval > TimeSpan.Zero
+                ? healthAsMetricsOptions.ReportInterval
+                : HealthConstants.Reporting.DefaultReportInterval;
+
+            Logger.Trace($"Using Metrics Reporter {this}. ReportInterval: {ReportInterval}");
+        }
+
+        /// <inheritdoc />
+        public TimeSpan ReportInterval { get; set; }
 
         /// <inheritdoc />
         public Task ReportAsync(HealthOptions options, HealthStatus status, CancellationToken cancellationToken = default)
         {
+            if (!_healthAsMetricsOptions.Enabled || !options.Enabled)
+            {
+                Logger.Trace($"Health Status Reporter `{this}` disabled, not reporting.");
+
+#if NETSTANDARD1_6
+                return Task.CompletedTask;
+#else
+                return AppMetricsHealthTaskHelper.CompletedTask();
+#endif
+            }
+
+            Logger.Trace($"Health Status Reporter `{this}` reporting health status.");
+
             foreach (var healthResult in status.Results)
             {
                 var tags = new MetricTags(HealthReportingConstants.TagKeys.HealthCheckName, healthResult.Name);
@@ -50,6 +85,8 @@ namespace App.Metrics.Health.Reporting.Metrics
             }
 
             _metrics.Measure.Gauge.SetValue(ApplicationHealthMetricRegistry.HealthGauge, overallHealthStatus);
+
+            Logger.Trace($"Health Status Reporter `{this}` successfully reported health status.");
 
 #if NETSTANDARD1_6
             return Task.CompletedTask;
