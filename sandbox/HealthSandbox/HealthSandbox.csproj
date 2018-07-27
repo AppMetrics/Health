@@ -18,6 +18,7 @@
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Checks.Network\App.Metrics.Health.Checks.Network.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Checks.Process\App.Metrics.Health.Checks.Process.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Checks.Sql\App.Metrics.Health.Checks.Sql.csproj" />
+		<ProjectReference Include="..\..\src\App.Metrics.Health.Reporting.GrafanaAnnotation\App.Metrics.Health.Reporting.GrafanaAnnotation.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Reporting.Metrics\App.Metrics.Health.Reporting.Metrics.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health.Reporting.Slack\App.Metrics.Health.Reporting.Slack.csproj" />
 		<ProjectReference Include="..\..\src\App.Metrics.Health\App.Metrics.Health.csproj" />

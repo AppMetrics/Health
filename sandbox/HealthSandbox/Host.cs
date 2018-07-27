@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,6 @@ namespace HealthSandbox
 {
     public static class Host
     {
-        private static readonly string ConnectionString = "Data Source=DBHealthCheck;Mode=Memory;Cache=Shared";
-        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/todo";
-        private static readonly string SlackChannel = "#general";
-
         public static IConfigurationRoot Configuration { get; set; }
 
         public static IHealthRoot Health { get; set; }
@@ -85,87 +82,23 @@ namespace HealthSandbox
                          .WriteTo.Seq("http://localhost:5341")
                          .CreateLogger();
 
-            var oneHourAgo = DateTime.UtcNow.AddHours(-1);
-            var oneHourFromNow = DateTime.UtcNow.AddHours(1);
-
-            var quiteAt = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, false, new[] { DayOfWeek.Monday });
-
             var healthOptionsDictionary = Configuration.GetSection(nameof(HealthOptions)).GetChildren().ToDictionary(x => $"{nameof(HealthOptions)}:{x.Key}", x => x.Value);
 
             Metrics = AppMetrics.CreateDefaultBuilder().Build();
 
             Health = AppMetricsHealth.CreateDefaultBuilder()
                                      .Configuration.Configure(healthOptionsDictionary)
-                                     .Report.ToSlack(
+                                     .Report.ToGrafanaAnnotation(
                                          options =>
                                          {
-                                             options.Channel = SlackChannel;
-                                             options.WebhookUrl = SlackWebhookUrl;
-                                             options.ReportInterval = TimeSpan.FromSeconds(30);
+                                             options.AnnotationEndpoint = new Uri("http://localhost:3000/api/annotations");
+                                             options.Token =
+                                                 "xxx";
+                                             options.Tags = new List<string> { "test" };
                                          })
                                      .Report.ToMetrics(Metrics)
                                      .HealthChecks.AddCheck(new SampleHealthCheck())
-                                     .HealthChecks.AddCheck(new SampleCachedHealthCheck())
-                                     .HealthChecks.AddCheck(new SampleQuiteTimeHealthCheck())
-                                     .HealthChecks.AddProcessPrivateMemorySizeCheck("Private Memory Size", 200)
-                                     .HealthChecks.AddProcessVirtualMemorySizeCheck("Virtual Memory Size", 200)
-                                     .HealthChecks.AddProcessPhysicalMemoryCheck("Working Set", 200)
-                                     .HealthChecks.AddPingCheck("google ping", "google.com", TimeSpan.FromSeconds(10))
-                                     .HealthChecks.AddPingCheck("google ping cached", "google.com", TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
-                                     .HealthChecks.AddHttpGetCheck(
-                                          "invalid http cached",
-                                          new Uri("https://invalid-asdfadsf-cached.com/"),
-                                          3,
-                                          TimeSpan.FromMilliseconds(100),
-                                          TimeSpan.FromSeconds(1),
-                                          TimeSpan.FromMinutes(1))
-                                     .HealthChecks.AddHttpGetCheck(
-                                          "invalid http",
-                                          new Uri("https://invalid-asdfadsf.com/"),
-                                          3,
-                                          TimeSpan.FromMilliseconds(100),
-                                          TimeSpan.FromSeconds(1))
-                                     .HealthChecks.AddHttpGetCheck(
-                                          "github",
-                                          new Uri("https://github.com/"),
-                                          retries: 3,
-                                          delayBetweenRetries: TimeSpan.FromMilliseconds(100),
-                                          timeoutPerRequest: TimeSpan.FromSeconds(5))
-                                      .HealthChecks.AddHttpGetCheck("google", new Uri("https://google.com/"), TimeSpan.FromSeconds(1))
-                                      .HealthChecks.AddCheck(
-                                          "DatabaseConnected",
-                                          () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy("Database Connection OK")))
-                                      .HealthChecks.AddCachedCheck(
-                                          "DiskSpace Cached",
-                                          () =>
-                                          {
-                                              var freeDiskSpace = GetFreeDiskSpace();
-                                              return new ValueTask<HealthCheckResult>(
-                                                  freeDiskSpace <= 512
-                                                      ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-                                                      : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-                                          },
-                                          cacheDuration: TimeSpan.FromMinutes(1))
-                                      .HealthChecks.AddQuiteTimeCheck(
-                                          "DiskSpace Quite Time",
-                                          () =>
-                                          {
-                                              var freeDiskSpace = GetFreeDiskSpace();
-                                              return new ValueTask<HealthCheckResult>(
-                                                  freeDiskSpace <= 512
-                                                      ? HealthCheckResult.Unhealthy("Not enough disk space: {0}", freeDiskSpace)
-                                                      : HealthCheckResult.Unhealthy("Disk space ok: {0}", freeDiskSpace));
-                                          },
-                                          quiteTime: quiteAt)
-                                      .HealthChecks.AddSqlCheck("DB Connection", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10))
-                                      .HealthChecks.AddSqlCachedCheck("DB Connection Cached", () => new SqliteConnection(ConnectionString), TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1))
-                                      .Report.Using<SampleHealthStatusReporter>()
                                       .Build();
-
-            int GetFreeDiskSpace()
-            {
-                return 1024;
-            }
         }
 
         private static async Task RunUntilEscAsync(TimeSpan delayBetweenRun, CancellationTokenSource cancellationTokenSource, Func<Task> action)

@@ -52,12 +52,12 @@ namespace App.Metrics.Health.Reporting.Slack
 
             if (!_slackOptions.Enabled || !options.Enabled)
             {
-                Logger.Trace($"Health Status Reporter `{this}` disabled, not reporting.");
+                Logger.Trace($"Health Status Reporter '{this}' disabled, not reporting.");
 
                 return;
             }
 
-            Logger.Trace($"Health Status Reporter `{this}` reporting health status.");
+            Logger.Trace($"Health Status Reporter '{this}' reporting health status.");
 
             var applicationName = options.ApplicationName;
 
@@ -132,16 +132,16 @@ namespace App.Metrics.Health.Reporting.Slack
 
                     if (response.IsSuccessStatusCode)
                     {
-                        Logger.Trace($"Health Status Reporter `{this}` successfully reported health status.");
+                        Logger.Trace($"Health Status Reporter '{this}' successfully reported health status.");
                     }
                     else
                     {
-                        Logger.Error($"Health Status Reporter `{this}` failed to reported health status with status code: `{response.StatusCode}` and reason phrase: `{response.ReasonPhrase}`");
+                        Logger.Error($"Health Status Reporter '{this}' failed to reported health status with status code: '{response.StatusCode}' and reason phrase: '{response.ReasonPhrase}'");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, $"Health Status Reporter `{this}` failed to reported health status");
+                    Logger.Error(ex, $"Health Status Reporter '{this}' failed to reported health status");
                 }
             }
 
@@ -255,18 +255,18 @@ namespace App.Metrics.Health.Reporting.Slack
 
                         if (response.IsSuccessStatusCode)
                         {
-                            Logger.Trace($"Health Status Reporter `{this}` successfully reported health status changes.");
+                            Logger.Trace($"Health Status Reporter '{this}' successfully reported health status changes.");
 
                             await AlertStatusChangeChecks(status, applicationName, cancellationToken);
                         }
                         else
                         {
-                            Logger.Error($"Health Status Reporter `{this}` failed to reported health status changes with status code: `{response.StatusCode}` and reason phrase: `{response.ReasonPhrase}`");
+                            Logger.Error($"Health Status Reporter '{this}' failed to reported health status changes with status code: `{response.StatusCode}` and reason phrase: `{response.ReasonPhrase}`");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error(ex, $"Health Status Reporter `{this}` failed to reported health status changes.");
+                        Logger.Error(ex, $"Health Status Reporter '{this}' failed to reported health status changes.");
                     }
                 }
             }
