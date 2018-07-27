@@ -289,7 +289,7 @@ namespace App.Metrics.Health
                             Logger.ErrorException(message, ex);
 
                             return HealthCheckResultOnError(
-                                $"FAILED. {message}. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                                $"FAILED. {message}.",
                                 degradedOnError);
                         }
 
@@ -315,7 +315,7 @@ namespace App.Metrics.Health
                 Logger.ErrorException(message, ex);
 
                 return HealthCheckResultOnError(
-                    $"FAILED. {message}. Time taken: {sw.ElapsedMilliseconds}ms. Attempts: {attempts}.",
+                    $"FAILED. {message}",
                     degradedOnError);
             }
             finally
