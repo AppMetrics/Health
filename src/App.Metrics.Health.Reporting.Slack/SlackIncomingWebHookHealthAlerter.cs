@@ -178,7 +178,7 @@ namespace App.Metrics.Health.Reporting.Slack
 
             var attachment = new SlackAttachment
                              {
-                                 Text = $"*_{checks.Count} {checkOrChecks} {textEnd}_*",
+                                 Text = $"*_{checks.Count} {checkOrChecks} {textEnd}_ on server {Environment.MachineName}*\n\n",
                                  Color = color,
                                  Ts = (DateTime.UtcNow - Epoch).TotalSeconds
                              };
