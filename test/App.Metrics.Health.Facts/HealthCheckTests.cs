@@ -1,5 +1,5 @@
-﻿// <copyright file="HealthCheckTests.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="HealthCheckTests.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using System;
@@ -77,6 +77,86 @@ namespace App.Metrics.Health.Facts
             var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()));
             var result = await check.ExecuteAsync();
             result.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
+        }
+
+        [Fact]
+        public async Task Can_cache_results()
+        {
+            var cacheDuration = TimeSpan.FromMilliseconds(50);
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), cacheDuration);
+            var result = await check.ExecuteAsync();
+
+            result.IsFromCache.Should().BeFalse();
+
+            result = await check.ExecuteAsync();
+            result.IsFromCache.Should().BeTrue();
+
+            await Task.Delay(cacheDuration);
+            result = await check.ExecuteAsync();
+            result.IsFromCache.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task During_quite_time_health_check_should_be_ignored()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var oneHourFromNow = DateTime.UtcNow.Add(TimeSpan.FromHours(1));
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, shouldCheck: false);
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Ignored);
+        }
+
+        [Fact]
+        public async Task During_quite_time_health_check_when_day_excluded_should_run_check()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var oneHourFromNow = DateTime.UtcNow.Add(TimeSpan.FromHours(1));
+            var today = DateTime.UtcNow.DayOfWeek;
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, shouldCheck: false, excludeDays: new[] { today });
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Unhealthy);
+        }
+
+        [Fact]
+        public async Task During_quite_time_health_check_when_day_not_excluded_should_ignore_check()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var oneHourFromNow = DateTime.UtcNow.Add(TimeSpan.FromHours(1));
+            var today = DateTime.UtcNow.AddDays(-1).DayOfWeek;
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, oneHourFromNow.TimeOfDay, shouldCheck: false, excludeDays: new[] { today });
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Ignored);
+        }
+
+        [Fact]
+        public async Task When_outside_quite_time_health_check_should_not_be_ignored()
+        {
+            var oneHourAgo = DateTime.UtcNow.Add(TimeSpan.FromHours(-1));
+            var halfAnHourAgo = DateTime.UtcNow.Add(TimeSpan.FromMinutes(-30));
+            var quiteTime = new HealthCheck.QuiteTime(oneHourAgo.TimeOfDay, halfAnHourAgo.TimeOfDay, shouldCheck: false);
+            var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy()), quiteTime);
+            var result = await check.ExecuteAsync();
+
+            result.Check.Status.Should().Be(HealthCheckStatus.Healthy);
+        }
+
+        [Fact]
+        public void Cache_duration_when_specified_should_be_greater_than_zero()
+        {
+            var cacheDuration = TimeSpan.Zero;
+            Func<Task> sut = async () =>
+            {
+                var check = new HealthCheck("test", () => new ValueTask<HealthCheckResult>(HealthCheckResult.Unhealthy()), cacheDuration);
+                var unused = await check.ExecuteAsync();
+            };
+
+            sut.Should().Throw<ArgumentException>();
         }
 
         [Fact]

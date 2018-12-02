@@ -1,5 +1,5 @@
-﻿// <copyright file="HealthStatusTextWriter.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="HealthStatusTextWriter.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using System;
@@ -105,7 +105,7 @@ namespace App.Metrics.Health.Formatters.Ascii
             _textWriter.Write(checkResult.Name);
             _textWriter.Write('\n');
             _textWriter.Write('\n');
-            _textWriter.Write(FormatReadable("MESSAGE", checkResult.Check.Message));
+            _textWriter.Write(FormatReadable("MESSAGE", checkResult.IsFromCache ? $"[Cached] {checkResult.Check.Message}" : checkResult.Check.Message));
             _textWriter.Write('\n');
             _textWriter.Write(FormatReadable("STATUS", HealthConstants.HealthStatusDisplay[checkResult.Check.Status]));
             _textWriter.Write("\n--------------------------------------------------------------");

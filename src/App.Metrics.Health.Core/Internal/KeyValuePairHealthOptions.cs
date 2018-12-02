@@ -1,5 +1,5 @@
-﻿// <copyright file="KeyValuePairHealthOptions.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="KeyValuePairHealthOptions.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using System;
@@ -11,6 +11,9 @@ namespace App.Metrics.Health.Internal
     internal class KeyValuePairHealthOptions
     {
         internal static readonly string EnabledDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.Enabled)}";
+        internal static readonly string ApplicationNameDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.ApplicationName)}";
+        internal static readonly string ReportingEnabledDirective = $"{nameof(HealthOptions)}:{nameof(HealthOptions.ReportingEnabled)}";
+
         private readonly HealthOptions _options;
 
         private readonly Dictionary<string, string> _optionValues;
@@ -50,6 +53,19 @@ namespace App.Metrics.Health.Internal
                     }
 
                     options.Enabled = metricsEnabled;
+                }
+                else if (string.Compare(key, ApplicationNameDirective, StringComparison.CurrentCultureIgnoreCase) == 0)
+                {
+                    options.ApplicationName = _optionValues[key];
+                }
+                else if (string.Compare(key, ReportingEnabledDirective, StringComparison.CurrentCultureIgnoreCase) == 0)
+                {
+                    if (!bool.TryParse(_optionValues[key], out var reportingEnabled))
+                    {
+                        throw new InvalidCastException($"Attempted to bind {key} to {ReportingEnabledDirective} but it's not a boolean");
+                    }
+
+                    options.ReportingEnabled = reportingEnabled;
                 }
             }
 

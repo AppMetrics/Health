@@ -1,10 +1,11 @@
-﻿// <copyright file="HealthBuilder.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="HealthBuilder.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using App.Metrics.Health.Formatters;
 using App.Metrics.Health.Formatters.Ascii;
 using App.Metrics.Health.Internal;
@@ -18,8 +19,12 @@ namespace App.Metrics.Health.Builder
         private static readonly ILog Logger = LogProvider.For<HealthBuilder>();
         private readonly Dictionary<string, HealthCheck> _checks = new Dictionary<string, HealthCheck>(StringComparer.OrdinalIgnoreCase);
         private readonly HealthFormatterCollection _healthFormatterCollection = new HealthFormatterCollection();
+        private readonly HealthReporterCollection _healthStatusReporters = new HealthReporterCollection();
         private IHealthOutputFormatter _defaultMetricsHealthFormatter;
         private HealthOptions _options;
+
+        /// <inheritdoc />
+        public bool CanReport() { return _options.Enabled && _options.ReportingEnabled && _healthStatusReporters.Any(); }
 
         /// <inheritdoc />
         public IHealthConfigurationBuilder Configuration
@@ -77,6 +82,11 @@ namespace App.Metrics.Health.Builder
                 }
             });
 
+        /// <inheritdoc />
+        public IHealthReportingBuilder Report => new HealthReportingBuilder(
+            this,
+            reporter => { _healthStatusReporters.TryAdd(reporter); });
+
         public IHealthRoot Build()
         {
             if (_options == null)
@@ -103,12 +113,20 @@ namespace App.Metrics.Health.Builder
                 healthCheckRunner = new NoOpHealthCheckRunner();
             }
 
+            if (string.IsNullOrWhiteSpace(_options.ApplicationName))
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+
+                _options.ApplicationName = entryAssembly?.GetName()?.Name?.Trim();
+            }
+
             return new HealthRoot(
                 health,
                 _options,
                 _healthFormatterCollection,
                 defaultMetricsOutputFormatter,
-                healthCheckRunner);
+                healthCheckRunner,
+                _healthStatusReporters);
         }
     }
 }

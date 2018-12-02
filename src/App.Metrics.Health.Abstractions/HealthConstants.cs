@@ -1,7 +1,8 @@
-﻿// <copyright file="HealthConstants.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="HealthConstants.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -27,5 +28,11 @@ namespace App.Metrics.Health
                     { HealthCheckStatus.Degraded, DegradedStatusDisplay },
                     { HealthCheckStatus.Ignored, IgnoredStatusDisplay }
                 });
+
+        public static class Reporting
+        {
+            public static readonly TimeSpan DefaultReportInterval = TimeSpan.FromSeconds(10);
+            public static readonly int DefaultNumberOfRunsBeforeReAlerting = 6; // Every 60secs
+        }
     }
 }

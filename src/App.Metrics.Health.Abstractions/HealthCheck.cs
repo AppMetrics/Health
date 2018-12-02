@@ -1,5 +1,5 @@
-﻿// <copyright file="HealthCheck.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="HealthCheck.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using System;
@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace App.Metrics.Health
 {
-    public class HealthCheck
+    /// <summary>
+    /// Resprents a system health check which
+    /// </summary>
+    public partial class HealthCheck
     {
         private readonly Func<CancellationToken, ValueTask<HealthCheckResult>> _check;
 
@@ -65,6 +68,16 @@ namespace App.Metrics.Health
         {
             try
             {
+                if (HasCacheDuration())
+                {
+                    return await ExecuteWithCachingAsync(cancellationToken);
+                }
+
+                if (HasQuiteTime())
+                {
+                    return await ExecuteWithQuiteTimeAsync(cancellationToken);
+                }
+
                 var checkResult = await CheckAsync(cancellationToken);
                 return new Result(Name, checkResult);
             }
@@ -74,10 +87,7 @@ namespace App.Metrics.Health
             }
         }
 
-        protected virtual ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default)
-        {
-            return _check(cancellationToken);
-        }
+        protected virtual ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = default) { return _check(cancellationToken); }
 
         /// <summary>
         ///     Represents the result of running a <see cref="HealthCheck" />
@@ -85,6 +95,7 @@ namespace App.Metrics.Health
         public struct Result
         {
             public readonly HealthCheckResult Check;
+            public readonly bool IsFromCache;
             public readonly string Name;
 
             /// <summary>
@@ -96,6 +107,23 @@ namespace App.Metrics.Health
             {
                 Name = name;
                 Check = check;
+                IsFromCache = false;
+            }
+
+            /// <summary>
+            ///     Initializes a new instance of the <see cref="Result" /> struct.
+            /// </summary>
+            /// <param name="name">A descriptive name for the health check</param>
+            /// <param name="check">The result of executing a health check.</param>
+            /// <param name="isFromCache">
+            ///     <value>true</value>
+            ///     if the result was cached.
+            /// </param>
+            public Result(string name, HealthCheckResult check, bool isFromCache)
+            {
+                Name = name;
+                Check = check;
+                IsFromCache = isFromCache;
             }
         }
     }

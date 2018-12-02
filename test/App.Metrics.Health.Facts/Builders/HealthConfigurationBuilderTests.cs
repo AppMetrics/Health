@@ -1,5 +1,5 @@
-﻿// <copyright file="HealthConfigurationBuilderTests.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="HealthConfigurationBuilderTests.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using System.Collections.Generic;
@@ -38,7 +38,9 @@ namespace App.Metrics.Health.Facts.Builders
             // Arrange
             var keyValuePairs = new Dictionary<string, string>
                                 {
-                                    { "HealthOptions:Enabled", "false" }
+                                    { "HealthOptions:Enabled", "false" },
+                                    { "HealthOptions:ReportingEnabled", "false" },
+                                    { "HealthOptions:ApplicationName", "test_app" }
                                 };
 
             // Act
@@ -46,6 +48,8 @@ namespace App.Metrics.Health.Facts.Builders
 
             // Assert
             health.Options.Enabled.Should().BeFalse();
+            health.Options.ReportingEnabled.Should().BeFalse();
+            health.Options.ApplicationName.Should().Be("test_app");
         }
 
         [Fact]

@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\build\common.props" />
-
   <PropertyGroup>
     <Description>App Metrics Health abstractions and interfaces.</Description>
-    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net452</TargetFrameworks>
     <RootNamespace>App.Metrics.Health</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>appmetrics;healthchecks</PackageTags>
@@ -19,10 +18,11 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="LibLog" Version="$(LibLogVersion)" PrivateAssets="All"  />
+    <PackageReference Include="App.Metrics.Concurrency" Version="2.0.1" />
+    <PackageReference Include="LibLog" Version="$(LibLogVersion)" PrivateAssets="All" />
     <PackageReference Include="Microsoft.CSharp" Version="$(MicrosoftCSharpVersion)" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="$(CoreFxVersion)" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   
 </Project>

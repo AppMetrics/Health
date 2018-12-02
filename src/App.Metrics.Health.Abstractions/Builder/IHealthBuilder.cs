@@ -1,5 +1,5 @@
-﻿// <copyright file="IHealthBuilder.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="IHealthBuilder.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 // ReSharper disable CheckNamespace
@@ -8,6 +8,8 @@ namespace App.Metrics.Health
 {
     public interface IHealthBuilder
     {
+        bool CanReport();
+
         /// <summary>
         ///     Builder for configuring core App Metrics Health options.
         /// </summary>
@@ -25,6 +27,11 @@ namespace App.Metrics.Health
         ///     </para>
         /// </summary>
         IHealthOutputFormattingBuilder OutputHealth { get; }
+
+        /// <summary>
+        ///  Builder for configuring health status reporters.
+        /// </summary>
+        IHealthReportingBuilder Report { get; }
 
         /// <summary>
         ///     Builds an <see cref="IHealth" /> with the services configured via an <see cref="IHealthBuilder" />.

@@ -1,5 +1,5 @@
-﻿// <copyright file="AppMetricsHealth.cs" company="Allan Hardy">
-// Copyright (c) Allan Hardy. All rights reserved.
+﻿// <copyright file="AppMetricsHealth.cs" company="App Metrics Contributors">
+// Copyright (c) App Metrics Contributors. All rights reserved.
 // </copyright>
 
 using App.Metrics.Health.Builder;
@@ -21,13 +21,15 @@ namespace App.Metrics.Health
         /// <returns>The initialized <see cref="IHealthBuilder" />.</returns>
         public static IHealthBuilder CreateDefaultBuilder()
         {
-            var builder = new HealthBuilder().Configuration.Configure(
-                options =>
-                {
-                    options.Enabled = true;
-                })
-                .OutputHealth.AsJson()
-                .OutputHealth.AsPlainText();
+            var builder = new HealthBuilder()
+                          .Configuration
+                          .Configure(
+                                options =>
+                                {
+                                    options.Enabled = true;
+                                })
+                           .OutputHealth.AsJson()
+                           .OutputHealth.AsPlainText();
 
             return builder;
         }
