@@ -125,7 +125,11 @@ namespace App.Metrics.Health.Checks.Sql
                     sw.Start();
                     using (var connection = newDbConnection())
                     {
-                        connection.Open();
+                        if (connection.State == ConnectionState.Closed)
+                        {
+                            connection.Open();
+                        }
+
                         using (var command = connection.CreateCommand())
                         {
                             command.CommandType = CommandType.Text;
